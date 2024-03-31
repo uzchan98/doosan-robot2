@@ -1,0 +1,466 @@
+<param>
+    <motor>
+        <pr>
+            <joint name="1">30400</joint>
+            <joint name="2">30400</joint>
+            <joint name="3">30400</joint>
+            <joint name="4">30400</joint>
+            <joint name="5">30400</joint>
+            <joint name="6">30400</joint>
+            <joint name="7">0</joint>
+        </pr>
+        <ar>
+            <joint name="1">262144</joint>
+            <joint name="2">262144</joint>
+            <joint name="3">262144</joint>
+            <joint name="4">262144</joint>
+            <joint name="5">262144</joint>
+            <joint name="6">262144</joint>
+            <joint name="7">0</joint>
+        </ar>
+        <at>
+            <joint num="1">524288</joint>
+            <joint num="2">524288</joint>
+            <joint num="3">524288</joint>
+            <joint num="4">524288</joint>
+            <joint num="5">524288</joint>
+            <joint num="6">524288</joint>
+            <joint num="7">0</joint>
+        </at>
+        <qd>
+            <joint name="1">1</joint>
+            <joint name="2">1</joint>
+            <joint name="3">-1</joint>
+            <joint name="4">1</joint>
+            <joint name="5">-1</joint>
+            <joint name="6">1</joint>
+            <joint name="7">0</joint>
+        </qd>
+        <td>
+            <joint name="1">1</joint>
+            <joint name="2">1</joint>
+            <joint name="3">-1</joint>
+            <joint name="4">1</joint>
+            <joint name="5">-1</joint>
+            <joint name="6">1</joint>
+            <joint name="7">0</joint>
+        </td>
+        <mt>
+            <joint name="1">1746</joint>
+            <joint name="2">1746</joint>
+            <joint name="3">1790</joint>
+            <joint name="4">2119</joint>
+            <joint name="5">2119</joint>
+            <joint name="6">2119</joint>
+            <joint name="7">0</joint>
+        </mt>
+        <rt>
+            <joint name="1">2.8</joint>
+            <joint name="2">2.8</joint>
+            <joint name="3">1.5</joint>
+            <joint name="4">0.4</joint>
+            <joint name="5">0.4</joint>
+            <joint name="6">0.4</joint>
+            <joint name="7">0</joint>
+        </rt>
+        <kt>
+            <joint name="1">0.0881</joint>
+            <joint name="2">0.0881</joint>
+            <joint name="3">0.08374</joint>
+            <joint name="4">0.0509922</joint>
+            <joint name="5">0.0509922</joint>
+            <joint name="6">0.0509922</joint>
+            <joint name="7">0</joint>
+        </kt>
+        <gr>
+            <joint name="1">101</joint>
+            <joint name="2">101</joint>
+            <joint name="3">101</joint>
+            <joint name="4">81</joint>
+            <joint name="5">81</joint>
+            <joint name="6">81</joint>
+            <joint name="7">0</joint>
+        </gr>
+        <cpf>
+            <joint name="1">50</joint>
+            <joint name="2">50</joint>
+            <joint name="3">50</joint>
+            <joint name="4">1000</joint>
+            <joint name="5">1000</joint>
+            <joint name="6">1000</joint>
+            <joint name="7">0</joint>
+        </cpf>
+        <ctf>
+            <joint name="1">-0.0610352</joint>
+            <joint name="2">-0.0610352</joint>
+            <joint name="3">0.0305176</joint>
+            <joint name="4">-0.00762939</joint>
+            <joint name="5">0.00762939</joint>
+            <joint name="6">-0.00762939</joint>
+            <joint name="7">0</joint>
+        </ctf>
+        <cpa>
+            <!--count per acceleartion sensor -->
+            <axis name="x">1</axis>
+            <axis name="y">1</axis>
+            <axis name="z">1</axis>
+        </cpa>
+        <cs>
+            <!--current sensor-->
+            <scale>
+                <joint num="1">0.040283</joint>
+                <joint num="2">0.040283</joint>
+                <joint num="3">0.0244414</joint>
+                <joint num="4">0.0121826</joint>
+                <joint num="5">0.0121826</joint>
+                <joint num="6">0.0121826</joint>
+            </scale>
+            <offset>
+                <joint num="1">2015</joint>
+                <joint num="2">2015</joint>
+                <joint num="3">2014</joint>
+                <joint num="4">2018</joint>
+                <joint num="5">2018</joint>
+                <joint num="6">2018</joint>
+            </offset>
+        </cs>
+        <stiffness>
+            <joint name="1">81000</joint>
+            <joint name="2">81000</joint>
+            <joint name="3">37000</joint>
+            <joint name="4">11000</joint>
+            <joint name="5">11000</joint>
+            <joint name="6">11000</joint>
+            <joint name="7">0</joint>
+        </stiffness>
+        <inertia>
+            <joint name="1">0.000227</joint>
+            <joint name="2">0.000227</joint>
+            <joint name="3">0.0001399</joint>
+            <joint name="4">0.0000727</joint>
+            <joint name="5">0.0000727</joint>
+            <joint name="6">0.0000727</joint>
+            <joint name="7">0</joint>
+        </inertia>
+    </motor>
+    <robot>
+        <length_a>
+            <link name="1">0</link>
+            <link name="2">0</link>
+            <link name="3">0.56</link>
+            <link name="4">0</link>
+            <link name="5">0</link>
+            <link name="6">0</link>
+            <link name="7">0</link>
+        </length_a>
+        <length_d>
+            <link name="1">0.195</link>
+            <link name="2">0.039</link>
+            <link name="3">0</link>
+            <link name="4">0.516</link>
+            <link name="5">0</link>
+            <link name="6">0.127</link>
+            <link name="7">0</link>
+        </length_d>
+        <mass>
+            <link name="1">3.635</link>
+            <link name="2">7.984</link>
+            <link name="3">11.223</link>
+            <link name="4">2.946</link>
+            <link name="5">3.35</link>
+            <link name="6">2.208</link>
+            <link name="7">0.813</link>
+        </mass>
+        <cog>
+            <x>
+                <link name="1">6e-06</link>
+                <link name="2">9.1e-05</link>
+                <link name="3">7.5e-05</link>
+                <link name="4">4.8e-05</link>
+                <link name="5">-5.1e-05</link>
+                <link name="6">3.9e-05</link>
+                <link name="7">-1.9e-05</link>
+            </x>
+            <y>
+                <link name="1">-0.001016</link>
+                <link name="2">0.030627</link>
+                <link name="3">0.168881</link>
+                <link name="4">0.06992</link>
+                <link name="5">0.12514</link>
+                <link name="6">0.052928</link>
+                <link name="7">0.038988</link>
+            </y>
+            <z>
+                <link name="1">0.082429</link>
+                <link name="2">0.181499</link>
+                <link name="3">0.397971</link>
+                <link name="4">0.757407</link>
+                <link name="5">1.13439</link>
+                <link name="6">1.27414</link>
+                <link name="7">1.343926</link>
+            </z>
+        </cog>
+        <inertia>
+            <Ixx>
+                <link name="1">0.018</link>
+                <link name="2">0.041</link>
+                <link name="3">0.695</link>
+                <link name="4">0.009</link>
+                <link name="5">0.119</link>
+                <link name="6">0.006</link>
+                <link name="7">0.001</link>
+            </Ixx>
+            <Iyy>
+                <link name="1">0.018</link>
+                <link name="2">0.026</link>
+                <link name="3">0.692</link>
+                <link name="4">0.005</link>
+                <link name="5">0.11</link>
+                <link name="6">0.004</link>
+                <link name="7">0.001</link>
+            </Iyy>
+            <Izz>
+                <link name="1">0.016</link>
+                <link name="2">0.039</link>
+                <link name="3">0.035</link>
+                <link name="4">0.008</link>
+                <link name="5">0.013</link>
+                <link name="6">0.004</link>
+                <link name="7">0.0006463</link>
+            </Izz>
+            <Ixy>
+                <link name="1">5.458e-08</link>
+                <link name="2">2.437e-05</link>
+                <link name="3">-6.904e-05</link>
+                <link name="4">1.071e-06</link>
+                <link name="5">7.811e-06</link>
+                <link name="6">3.237e-06</link>
+                <link name="7">7.487e-09</link>
+            </Ixy>
+            <Iyz>
+                <link name="1">-6.316e-05</link>
+                <link name="2">-0.003</link>
+                <link name="3">-0.016</link>
+                <link name="4">0.0001929</link>
+                <link name="5">-0.028</link>
+                <link name="6">5.515e-05</link>
+                <link name="7">2.164e-06</link>
+            </Iyz>
+            <Ixz>
+                <link name="1">5.659e-06</link>
+                <link name="2">-6.496e-05</link>
+                <link name="3">6.673e-05</link>
+                <link name="4">7.354e-06</link>
+                <link name="5">-1.49e-07</link>
+                <link name="6">6.911e-06</link>
+                <link name="7">-2.124e-06</link>
+            </Ixz>
+        </inertia>
+        <limit>
+            <pos>
+                <link name="1">360</link>
+                <link name="2">360</link>
+                <link name="3">160</link>
+                <link name="4">360</link>
+                <link name="5">360</link>
+                <link name="6">360</link>
+                <link name="7">0</link>
+            </pos>
+            <vel>
+                <link name="1">180</link>
+                <link name="2">180</link>
+                <link name="3">180</link>
+                <link name="4">360</link>
+                <link name="5">360</link>
+                <link name="6">360</link>
+                <link name="7">0</link>
+            </vel>
+            <acc>
+                <link name="1">180</link>
+                <link name="2">180</link>
+                <link name="3">180</link>
+                <link name="4">720</link>
+                <link name="5">720</link>
+                <link name="6">720</link>
+                <link name="7">0</link>
+            </acc>
+            <jts>
+                <link name="1">411</link>
+                <link name="2">411</link>
+                <link name="3">194</link>
+                <link name="4">50</link>
+                <link name="5">50</link>
+                <link name="6">50</link>
+                <link name="7">0</link>
+            </jts>
+        </limit>
+        <collision>
+            <a>
+                <link name="1">11260</link>
+                <link name="2">7013</link>
+                <link name="3">36480</link>
+                <link name="4">116.2</link>
+                <link name="5">114.3</link>
+                <link name="6">289.1</link>
+                <link name="7">0</link>
+            </a>
+            <b>
+                <link name="1">-0.2761</link>
+                <link name="2">-0.3931</link>
+                <link name="3">-3.423</link>
+                <link name="4">-0.3003</link>
+                <link name="5">-0.3997</link>
+                <link name="6">-3.003</link>
+                <link name="7">0</link>
+            </b>
+            <c>
+                <link name="1">202.9</link>
+                <link name="2">1849</link>
+                <link name="3">2005</link>
+                <link name="4">5.438</link>
+                <link name="5">8.922</link>
+                <link name="6">16.72</link>
+                <link name="7">0</link>
+            </c>
+            <d>
+                <link name="1">0.1078</link>
+                <link name="2">-0.07233</link>
+                <link name="3">-0.2536</link>
+                <link name="4">0.07673</link>
+                <link name="5">0.0116</link>
+                <link name="6">-0.1007</link>
+                <link name="7">0</link>
+            </d>
+        </collision>
+		<fts>
+			<m1>
+				<limit>
+					<link name="1">160.0</link>
+					<link name="2">160.0</link>
+					<link name="3">160.0</link>
+					<link name="4">16.0</link>
+					<link name="5">16.0</link>
+					<link name="6">16.0</link>
+					<link name="7">0</link>
+				</limit>
+				<offset>
+					<link name="1">6.0</link>
+					<link name="2">6.0</link>
+					<link name="3">12.0</link>
+					<link name="4">0.6</link>
+					<link name="5">0.6</link>
+					<link name="6">0.6</link>
+					<link name="7">0</link>
+				</offset>
+			</m1>
+			<m2>
+				<limit>
+					<link name="1">630.0</link>
+					<link name="2">630.0</link>
+					<link name="3">630.0</link>
+					<link name="4">53.0</link>
+					<link name="5">53.0</link>
+					<link name="6">53.0</link>
+					<link name="7">0</link>
+				</limit>
+				<offset>
+					<link name="1">30.0</link>
+					<link name="2">30.0</link>
+					<link name="3">30.0</link>
+					<link name="4">3.0</link>
+					<link name="5">3.0</link>
+					<link name="6">3.0</link>
+					<link name="7">0</link>
+				</offset>
+			</m2>
+		</fts>
+    </robot>
+    <safetyboard>
+        <cog>
+            <x>
+                <link name="1">-9.1e-05</link>
+                <link name="2">0.202971</link>
+                <link name="3">4.8e-05</link>
+                <link name="4">-5.1e-05</link>
+                <link name="5">3.9e-05</link>
+                <link name="6">-1.9e-05</link>
+                <link name="7">0</link>
+            </x>
+            <y>
+                <link name="1">0.030627</link>
+                <link name="2">0.000075</link>
+                <link name="3">-0.002407</link>
+                <link name="4">0.12514</link>
+                <link name="5">-0.00314</link>
+                <link name="6">0.038988</link>
+                <link name="7">0</link>
+            </y>
+            <z>
+                <link name="1">-0.013501</link>
+                <link name="2">0.168881</link>
+                <link name="3">0.06992</link>
+                <link name="4">-0.13661</link>
+                <link name="5">0.052928</link>
+                <link name="6">-0.05407</link>
+                <link name="7">0</link>
+            </z>
+        </cog>
+        <inertia>
+            <Ixx>
+                <link name="1">0.041</link>
+                <link name="2">0.035</link>
+                <link name="3">0.009</link>
+                <link name="4">0.119</link>
+                <link name="5">0.006</link>
+                <link name="6">0.001</link>
+                <link name="7">0</link>
+            </Ixx>
+            <Iyy>
+                <link name="1">0.026</link>
+                <link name="2">0.695</link>
+                <link name="3">0.008</link>
+                <link name="4">0.11</link>
+                <link name="5">0.004</link>
+                <link name="6">0.001</link>
+                <link name="7">0</link>
+            </Iyy>
+            <Izz>
+                <link name="1">0.039</link>
+                <link name="2">0.692</link>
+                <link name="3">0.005</link>
+                <link name="4">0.013</link>
+                <link name="5">0.004</link>
+                <link name="6">0.0006463</link>
+                <link name="7">0</link>
+            </Izz>
+            <Ixy>
+                <link name="1">2.44e-05</link>
+                <link name="2">6.67e-05</link>
+                <link name="3">-7.35e-06</link>
+                <link name="4">7.81e-06</link>
+                <link name="5">-6.91e-06</link>
+                <link name="6">7.487e-09</link>
+                <link name="7">0</link>
+            </Ixy>
+            <Iyz>
+                <link name="1">-3.0e-03</link>
+                <link name="2">-6.9e-05</link>
+                <link name="3">-1.93e-04</link>
+                <link name="4">-0.028</link>
+                <link name="5">-5.52e-05</link>
+                <link name="6">2.164e-06</link>
+                <link name="7">0</link>
+            </Iyz>
+            <Ixz>
+                <link name="1">-6.5e-05</link>
+                <link name="2">-0.016</link>
+                <link name="3">1.07e-06</link>
+                <link name="4">1.49e-07</link>
+                <link name="5">3.24e-06</link>
+                <link name="6">-2.124e-06</link>
+                <link name="7">0</link>
+            </Ixz>
+        </inertia>
+    </safetyboard>
+    <crc>1653432303</crc>
+</param>
