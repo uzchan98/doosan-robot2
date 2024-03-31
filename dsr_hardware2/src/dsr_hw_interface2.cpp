@@ -63,9 +63,9 @@ void threadFunction() {
     s_node_->declare_parameter("rate", 100);
     s_node_->declare_parameter("standby", 5000);
     s_node_->declare_parameter("command", true);
-    s_node_->declare_parameter("host", "127.0.0.1");
+    s_node_->declare_parameter("host", "192.168.137.100");
     s_node_->declare_parameter("port", 12345);
-    s_node_->declare_parameter("mode", "virtual");
+    s_node_->declare_parameter("mode", "real");
     s_node_->declare_parameter("model", "m1013");
     s_node_->declare_parameter("gripper", "none");
     s_node_->declare_parameter("mobile", "none");
