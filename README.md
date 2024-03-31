@@ -37,5 +37,5 @@ The default IP of the robot controller is _192.168.127.100_ and the port is _123
 
 ##### Run dsr_control2 node 
 ```bash
-$ ros2 launch dsr_bringup2 dsr_bringup_rviz.launch.py 
+$ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py 
 ```
