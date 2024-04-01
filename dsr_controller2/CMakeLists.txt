@@ -48,11 +48,11 @@ else()
   message("Unknown ROS distro:")
   message($ENV{ROS_DISTRO})
 endif()
-add_executable(dsr_control_node2 src/dsr_control_node2.cpp)
-ament_target_dependencies(
-  dsr_control_node2 PUBLIC
-  ${THIS_PACKAGE_INCLUDE_DEPENDS}
-)
+# add_executable(dsr_control_node2 src/dsr_control_node2.cpp)
+# ament_target_dependencies(
+#   dsr_control_node2 PUBLIC
+#   ${THIS_PACKAGE_INCLUDE_DEPENDS}
+# )
 
 add_library(dsr_controller2 SHARED
   # src/dsr_control_node2.cpp
@@ -95,13 +95,13 @@ install(
   DIRECTORY config launch
   DESTINATION share/dsr_controller2
 )
-install(
-  TARGETS dsr_control_node2
-  # RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
+# install(
+#   TARGETS dsr_control_node2
+#   # RUNTIME DESTINATION bin
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION lib/${PROJECT_NAME}
+# )
 
 install(
   TARGETS
