@@ -90,7 +90,7 @@ void threadFunctionUpdate(const sensor_msgs::msg::JointState& msg){
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
     m_joint_state_pub_ = m_node_->create_publisher<sensor_msgs::msg::JointState>("/dsr/joint_states", qos);
     m_joint_state_pub_->publish(msg);
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface_update"),"on update joint");
+    // RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface_update"),"on update joint");
     rclcpp::spin_some(m_node_);
 }
 
