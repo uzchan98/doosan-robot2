@@ -91,18 +91,6 @@ def generate_launch_description():
         ],
         output="both",
     )
-    # robot_state_pub_node = Node(
-    #     package="robot_state_publisher",
-    #     executable="robot_state_publisher",
-    #     output="both",
-    #     remappings=[
-    #         (
-    #             "/joint_states",
-    #             "/dsr/joint_states",
-    #         ),
-    #     ],
-    #     parameters=[robot_description],
-    # )
     robot_state_pub_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -137,19 +125,6 @@ def generate_launch_description():
         arguments=["dsr_joint_trajectory", "-c", "/controller_manager"],
     )
 
-    # joint_state_publisher_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["dsr_joint_publisher", "--controller-manager", "/controller_manager"],
-    # )
-    
-    # Delay connection start after registering user's param`
-    # delay_control_node_after_connection_node = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=connection_node,
-    #         on_exit=[control_node],
-    #     )
-    # )
 
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -167,23 +142,13 @@ def generate_launch_description():
         )
     )
 
-    # Delay start of robot_controller after `joint_state_broadcaster`
-    delay_robot_controller_spawner_after_joint_trajectory_controller_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[joint_trajectory_controller_spawner],
-        )
-    )
-
     nodes = [
         connection_node,
         control_node,
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
-        # joint_state_publisher_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
-        # delay_robot_controller_spawner_after_joint_trajectory_controller_spawner,
     ]
 
     return LaunchDescription(ARGUMENTS + nodes)
