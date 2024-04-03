@@ -14,6 +14,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>control_msgs</depend>
+  <depend>ament_index_cpp</depend>
   <depend>controller_interface</depend>
   <depend>hardware_interface</depend>
   <depend>kdl_parser</depend>
@@ -23,8 +24,10 @@
   <depend>rcpputils</depend>
   <depend>realtime_tools</depend>
   <depend>trajectory_msgs</depend> 
-  <depend>dsr_msgs2</depend> 
   <depend>moveit_msgs</depend> 
+  <depend>yaml-cpp</depend> 
+  
+  <build_depend>dsr_msgs2</build_depend>
 
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>

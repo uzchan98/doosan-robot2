@@ -7,6 +7,8 @@
 // */
 
 #include "dsr_hardware2/dsr_hw_interface2.h"
+#include "ament_index_cpp/get_package_share_directory.hpp"
+
 // #include "dsr_hardware2/dsr_connection_node2.h"
 #include <boost/thread/thread.hpp>
 #include <boost/assign/list_of.hpp>
@@ -15,13 +17,13 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 #include <unistd.h>     
 #include <math.h>
 #include "../../common2/include/DRFLEx.h"
-// #include "../../dsr_hardware2/include/dsr_hardware2/dsr_connection_node2.h"
 using namespace DRAFramework;
-// rclcpp::Node::SharedPtr s_node_ = nullptr; //ROS2
 rclcpp::Node::SharedPtr s_node_ = nullptr;
 rclcpp::Node::SharedPtr m_node_ = nullptr; //ROS2
 CDRFLEx Drfl;
@@ -41,6 +43,7 @@ int g_nAnalogOutputModeCh1;
 int g_nAnalogOutputModeCh2;
 int m_nVersionDRCF;
 
+
 int nDelay = 5000;
 #define STABLE_BAND_JNT     0.05
 #define DSR_CTL_PUB_RATE    100  //[hz] 10ms <----- 퍼블리싱 주기, but OnMonitoringDataCB() 은 100ms 마다 불려짐을 유의!   
@@ -51,36 +54,74 @@ void* get_drfl(){
 void* get_s_node_(){
     return &s_node_;
 }
-// extern bool g_initialized;
-// extern ConnectionNode connection_node;
-// ConnectionNode connection_node;
 
 bool init_check = true;
 
 void threadFunction() {
     s_node_ = rclcpp::Node::make_shared("dsr_hw_interface2");
-    s_node_->declare_parameter("name", "dsr01");
-    s_node_->declare_parameter("rate", 100);
-    s_node_->declare_parameter("standby", 5000);
-    s_node_->declare_parameter("command", true);
-    s_node_->declare_parameter("host", "192.168.137.100");
-    s_node_->declare_parameter("port", 12345);
-    s_node_->declare_parameter("mode", "real");
-    s_node_->declare_parameter("model", "m1013");
-    s_node_->declare_parameter("gripper", "none");
-    s_node_->declare_parameter("mobile", "none");
-    //----- get parameters --------------------------------------------------------
-    // connection_node.readParameters();
-    s_node_->get_parameter("host", host);        
-    s_node_->get_parameter("port", nServerPort);
-    s_node_->get_parameter("command", m_bCommand_);    
-    s_node_->get_parameter("mode", mode);
     
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    name = %s",name.c_str());
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    host = %s",host.c_str());
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    port = %d",nServerPort);
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    command = %d",m_bCommand_);
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    mode = %s",mode.c_str());
+    // YAML 파일 경로 설정
+    std::string package_directory = ament_index_cpp::get_package_share_directory("dsr_hardware2");
+    std::string yaml_file_path = package_directory + "/config/parameters.yaml";
+    RCLCPP_INFO(s_node_->get_logger(), "Failed to open YAML file: %s", yaml_file_path.c_str());
+
+    std::ifstream fin(yaml_file_path);
+    if (!fin) {
+        RCLCPP_ERROR(s_node_->get_logger(), "Failed to open YAML file: %s", yaml_file_path.c_str());
+        return;
+    }
+
+    // YAML 파일 파싱
+    YAML::Node yaml_node = YAML::Load(fin);
+    fin.close();
+
+    // 파싱된 YAML 노드에서 파라미터 읽기
+    if (yaml_node["name"]) {
+        m_name = yaml_node["name"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "name: %s", m_name.c_str());
+    }
+    if (yaml_node["rate"]) {
+        m_rate = yaml_node["rate"].as<int>();
+        RCLCPP_INFO(s_node_->get_logger(), "rate: %d", m_rate);
+    }
+    if (yaml_node["standby"]) {
+        m_standby = yaml_node["standby"].as<int>();
+        RCLCPP_INFO(s_node_->get_logger(), "standby: %d", m_standby);
+    }
+    if (yaml_node["command"]) {
+        m_command = yaml_node["command"].as<bool>();
+        RCLCPP_INFO(s_node_->get_logger(), "command: %s", m_command ? "true" : "false");
+    }
+    if (yaml_node["host"]) {
+        m_host = yaml_node["host"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "host: %s", m_host.c_str());
+    }
+    if (yaml_node["port"]) {
+        m_port = yaml_node["port"].as<int>();
+        RCLCPP_INFO(s_node_->get_logger(), "port: %d", m_port);
+    }
+    if (yaml_node["mode"]) {
+        m_mode = yaml_node["mode"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "mode: %s", m_mode.c_str());
+    }
+    if (yaml_node["model"]) {
+        m_model = yaml_node["model"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "model: %s", m_model.c_str());
+    }
+    if (yaml_node["gripper"]) {
+        m_gripper = yaml_node["gripper"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "gripper: %s", m_gripper.c_str());
+    }
+    if (yaml_node["mobile"]) {
+        m_mobile = yaml_node["mobile"].as<std::string>();
+        RCLCPP_INFO(s_node_->get_logger(), "mobile: %s", m_mobile.c_str());
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    name = %s",m_name.c_str());
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    host = %s",m_host.c_str());
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    port = %d",m_port);
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    command = %d",m_command);
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    mode = %s",m_mode.c_str());
 
     rclcpp::spin(s_node_);
 
@@ -103,16 +144,13 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     {
         return CallbackReturn::ERROR;
     }
-    
+    sleep(1.5);
+
     // robot has 6 joints and 2 interfaces
     joint_position_.assign(6, 0);
     joint_velocities_.assign(6, 0);
     joint_position_command_.assign(6, 0);
     joint_velocities_command_.assign(6, 0);
-
-    // force sensor has 6 readings
-    // ft_states_.assign(6, 0);
-    // ft_command_.assign(6, 0);
 
     for (const auto & joint : info_.joints)
     {
@@ -122,10 +160,6 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         }
     }
     
-
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"[dsr_hw_interface2] init() ==> setup callback fucntion");
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"[dsr_hw_interface2] init() ==> setup callback fucntion");
-
     auto joint_names = {
         "joint1",
         "joint2",
@@ -138,16 +172,11 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     size_t i = 0;
     for (auto & joint_name : joint_names)
     {
-        // printf("joint_name = %s",joint_name);
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"joint_name = %s",joint_name);
-        // register_joint(joint_name, "position", g_joints[i].pos);
         ++i;
     }
     std::thread t(threadFunction);
     t.detach();
-    // std::thread t2(threadFunctionUpdate, msg);
-    // t2.detach();
-
 
 //-----------------------------------------------------------------------------------------------------
     
@@ -169,18 +198,18 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
 
     //------------------------------------------------------------------------------
     // await for values from ros parameters
-    while(host == "")
+    while(m_host == "")
     {
         usleep(nDelay);
     }
-    if(Drfl.open_connection(host, nServerPort))
+    if(Drfl.open_connection(m_host, m_port))
     {
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    OPEN CONNECTION");
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
 
         //--- connect Emulator ? ------------------------------    
-        if(host == "127.0.0.1") g_bIsEmulatorMode = true; 
+        if(m_host == "127.0.0.1") g_bIsEmulatorMode = true; 
         else                    g_bIsEmulatorMode = false;
 
         //--- Get version -------------------------------------            
@@ -210,7 +239,6 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         }
 
         //--- Check Robot State : STATE_STANDBY ---               
-        //ROS2 ros::param::param<int>("~standby", delay, 5000);
         while ((Drfl.GetRobotState() != STATE_STANDBY)){
             usleep(nDelay);
         }
@@ -220,7 +248,7 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
 
         //--- Set Robot mode : virual or real 
         ROBOT_SYSTEM eTargetSystem = ROBOT_SYSTEM_VIRTUAL;
-        if(mode == "real") eTargetSystem = ROBOT_SYSTEM_REAL;
+        if(m_mode == "real") eTargetSystem = ROBOT_SYSTEM_REAL;
         assert(Drfl.SetRobotSystem(eTargetSystem));
 
         // to compare with g_joints[].cmd
@@ -281,15 +309,6 @@ std::vector<hardware_interface::CommandInterface> DRHWInterface::export_command_
 
 return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
-    // if(init_check){
-        
-    //     // rclcpp::init(0, nullptr);
-    //     // m_node_ = rclcpp::Node::make_shared("dsr_hw_interface_update");
-    //     // auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
-    //     // m_joint_state_pub_  = m_node_->create_publisher<sensor_msgs::msg::JointState>("/joint_states", qos);
-    //     init_check = false;
-    // };
-    
     double now_sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     long int now_ns;
     struct timespec spec;

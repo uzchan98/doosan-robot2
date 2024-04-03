@@ -15,8 +15,8 @@
 # *build* 
 ##### *Doosan Robot ROS2 Package is implemented at ROS2-humble.*
     ### Prerequisite installation elements before package installation
-    $ sudo apt-get install libpoco-dev
-    $ sudo apt-get install ros-humble-control-msgs ros-humble-realtime-tools ros-humble-xacro ros-humble-joint-state-publisher-gui ros-humble-ros2-control ros-humble-ros2-controllers
+    $ sudo apt-get install libpoco-dev libyaml-cpp-dev
+    $ sudo apt-get install ros-humble-control-msgs ros-humble-realtime-tools ros-humble-xacro ros-humble-joint-state-publisher-gui ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-gazebo-msgs ros-humble-moveit-msgs
     
     ### We assume that you have installed the ros-humble-desktop package using the apt-get command.
     ### We recommand the /home/<user_home>/ros2_ws/src
@@ -37,5 +37,5 @@ The default IP of the robot controller is _192.168.127.100_ and the port is _123
 
 ##### Run dsr_control2 node 
 ```bash
-$ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py 
+$ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py mode:=real host:=192.168.137.100 model:=m1013
 ```
