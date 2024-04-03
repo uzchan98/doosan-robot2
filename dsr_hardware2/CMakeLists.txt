@@ -14,7 +14,8 @@ set(HW_IF_INCLUDE_DEPENDS
   moveit_msgs
   sensor_msgs
   controller_manager
-  
+  ament_index_cpp
+  yaml-cpp
 )
 set(REF_GEN_INCLUDE_DEPENDS
   kdl_parser
@@ -93,8 +94,9 @@ target_include_directories(dsr_hardware2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/dsr_hardware2>
 )
+target_link_libraries(dsr_hardware2 yaml-cpp)
 ament_target_dependencies(
-  dsr_hardware2 PUBLIC
+  dsr_hardware2 
   ${HW_IF_INCLUDE_DEPENDS}
   ${CONTROLLER_INCLUDE_DEPENDS}
 )

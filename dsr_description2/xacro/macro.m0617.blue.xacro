@@ -3,9 +3,9 @@
 <robot name="m0617" xmlns:xacro="http://www.ros.org/wiki/xacro">
 	<xacro:include filename="$(find dsr_description2)/config/macro.gazebo.xacro" />
 	<xacro:include filename="$(find dsr_description2)/config/macro.transmission.xacro" />
-	<!--xacro:include filename="$(find dsr_description2)/config/macro.materials.xacro" /-->
+	<xacro:include filename="$(find dsr_description2)/config/macro.materials.xacro" />
 	<xacro:macro name="m0617" params="namespace">
-		<!--xacro:dsr_materials /-->
+		<xacro:dsr_materials />
 		<link name="base_0">
 			<inertial>
 				<mass value="4.12"/>
@@ -14,10 +14,16 @@
 					iyz="-0.00051388"
 					izz="0.023376"/>
 			</inertial>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_0_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_0_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_0_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -39,14 +45,15 @@
 					izz="0.047021"/>
 			</inertial>
             <collision>
-                <geometry>
-                    <cylinder radius="0.1" length="0.2"/>
-                </geometry>
-            </collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_1_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_1_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_1_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -67,27 +74,39 @@
 					izz="1.626"/>
 			</inertial>
             <collision>
-                <origin rpy="0 -1.571 0" xyz="0.45 0 0.1525" />
-                <geometry>
-                    <cylinder radius="0.08" length="0.9"/>
-                </geometry>
-            </collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_2_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_2_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_2_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_2_1.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_2_1.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_2_1.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_2_2.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_2_2.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_2_2.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -108,10 +127,16 @@
 					iyz="-0.0009947"
 					izz="0.014379"/>
 			</inertial>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_3_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_3_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_3_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -132,21 +157,27 @@
 					izz="0.029844"/>
 			</inertial>
             <collision>
-                <origin rpy="-0.32 0 0" xyz="0 0.07 -0.32" />
-                <geometry>
-                    <cylinder radius="0.07" length="0.5"/>
-                </geometry>
-            </collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_4_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_4_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_4_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_4_1.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_4_1.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_4_1.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -167,15 +198,15 @@
 					izz="0.010423"/>
 			</inertial>
             <collision>
-                <origin rpy="1.571 0 0" xyz="0 0 0" />
-                <geometry>
-                    <cylinder radius="0.08" length="0.15"/>
-                </geometry>
-            </collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_5_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_5_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_5_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>
@@ -196,10 +227,16 @@
 					iyz="5.8483e-06"
 					izz="0.0086768"/>
 			</inertial>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0" />
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/m0617_collision/MF0617_6_0.dae" scale="0.001 0.001 0.001" />
+				</geometry>
+			</collision>
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0" />
 				<geometry>
-					<mesh filename="file:///$(find dsr_description2)/meshes/m0617_blue/MF0617_6_0.dae" scale="0.001 0.001 0.001" />
+					<mesh filename="package://dsr_description2/meshes/m0617_blue/MF0617_6_0.dae" scale="0.001 0.001 0.001" />
 				</geometry>
 			</visual>
 		</link>

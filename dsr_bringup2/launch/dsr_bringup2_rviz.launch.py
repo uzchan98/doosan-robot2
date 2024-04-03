@@ -18,18 +18,14 @@ from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 
 
-ARGUMENTS = [
-    DeclareLaunchArgument(
-        'model',
-        default_value='m1013',
-        description='Robot Model'
-    ),
-    DeclareLaunchArgument(
-        'color',
-        default_value='white',
-        description='Robot Color'
-    )
-    ]	
+ARGUMENTS =[ 
+    DeclareLaunchArgument('name',  default_value = 'dsr01',     description = 'NAME_SPACE'     ),
+    DeclareLaunchArgument('host',  default_value = '192.168.137.100', description = 'ROBOT_IP'       ),
+    DeclareLaunchArgument('port',  default_value = '12345',     description = 'ROBOT_PORT'     ),
+    DeclareLaunchArgument('mode',  default_value = 'real',   description = 'OPERATION MODE' ),
+    DeclareLaunchArgument('model', default_value = 'm1013',     description = 'ROBOT_MODEL'    ),
+    DeclareLaunchArgument('color', default_value = 'white',     description = 'ROBOT_COLOR'    ),
+]
 
 def generate_launch_description():
     
@@ -62,6 +58,25 @@ def generate_launch_description():
     )
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare("dsr_description2"), "rviz", "default.rviz"]
+    )
+    
+    connection_node = Node(
+        package="dsr_bringup2",
+        executable="connection",
+        parameters=[
+            {"name":    LaunchConfiguration('name')  }, 
+            {"rate":    100         },
+            {"standby": 5000        },
+            {"command": True        },
+            {"host":    LaunchConfiguration('host')  },
+            {"port":    LaunchConfiguration('port')  },
+            {"mode":    LaunchConfiguration('mode')  },
+            {"model":   LaunchConfiguration('model') },
+            {"gripper": "none"      },
+            {"mobile":  "none"      },
+            #parameters_file_path       # 파라미터 설정을 동일이름으로 launch 파일과 yaml 파일에서 할 경우 yaml 파일로 셋팅된다.    
+        ],
+        output="screen",
     )
 
     control_node = Node(
@@ -127,6 +142,14 @@ def generate_launch_description():
     #     executable="spawner",
     #     arguments=["dsr_joint_publisher", "--controller-manager", "/controller_manager"],
     # )
+    
+    # Delay connection start after registering user's param`
+    # delay_control_node_after_connection_node = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=connection_node,
+    #         on_exit=[control_node],
+    #     )
+    # )
 
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -153,6 +176,7 @@ def generate_launch_description():
     )
 
     nodes = [
+        connection_node,
         control_node,
         robot_state_pub_node,
         joint_state_broadcaster_spawner,

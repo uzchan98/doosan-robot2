@@ -485,11 +485,16 @@ typedef struct {
     //---------------------------------------------------------------------------------
 
 } DR_STATE, *LPDR_STATE;
-std::string host ="";
-std::string mode;
-std::string name;
-unsigned int nServerPort = 12345;
-bool m_bCommand_;
+std::string m_name;
+std::string m_host;
+std::string m_mode;
+std::string m_model;
+std::string m_gripper;
+std::string m_mobile;
+unsigned int m_rate;
+unsigned int m_standby;
+bool m_command;
+unsigned int m_port;
 rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr m_joint_state_pub_;
 typedef struct _ROBOT_JOINT_DATA
 {
