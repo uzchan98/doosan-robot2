@@ -22,7 +22,7 @@
     ### We recommand the /home/<user_home>/ros2_ws/src
     $ mkdir -p ~/ros2_ws/src
     $ cd ~/ros2_ws/src
-    $ git clone https://github.com/doosan-robotics/doosan-robot2.git
+    $ git clone -b humble-devel https://github.com/doosan-robotics/doosan-robot2.git
     $ cd ~/ros2_ws
     $ colcon build
     $ . install/setup.bash
