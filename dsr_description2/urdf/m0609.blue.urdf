@@ -4,10 +4,10 @@
   <link name="base"/>
   <joint name="fixed" type="fixed">
     <parent link="base"/>
-    <child link="base_0"/>
+    <child link="base_link"/>
   </joint>
   
-  <link name="base_0">
+  <link name="base_link">
 	<inertial>
 	  <mass value="3.722"/>
 	  <origin xyz="-1.2e-05 -6e-05 0.050723"/>
@@ -21,15 +21,15 @@
     </visual>
   </link>
 
-  <joint name="joint1" type="revolute">
-    <parent link="base_0"/>
-    <child link="link1"/>
+  <joint name="joint_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link_1"/>
     <origin rpy="0 0 0" xyz="0 0 0.1525"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
 
-  <link name="link1">
+  <link name="link_1">
 	<inertial>
 	  <mass value="7.446"/>
 	  <origin xyz="7e-05 0.044281 0.143327"/>
@@ -43,15 +43,15 @@
     </visual>
   </link>
   
-  <joint name="joint2" type="revolute">
-    <parent link="link1"/>
-    <child link="link2"/>
+  <joint name="joint_2" type="revolute">
+    <parent link="link_1"/>
+    <child link="link_2"/>
     <origin rpy="0 -1.571 -1.571" xyz="0 0.006 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
 
-  <link name="link2">
+  <link name="link_2">
 	<inertial>
 	  <mass value="10.569"/>
 	  <origin xyz="-1.6e-05 0.189372 0.418558"/>
@@ -77,15 +77,15 @@
     </visual>	
   </link>
 
-  <joint name="joint3" type="revolute">
-    <parent link="link2"/>
-    <child link="link3"/>
+  <joint name="joint_3" type="revolute">
+    <parent link="link_2"/>
+    <child link="link_3"/>
     <origin rpy="0 0 1.571" xyz="0.411 0 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
   
-  <link name="link3">
+  <link name="link_3">
 	<inertial>
 	  <mass value="3.614"/>
 	  <origin xyz="6e-06 0.07917 0.781807"/>
@@ -99,15 +99,15 @@
     </visual>
   </link>
 
-  <joint name="joint4" type="revolute">
-    <parent link="link3"/>
-    <child link="link4"/>
+  <joint name="joint_4" type="revolute">
+    <parent link="link_3"/>
+    <child link="link_4"/>
     <origin rpy="1.571 0 0" xyz="0 -0.368 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
   
-  <link name="link4">
+  <link name="link_4">
 	<inertial>
 	  <mass value="3.785"/>
 	  <origin xyz="-2.1e-05 0.12337 1.148"/>
@@ -128,15 +128,15 @@
     </visual>
   </link>
 
-  <joint name="joint5" type="revolute">
-    <parent link="link4"/>
-    <child link="link5"/>
+  <joint name="joint_5" type="revolute">
+    <parent link="link_4"/>
+    <child link="link_5"/>
     <origin rpy="-1.571 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
   
-  <link name="link5">
+  <link name="link_5">
 	<inertial>
 	  <mass value="2.598"/>
 	  <origin xyz="-1.7e-05 0.06662 1.33103"/>
@@ -150,15 +150,15 @@
     </visual>
   </link>
 
-  <joint name="joint6" type="revolute">
-    <parent link="link5"/>
-    <child link="link6"/>
+  <joint name="joint_6" type="revolute">
+    <parent link="link_5"/>
+    <child link="link_6"/>
     <origin rpy="1.571 0 0" xyz="0 -0.121 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-2.617" upper="2.617" velocity="1.571"/>
   </joint>
   
-  <link name="link6">
+  <link name="link_6">
 	<inertial>
 	  <mass value="1.128"/>
 	  <origin xyz="-0.000174 0.034708 1.40022"/>

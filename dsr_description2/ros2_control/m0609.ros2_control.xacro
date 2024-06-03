@@ -30,7 +30,7 @@
         <param name="mobile">${mobile}</param>
       </hardware>
 
-      <joint name="joint1">
+      <joint name="joint_1">
         <command_interface name="position">
           <param name="min">{-2*pi}</param>
           <param name="max">{2*pi}</param>
@@ -45,7 +45,7 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="joint2">
+      <joint name="joint_2">
         <command_interface name="position">
           <param name="min">{-2*pi}</param>
           <param name="max">{2*pi}</param>
@@ -60,7 +60,7 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="joint3">
+      <joint name="joint_3">
         <command_interface name="position">
           <param name="min">{-pi}</param>
           <param name="max">{pi}</param>
@@ -75,7 +75,7 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="joint4">
+      <joint name="joint_4">
         <command_interface name="position">
           <param name="min">{-2*pi}</param>
           <param name="max">{2*pi}</param>
@@ -90,7 +90,7 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="joint5">
+      <joint name="joint_5">
         <command_interface name="position">
           <param name="min">{-2*pi}</param>
           <param name="max">{2*pi}</param>
@@ -105,7 +105,7 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="joint6">
+      <joint name="joint_6">
         <command_interface name="position">
           <param name="min">{-2*pi}</param>
           <param name="max">{2*pi}</param>

@@ -33,7 +33,7 @@ Only Real Mode is available until May.
 
 ### Real Mode 
 Use __real mode__ to drive a real robot   
-The default IP of the robot controller is _192.168.127.100_ and the port is _12345_.
+The default IP of the robot controller is _192.168.137.100_ and the port is _12345_.
 
 ##### Run dsr_control2 node 
 ```bash

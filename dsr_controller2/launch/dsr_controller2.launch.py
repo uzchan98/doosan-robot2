@@ -15,7 +15,7 @@
 from launch import LaunchDescription
 from launch.actions import RegisterEventHandler,DeclareLaunchArgument
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -31,7 +31,8 @@ ARGUMENTS = [
         'color',
         default_value='white',
         description='Robot Color'
-    )
+    ),
+    DeclareLaunchArgument('name',  default_value = '',     description = 'NAME_SPACE'     ),
     ]	
 
 def generate_launch_description():
@@ -66,6 +67,7 @@ def generate_launch_description():
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
+        namespace=LaunchConfiguration('name'),
         parameters=[robot_description, robot_controllers],
         remappings=[
             (
@@ -78,6 +80,8 @@ def generate_launch_description():
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
+        namespace=LaunchConfiguration('name'),
+        
         output="both",
         remappings=[
             (
@@ -91,24 +95,28 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         name="rviz2",
+        namespace=LaunchConfiguration('name'),
         output="log",
         arguments=["-d", rviz_config_file],
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
+        namespace=LaunchConfiguration('name'),
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
     robot_controller_spawner = Node(
         package="controller_manager",
+        namespace=LaunchConfiguration('name'),
         executable="spawner",
         arguments=["dsr_controller2", "-c", "/controller_manager"],
     )
     
     joint_trajectory_controller_spawner = Node(
         package="controller_manager",
+        namespace=LaunchConfiguration('name'),
         executable="spawner",
         arguments=["dsr_joint_trajectory", "-c", "/controller_manager"],
     )

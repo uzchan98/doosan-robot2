@@ -23,7 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'connection = dsr_bringup2.connection:main'
+            'connection = dsr_bringup2.connection:main',
+            'moveit_connection = dsr_bringup2.moveit_connection:main',
+            'gazebo_connection = dsr_bringup2.gazebo_connection:main',
         ],
     },
 )

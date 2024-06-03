@@ -512,12 +512,12 @@ namespace dsr_hardware2{
     {
     public:
         std::vector<std::string> joint_names = {
-            "joint1",
-            "joint2",
-            "joint3",
-            "joint4",
-            "joint5",
-            "joint6"
+            "joint_1",
+            "joint_2",
+            "joint_3",
+            "joint_4",
+            "joint_5",
+            "joint_6"
             };
         int m_nVersionDRCF;
         bool init_check;

@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="m1013_gz_ros2_control" params="
+  name:=m1013
+  namespace
+  rate:=100
+  standby:=true
+  command:=none
+  host:=0.0.0.0
+  port:=12345
+  mode:=real
+  model:=m1013
+  gripper:=none
+  mobile:=none
+  use_gazebo:=false
+  ">
+    <xacro:include filename="$(find dsr_description2)/config/macro.gazebo.xacro" />
+    <xacro:include filename="$(find dsr_description2)/config/macro.transmission.xacro" />
+    <xacro:include filename="$(find dsr_description2)/config/macro.materials.xacro" />
+    <xacro:dsr_materials />
+    <xacro:dsr_transmission />
+    <xacro:dsr_gazebo namespace="${namespace}" />
+    <ros2_control name="${model}" type="system">
+
+      <hardware>
+          <plugin>ign_ros2_control/IgnitionSystem</plugin>
+      </hardware>
+
+      <joint name="${namespace}joint_1">
+        <command_interface name="position">
+          <param name="min">{-2*pi}</param>
+          <param name="max">{2*pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${namespace}joint_2">
+        <command_interface name="position">
+          <param name="min">{-2*pi}</param>
+          <param name="max">{2*pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${namespace}joint_3">
+        <command_interface name="position">
+          <param name="min">{-pi}</param>
+          <param name="max">{pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${namespace}joint_4">
+        <command_interface name="position">
+          <param name="min">{-2*pi}</param>
+          <param name="max">{2*pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${namespace}joint_5">
+        <command_interface name="position">
+          <param name="min">{-2*pi}</param>
+          <param name="max">{2*pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${namespace}joint_6">
+        <command_interface name="position">
+          <param name="min">{-2*pi}</param>
+          <param name="max">{2*pi}</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+
+    </ros2_control>
+
+  </xacro:macro>
+
+</robot>

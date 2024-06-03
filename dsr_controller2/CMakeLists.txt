@@ -19,6 +19,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   std_msgs
   dsr_hardware2
   rclcpp_components
+  ament_index_cpp
+  yaml-cpp
 )
 
 find_package(ament_cmake REQUIRED)

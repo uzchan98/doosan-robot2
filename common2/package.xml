@@ -5,7 +5,9 @@
   <version>1.1.0</version>
   <description>common2 package for Doosan Robot</description>
 
-  <author email="kabkyoum.kim@doosan.com">Kab Kyoum Kim</author>
+  <author email="minsoo.song@doosan.com">Minsoo Song</author>   
+
+  <maintainer email="minsoo.song@doosan.com">Minsoo Song</maintainer>
   <maintainer email="ros.robotics@doosan.com">Doosan Robotics</maintainer>
 
   <license>BSD</license>
