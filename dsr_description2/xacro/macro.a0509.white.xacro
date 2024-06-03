@@ -6,7 +6,7 @@
 	<xacro:include filename="$(find dsr_description2)/config/macro.materials.xacro" />
 	<xacro:macro name="a0509" params="namespace">
 		<xacro:dsr_materials />
-		<link name="base_0">
+		<link name="base_link">
 			<inertial>
 				<mass value="2.198"/>
 				<origin xyz="-1e-06   -0.001096    0.058957"/>
@@ -28,15 +28,15 @@
 			</visual>
 		</link>
 		<!-- joint 1 -->
-		<joint name="joint1" type="revolute">
-			<parent link="base_0" />
-			<child link="link1" />
+		<joint name="joint_1" type="revolute">
+			<parent link="base_link" />
+			<child link="link_1" />
 			<origin rpy="0 0 0" xyz="0 0 0.1555" />
 			<axis xyz="0 0 1" />
 			<limit effort="194" lower="-6.2832" upper="6.2832" velocity="3.1416"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link1">
+		<link name="link_1">
 			<inertial>
 				<mass value="3.715"/>
 				<origin xyz="-6.9e-05    0.024423   -0.007375"/>
@@ -81,15 +81,15 @@
 			</visual>
 		</link>
 		<!-- joint2 -->
-		<joint name="joint2" type="revolute">
-			<parent link="link1" />
-			<child link="link2" />
+		<joint name="joint_2" type="revolute">
+			<parent link="link_1" />
+			<child link="link_2" />
 			<origin rpy="0 -1.571 -1.571" xyz="0 0 0" />
 			<axis xyz="0 0 1" />
 			<limit effort="194" lower="-6.2832" upper="6.2832" velocity="3.1416"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link2">
+		<link name="link_2">
 			<inertial>
 				<mass value="6.837"/>
 				<origin xyz="0.20449 -1.2521e-17     0.13271"/>
@@ -134,15 +134,15 @@
 			</visual>
 		</link>
 		<!-- joint3 -->
-		<joint name="joint3" type="revolute">
-			<parent link="link2" />
-			<child link="link3" />
+		<joint name="joint_3" type="revolute">
+			<parent link="link_2" />
+			<child link="link_3" />
 			<origin rpy="0 0 1.571" xyz="0.409 0 0" />
 			<axis xyz="0 0 1" />
 			<limit effort="163" lower="-2.7925" upper="2.7925" velocity="3.1416"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link3">
+		<link name="link_3">
 			<inertial>
 				<mass value="2.769"/>
 				<origin xyz="7.1e-05   -0.005123    0.033009"/>
@@ -176,15 +176,15 @@
 			</visual>
 		</link>
 		<!-- joint4 -->
-		<joint name="joint4" type="revolute">
-			<parent link="link3" />
-			<child link="link4" />
+		<joint name="joint_4" type="revolute">
+			<parent link="link_3" />
+			<child link="link_4" />
 			<origin rpy="1.571 0 0" xyz="0 -0.367 0" />
 			<axis xyz="0 0 1" />
 			<limit effort="50" lower="-6.2832" upper="6.2832" velocity="6.2832"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link4">
+		<link name="link_4">
 			<inertial>
 				<mass value="2.679"/>
 				<origin xyz="-8.6e-05    0.086348   -0.086031"/>
@@ -217,15 +217,15 @@
 			</visual>
 		</link>
 		<!-- joint5 -->
-		<joint name="joint5" type="revolute">
-			<parent link="link4" />
-			<child link="link5" />
+		<joint name="joint_5" type="revolute">
+			<parent link="link_4" />
+			<child link="link_5" />
 			<origin rpy="-1.571 0 0" xyz="0 0 0" />
 			<axis xyz="0 0 1" />
 			<limit effort="50" lower="-6.2832" upper="6.2832" velocity="6.2832"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link5">
+		<link name="link_5">
 			<inertial>
 				<mass value="2.051"/>
 				<origin xyz="9.1e-05   -0.006457    0.015434"/>
@@ -259,15 +259,15 @@
 			</visual>
 		</link>
 		<!-- joint6 -->
-		<joint name="joint6" type="revolute">
-			<parent link="link5" />
-			<child link="link6" />
+		<joint name="joint_6" type="revolute">
+			<parent link="link_5" />
+			<child link="link_6" />
 			<origin rpy="1.571 0 0" xyz="0 -0.124 0" />
 			<axis xyz="0 0 1" />
 			<limit effort="50" lower="-6.2832" upper="6.2832" velocity="6.2832"/>
 			<dynamics friction="0" />
 		</joint>
-		<link name="link6">
+		<link name="link_6">
 			<inertial>
 				<mass value="0.773"/>
 				<origin xyz="-2.2e-05      -7e-06   -0.051746"/>

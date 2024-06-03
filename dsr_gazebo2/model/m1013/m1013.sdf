@@ -18,7 +18,7 @@
           <izz>0.014</izz>
         </inertia>
       </inertial>
-      <visual name='base_0_visual'>
+      <visual name='base_link_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -28,10 +28,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint1' type='revolute'>
+    <joint name='joint_1' type='revolute'>
       <pose relative_to='base'>0 0 0.1525 0 -0 0</pose>
       <parent>base</parent>
-      <child>link1</child>
+      <child>link_1</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -46,8 +46,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link1'>
-      <pose relative_to='joint1'>0 0 0 0 -0 0</pose>
+    <link name='link_1'>
+      <pose relative_to='joint_1'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>7e-05 0.044281 0.143327 0 -0 0</pose>
         <mass>7.446</mass>
@@ -60,7 +60,7 @@
           <izz>0.039</izz>
         </inertia>
       </inertial>
-      <visual name='link1_visual'>
+      <visual name='link_1_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -70,10 +70,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint2' type='revolute'>
-      <pose relative_to='link1'>0 0.0345 0 3.14159 -1.57059 1.57059</pose>
-      <parent>link1</parent>
-      <child>link2</child>
+    <joint name='joint_2' type='revolute'>
+      <pose relative_to='link_1'>0 0.0345 0 3.14159 -1.57059 1.57059</pose>
+      <parent>link_1</parent>
+      <child>link_2</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -88,8 +88,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link2'>
-      <pose relative_to='joint2'>0 0 0 0 -0 0</pose>
+    <link name='link_2'>
+      <pose relative_to='joint_2'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>-1.6e-05 0.189372 0.418558 0 -0 0</pose>
         <mass>10.569</mass>
@@ -102,7 +102,7 @@
           <izz>0.031</izz>
         </inertia>
       </inertial>
-      <visual name='link2_visual'>
+      <visual name='link_2_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -111,7 +111,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='link2_visual_1'>
+      <visual name='link_2_visual_1'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -120,7 +120,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='link2_visual_2'>
+      <visual name='link_2_visual_2'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -130,10 +130,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint3' type='revolute'>
-      <pose relative_to='link2'>0.62 0 0 0 -0 1.571</pose>
-      <parent>link2</parent>
-      <child>link3</child>
+    <joint name='joint_3' type='revolute'>
+      <pose relative_to='link_2'>0.62 0 0 0 -0 1.571</pose>
+      <parent>link_2</parent>
+      <child>link_3</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -148,8 +148,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link3'>
-      <pose relative_to='joint3'>0 0 0 0 -0 0</pose>
+    <link name='link_3'>
+      <pose relative_to='joint_3'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>6e-06 0.07917 0.781807 0 -0 0</pose>
         <mass>3.614</mass>
@@ -162,7 +162,7 @@
           <izz>0.011</izz>
         </inertia>
       </inertial>
-      <visual name='link3_visual'>
+      <visual name='link_3_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -172,10 +172,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint4' type='revolute'>
-      <pose relative_to='link3'>0 -0.559 0 1.571 -0 0</pose>
-      <parent>link3</parent>
-      <child>link4</child>
+    <joint name='joint_4' type='revolute'>
+      <pose relative_to='link_3'>0 -0.559 0 1.571 -0 0</pose>
+      <parent>link_3</parent>
+      <child>link_4</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -190,8 +190,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link4'>
-      <pose relative_to='joint4'>0 0 0 0 -0 0</pose>
+    <link name='link_4'>
+      <pose relative_to='joint_4'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>-2.1e-05 0.12337 1.148 0 -0 0</pose>
         <mass>3.785</mass>
@@ -204,7 +204,7 @@
           <izz>0.022</izz>
         </inertia>
       </inertial>
-      <visual name='link4_visual'>
+      <visual name='link_4_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -213,7 +213,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='link4_visual_1'>
+      <visual name='link_4_visual_1'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -223,10 +223,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint5' type='revolute'>
-      <pose relative_to='link4'>0 0 0 -1.571 0 0</pose>
-      <parent>link4</parent>
-      <child>link5</child>
+    <joint name='joint_5' type='revolute'>
+      <pose relative_to='link_4'>0 0 0 -1.571 0 0</pose>
+      <parent>link_4</parent>
+      <child>link_5</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -241,8 +241,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link5'>
-      <pose relative_to='joint5'>0 0 0 0 -0 0</pose>
+    <link name='link_5'>
+      <pose relative_to='joint_5'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>-1.7e-05 0.06662 1.33103 0 -0 0</pose>
         <mass>2.598</mass>
@@ -255,7 +255,7 @@
           <izz>0.007</izz>
         </inertia>
       </inertial>
-      <visual name='link5_visual'>
+      <visual name='link_5_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -265,10 +265,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='joint6' type='revolute'>
-      <pose relative_to='link5'>0 -0.121 0 1.571 -0 0</pose>
-      <parent>link5</parent>
-      <child>link6</child>
+    <joint name='joint_6' type='revolute'>
+      <pose relative_to='link_5'>0 -0.121 0 1.571 -0 0</pose>
+      <parent>link_5</parent>
+      <child>link_6</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -283,8 +283,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='link6'>
-      <pose relative_to='joint6'>0 0 0 0 -0 0</pose>
+    <link name='link_6'>
+      <pose relative_to='joint_6'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>-0.000174 0.034708 1.40022 0 -0 0</pose>
         <mass>1.128</mass>
@@ -297,7 +297,7 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
-      <visual name='link6_visual'>
+      <visual name='link_6_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -309,7 +309,7 @@
     </link>
     <transmission name="tran1">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint1">
+        <joint name="joint_1">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor1">
@@ -320,7 +320,7 @@
     <!-- Transmission 2 -->
     <transmission name="tran2">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint2">
+        <joint name="joint_2">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor2">
@@ -331,7 +331,7 @@
     <!-- Transmission 3 -->
     <transmission name="tran3">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint3">
+        <joint name="joint_3">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor3">
@@ -342,7 +342,7 @@
     <!-- Transmission 4 -->
     <transmission name="tran4">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint4">
+        <joint name="joint_4">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor4">
@@ -353,7 +353,7 @@
     <!-- Transmission 5 -->
     <transmission name="tran5">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint5">
+        <joint name="joint_5">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor5">
@@ -364,7 +364,7 @@
     <!-- Transmission 6 -->
     <transmission name="tran6">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="joint6">
+        <joint name="joint_6">
             <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="motor6">

@@ -53,7 +53,7 @@ Visualization Manager:
         Durability Policy: Transient Local
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /robot_description
+        Value: robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -66,37 +66,37 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        base_0:
+        base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link1:
+        link_1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link2:
+        link_2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link3:
+        link_3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link4:
+        link_4:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link5:
+        link_5:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        link6:
+        link_6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -111,7 +111,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_0
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:

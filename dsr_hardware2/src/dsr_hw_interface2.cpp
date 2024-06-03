@@ -129,7 +129,7 @@ void threadFunction() {
 void threadFunctionUpdate(const sensor_msgs::msg::JointState& msg){
     m_node_ = rclcpp::Node::make_shared("dsr_hw_interface_update");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
-    m_joint_state_pub_ = m_node_->create_publisher<sensor_msgs::msg::JointState>("/dsr/joint_states", qos);
+    m_joint_state_pub_ = m_node_->create_publisher<sensor_msgs::msg::JointState>(m_name+"/joint_states", qos);
     m_joint_state_pub_->publish(msg);
     // RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface_update"),"on update joint");
     rclcpp::spin_some(m_node_);
@@ -161,12 +161,12 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     }
     
     auto joint_names = {
-        "joint1",
-        "joint2",
-        "joint3",
-        "joint4",
-        "joint5",
-        "joint6",
+        "joint_1",
+        "joint_2",
+        "joint_3",
+        "joint_4",
+        "joint_5",
+        "joint_6",
     };
 
     size_t i = 0;
@@ -316,12 +316,12 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     now_ns = spec.tv_nsec;
     msg.header.stamp.sec = (long)now_sec;
     msg.header.stamp.nanosec = now_ns;
-    msg.name.push_back("joint1");
-    msg.name.push_back("joint2");
-    msg.name.push_back("joint3");
-    msg.name.push_back("joint4");
-    msg.name.push_back("joint5");
-    msg.name.push_back("joint6");
+    msg.name.push_back("joint_1");
+    msg.name.push_back("joint_2");
+    msg.name.push_back("joint_3");
+    msg.name.push_back("joint_4");
+    msg.name.push_back("joint_5");
+    msg.name.push_back("joint_6");
     
     LPROBOT_POSE pose = Drfl.GetCurrentPose();
     for (auto i = 0ul; i < joint_velocities_command_.size(); i++)

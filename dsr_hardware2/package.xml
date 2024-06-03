@@ -5,10 +5,10 @@
   <version>0.0.0</version>
   <description>Demo for 6 DOF robot.</description>
 
+  <author email="minsoo.song@doosan.com">Minsoo Song</author>   
+
   <maintainer email="minsoo.song@doosan.com">Minsoo Song</maintainer>
-
-  <author email="minsoo.song@doosan.com">Minsoo Song</author>
-
+  <maintainer email="ros.robotics@doosan.com">Doosan Robotics</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

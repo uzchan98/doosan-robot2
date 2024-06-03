@@ -439,6 +439,8 @@ typedef struct _ROBOT_JOINT_DATA
     double eff;
 } ROBOT_JOINT_DATA, *LPROBOT_JOINT_DATA;
 
+std::string m_name;
+
 namespace dsr_controller2
 {
 class RobotController : public controller_interface::ControllerInterface
