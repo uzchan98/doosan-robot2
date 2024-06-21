@@ -42,11 +42,25 @@ class ConnectionNode(Node):
         current_file_path = os.path.join(
             get_package_share_directory("dsr_hardware2"), "config"
         )
+        run_script_path = os.path.join(
+            get_package_share_directory("common2"), "bin"
+        )
         os.makedirs(current_file_path, exist_ok=True)
-
+        
+            # exec(command)
+            # print(command)
+            # eval("{}/run_drcf.sh ".format(run_script_path), host, str(port), name)
+        
         with open(os.path.join(current_file_path, 'parameters.yaml'), 'w') as file:
             yaml.dump(parameters, file)
-        
+        if parameters['mode'] == 'virtual':
+            port = parameters['port']
+            model = parameters['model']
+            name = parameters['name']
+            command = "{}/run_drcf.sh ".format(run_script_path) +" "+ str(port)+" "+ model +" " +name
+            # import os
+            self.get_logger().info('@@@@@@@@@@@@@@@@@@@@@@@@@@@ run_drcf')
+            os.system(command)
 
 def main(args=None):
     rclpy.init(args=args)
