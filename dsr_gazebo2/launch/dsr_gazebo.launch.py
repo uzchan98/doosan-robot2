@@ -9,7 +9,7 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler,DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import RegisterEventHandler,DeclareLaunchArgument, IncludeLaunchDescription, TimeAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 
@@ -122,25 +122,26 @@ def generate_launch_description():
         )
     )
 
+    # launch issue position controller
+    dsr_position_controller_spawner_action = TimeAction(
+        period=2.0,
+        actions=[dsr_position_controller_spawner]
+    )
+
     # Delay start of robot_controller after `joint_state_broadcaster`
     delay_dsr_position_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=joint_state_broadcaster_spawner,
-            on_exit=[dsr_position_controller_spawner],
+            on_exit=[dsr_position_controller_spawner_action],
         )
     )
 
     nodes = [
-        # robot_state_pub_node,
-        # control_node,
         gazebo,
         node_robot_state_publisher,
         gz_spawn_entity,
-        # dsr_position_controller_spawner,
         joint_state_broadcaster_spawner,
         delay_dsr_position_controller_spawner_after_joint_state_broadcaster_spawner
-        # delay_rviz_after_joint_state_broadcaster_spawner,
-        # delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 
     return LaunchDescription(ARGUMENTS + nodes)
