@@ -9,7 +9,7 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler,DeclareLaunchArgument, IncludeLaunchDescription, TimeAction
+from launch.actions import RegisterEventHandler,DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 
@@ -123,7 +123,7 @@ def generate_launch_description():
     )
 
     # launch issue position controller
-    dsr_position_controller_spawner_action = TimeAction(
+    dsr_position_controller_spawner_action = TimerAction(
         period=2.0,
         actions=[dsr_position_controller_spawner]
     )
