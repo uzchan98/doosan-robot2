@@ -77,29 +77,30 @@ If users would like to launch virtually, you need to specify host:=127.0.0.1 (th
 ---
 ### Launch With Rviz2
 ```bash
-// Real Mode
-// User needs to match host and port according to real controller's
+## Real Mode
+## User needs to match host and port according to real controller's
 $ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py mode:=real host:=192.168.137.100 port:=12345 model:=m1013
 ```
 
 ```bash
-// Virtual Mode
-// User need to specify port (the virtual controller automatically starts on it)
+## Virtual Mode
+## User need to specify port (the virtual controller automatically starts on it)
 $ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py mode:=virtual host:=127.0.0.1 port:=12345 model:=m1013
 ```
 
 ---
 ### Launch With Gazebo Sim
 ```bash
-// Real Mode
+## Real Mode
 $ ros2 launch dsr_bringup2 dsr_bringup2_gazebo.launch.py mode:=real host:=192.168.137.100 model:=m1013
 ```
 ```bash
-// Virtual Mode
+## Virtual Mode
 $ ros2 launch dsr_bringup2 dsr_bringup2_gazebo.launch.py mode:=virtual host:=127.0.0.1 port:=12346 name:=dsr01 x:=0 y:=0
 
-// Additionally, you can add adittional arms for multi controls by spawning sperate ones. 
-// Keep in mind. you need to distinguish 'port' for controller, 'name' for robot namespace, location for loading on gazebo without collisions. 
+## Additionally, you can add adittional arms for multi controls by spawning sperate ones. 
+## Keep in mind. you need to distinguish 'port' for controller,
+## 'name' for robot namespace, location for loading on gazebo without collisions. 
 $ ros2 launch dsr_bringup2 dsr_bringup2_spawn_on_gazebo.launch.py mode:=virtual host:=127.0.0.1 port:=12347 name:=dsr02 x:=2 y:=2
 ```
 
