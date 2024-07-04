@@ -13,6 +13,10 @@
  
 
 # Installation 
+#### To utilize the new emulator in virtual mode, Docker is required . Please ensure Docker is installed beforehand if virtual mode is required.
+
+install Docker https://docs.docker.com/engine/install/ubuntu/
+
 #### *Doosan Robot ROS2 Package is implemented at ROS2-humble.*
     ### Prerequisite installation elements before package installation
     $ sudo apt-get install libpoco-dev libyaml-cpp-dev
