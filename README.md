@@ -14,7 +14,6 @@
 
 # Installation 
 #### To utilize the new emulator in virtual mode, Docker is required. 
-#### Please ensure Docker is installed beforehand if virtual mode is required.
 
 Install Docker https://docs.docker.com/engine/install/ubuntu/
 
