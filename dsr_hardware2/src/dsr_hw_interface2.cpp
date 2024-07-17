@@ -7,12 +7,14 @@
 // */
 
 #include "dsr_hardware2/dsr_hw_interface2.h"
+#include "DRFS.h"
 #include "ament_index_cpp/get_package_share_directory.hpp"
 
 // #include "dsr_hardware2/dsr_connection_node2.h"
 #include <boost/thread/thread.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
+#include <rclcpp/logger.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -23,6 +25,7 @@
 #include <unistd.h>     
 #include <math.h>
 #include "../../common2/include/DRFLEx.h"
+#include "hardware_interface/types/hardware_interface_return_values.hpp"
 using namespace DRAFramework;
 rclcpp::Node::SharedPtr s_node_ = nullptr;
 rclcpp::Node::SharedPtr m_node_ = nullptr; //ROS2
@@ -127,13 +130,16 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     {
         return CallbackReturn::ERROR;
     }
-    sleep(8);
+    sleep(3);
+    control_mode_ = UNKNOWN;
 
     // robot has 6 joints and 2 interfaces
     joint_position_.assign(6, 0);
     joint_velocities_.assign(6, 0);
+    joint_efforts_.assign(6, 0);
     joint_position_command_.assign(6, 0);
     joint_velocities_command_.assign(6, 0);
+    joint_efforts_command_.assign(6, 0);
 
     for (const auto & joint : info_.joints)
     {
@@ -189,9 +195,9 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     }
     if(Drfl.open_connection(m_host, m_port))
     {
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    OPEN CONNECTION");
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
 
         //--- connect Emulator ? ------------------------------    
         if(m_host == "127.0.0.1") g_bIsEmulatorMode = true; 
@@ -214,7 +220,8 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    DRCF version = %s",tSysVerion._szController);
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    DRFL version = %s",Drfl.get_library_version());
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    m_nVersionDRCF = %d", m_nVersionDRCF);  //ex> M2.40 = 120400, M2.50 = 120500  
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"Set UNKNOWN control mode"); 
 
         if(m_nVersionDRCF >= 120500)    //M2.5 or later        
         {
@@ -242,6 +249,16 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
             m_fCmd_[i] = g_joints[i].cmd;
         }
 
+        if (!Drfl.connect_rt_control(m_host, m_port)) {
+            RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Failed to connect to RT control");
+            return CallbackReturn::ERROR;
+        }
+        if (!Drfl.start_rt_control()) {
+            RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Failed to start RT control");
+            return CallbackReturn::ERROR;
+        }
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"Started RT control");
+
         return CallbackReturn::SUCCESS;
     }
     RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"),"    DSRInterface::init() DRCF connecting ERROR!!!");
@@ -268,6 +285,12 @@ std::vector<hardware_interface::StateInterface> DRHWInterface::export_state_inte
     state_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_[ind++]);
   }
 
+  ind = 0;
+  for (const auto & joint_name : joint_interfaces["effort"])
+  {
+    state_interfaces.emplace_back(joint_name, "effort", &joint_efforts_[ind++]);
+  }
+
   return state_interfaces;
 }
 
@@ -288,9 +311,41 @@ std::vector<hardware_interface::CommandInterface> DRHWInterface::export_command_
     command_interfaces.emplace_back(joint_name, "velocity", &joint_velocities_command_[ind++]);
   }
 
+  ind = 0;
+  for (const auto & joint_name : joint_interfaces["effort"])
+  {
+    command_interfaces.emplace_back(joint_name, "effort", &joint_efforts_command_[ind++]);
+  }
+
   return command_interfaces;
 }
 
+hardware_interface::return_type
+DRHWInterface::perform_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& /* stop_interfaces */ )
+{
+    if (start_interfaces.empty()) {
+        RCLCPP_DEBUG(rclcpp::get_logger("dsr_hw_interface2"), "No control_mode is specified, leaving unchanged!");
+        return return_type::OK;
+    }
+    
+    const std::string req_cmd_interface = start_interfaces[0];
+    const std::string mode = req_cmd_interface.substr(req_cmd_interface.find('/') + 1);
+
+    if (mode == hardware_interface::HW_IF_POSITION) {
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "Switching to position control");
+        control_mode_ = POSITION;
+    } else if (mode == hardware_interface::HW_IF_VELOCITY) {
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "Switching to velocity control");
+        control_mode_ = VELOCITY;
+    } else if (mode == hardware_interface::HW_IF_EFFORT) {
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "Switching to torque control");
+        control_mode_ = TORQUE;
+    } else {
+        RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Unknown control mode %s", mode.data());
+        return hardware_interface::return_type::ERROR;
+    }
+    return return_type::OK;
+}
 
 return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
@@ -302,29 +357,25 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     msg.header.stamp.sec = (long)now_sec;
     msg.header.stamp.nanosec = now_ns;
 
+    LPROBOT_POSE joint_pos = Drfl.get_current_posj();
+    LPROBOT_VEL joint_vel = Drfl.get_current_velj();
+    LPROBOT_FORCE joint_tau = Drfl.get_joint_torque();
+
     msg.name.push_back("joint_1");
     msg.name.push_back("joint_2");
     msg.name.push_back("joint_3");
     msg.name.push_back("joint_4");
     msg.name.push_back("joint_5");
     msg.name.push_back("joint_6");
-    LPROBOT_POSE pose = Drfl.GetCurrentPose();
-    // for (int i = 0; i < 6; i++){
-    //     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), " : %.2f", pose->_fPosition[i]);
-    // }
-    for (auto i = 0ul; i < joint_velocities_command_.size(); i++)
-    {
-        joint_velocities_[i] = joint_velocities_command_[i];
-        joint_position_[i] += joint_velocities_command_[i] * period.seconds();
-    }
-    for (auto i = 0ul; i < joint_position_command_.size(); i++)
-    {
-        joint_position_[i] = joint_position_command_[i];
-        
-        g_joints[i].pos = deg2rad(pose->_fPosition[i]);
-        msg.position.push_back(g_joints[i].pos);
-        msg.velocity.push_back(0);
-        msg.effort.push_back(0);
+
+    for(long i = 0; i < 6; i++) {
+        joint_position_[i] = static_cast<double>(joint_pos->_fPosition[i]);
+        joint_velocities_[i] = static_cast<double>(joint_vel->_fVelocity[i]);
+        joint_efforts_[i] = static_cast<double>(joint_tau->_fForce[i]);
+
+        msg.position.push_back(joint_position_[i]);
+        msg.velocity.push_back(joint_velocities_[i]);
+        msg.effort.push_back(joint_efforts_[i]);
     }
     m_joint_state_pub_->publish(msg);
     msg.position.clear();
@@ -336,11 +387,41 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
 
 return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
 {
-  return return_type::OK;
+    float positions[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
+    float velocities[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
+    float accelerations[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
+    float torques[6];
+
+    switch(control_mode_){
+        case POSITION:
+            for(long i = 0; i < 6; i++)
+                positions[i] = static_cast<float>(joint_position_command_[i]);
+            if(!Drfl.servoj_rt(positions, velocities, accelerations, 0.0)) return return_type::ERROR;
+            std::cout << positions[0] << " - " << positions[1] << std::endl;
+            break;
+
+        case VELOCITY:
+            for(long i = 0; i < 6; i++)
+                velocities[i] = static_cast<float>(joint_velocities_command_[i]);
+            if(!Drfl.speedj_rt(velocities, accelerations, 0.0)) return return_type::ERROR;
+            break;
+            
+        case TORQUE:
+            for(long i = 0; i < 6; i++)
+                torques[i] = static_cast<float>(joint_efforts_command_[i]);
+            if(!Drfl.torque_rt(torques, 0.0)) return return_type::ERROR;
+            break;
+
+        case UNKNOWN:
+            break;
+    }
+    return return_type::OK;
 }
 
 DRHWInterface::~DRHWInterface()
 {
+    Drfl.stop_rt_control();
+    Drfl.disconnect_rt_control();
     Drfl.close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
@@ -694,16 +775,16 @@ void DSRInterface::OnMonitoringAccessControlCB(const MONITORING_ACCESS_CONTROL e
         //Drfl.TransitControlAuth(MANaGE_ACCESS_CONTROL_RESPONSE_YES);
         break;
     case MONITORING_ACCESS_CONTROL_GRANT:
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    Access control granted ");
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
         g_bHasControlAuthority = TRUE;
         OnMonitoringStateCB(Drfl.GetRobotState());
         break;
     case MONITORING_ACCESS_CONTROL_DENY:
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    Access control deny ");
-        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");   
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------");   
         break;
     case MONITORING_ACCESS_CONTROL_LOSS:
         g_bHasControlAuthority = FALSE;
