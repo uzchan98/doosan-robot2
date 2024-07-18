@@ -37,6 +37,8 @@
  *********************************************************************/
 #define _DEBUG_DSR_CTL      1
 
+#define USE_FULL_LIB
+
 #ifndef DSR_HARDWARE2__DR_HW_INTERFACE2_H
 #define DSR_HARDWARE2__DR_HW_INTERFACE2_H
 
@@ -82,7 +84,7 @@
 #include "../../../common2/include/DRFLEx.h"
 //TODO #include "../../../common2/include/dsr_serial.h"
 
-#if 0
+#ifdef USE_FULL_LIB
 #define _DEBUG_DSR_CTL      0
 
 #ifndef PI
@@ -421,7 +423,7 @@ namespace dsr_hardware2{
         } control_mode_;
 
 }
-#if 0
+#ifdef USE_FULL_LIB
     class DSRInterface : public rclcpp::Node
     {
     public:

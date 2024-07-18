@@ -158,12 +158,12 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         "joint_6",
     };
 
-    size_t i = 0;
-    for (auto & joint_name : joint_names)
-    {
-        // RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"joint_name = %s", joint_name);
-        ++i;
-    }
+    // size_t i = 0;
+    // for (auto & joint_name : joint_names)
+    // {
+    //     // RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"joint_name = %s", joint_name);
+    //     ++i;
+    // }
     std::thread t(threadFunction);
     t.join(); // need to make sure termination of the thread.
 
@@ -174,15 +174,17 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    INITAILIZE");
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
     //--- doosan API's call-back fuctions : Only work within 50msec in call-back functions
-    // Drfl.set_on_tp_initializing_completed(DSRInterface::OnTpInitializingCompletedCB);
-    // Drfl.set_on_homming_completed(DSRInterface::OnHommingCompletedCB);
-    // Drfl.set_on_program_stopped(DSRInterface::OnProgramStoppedCB);
-    // Drfl.set_on_monitoring_modbus(DSRInterface::OnMonitoringModbusCB);
-    // Drfl.set_on_monitoring_data(DSRInterface::OnMonitoringDataCB);           // Callback function in M2.4 and earlier
-    // Drfl.set_on_monitoring_ctrl_io(DSRInterface::OnMonitoringCtrlIOCB);       // Callback function in M2.4 and earlier
-    // Drfl.set_on_monitoring_state(DSRInterface::OnMonitoringStateCB);
-    // Drfl.set_on_monitoring_access_control(DSRInterface::OnMonitoringAccessControlCB);
-    // Drfl.set_on_log_alarm(DSRInterface::OnLogAlarm);
+#ifdef USE_FULL_LIB
+    Drfl.set_on_tp_initializing_completed(DSRInterface::OnTpInitializingCompletedCB);
+    Drfl.set_on_homming_completed(DSRInterface::OnHommingCompletedCB);
+    Drfl.set_on_program_stopped(DSRInterface::OnProgramStoppedCB);
+    Drfl.set_on_monitoring_modbus(DSRInterface::OnMonitoringModbusCB);
+    Drfl.set_on_monitoring_data(DSRInterface::OnMonitoringDataCB);           // Callback function in M2.4 and earlier
+    Drfl.set_on_monitoring_ctrl_io(DSRInterface::OnMonitoringCtrlIOCB);       // Callback function in M2.4 and earlier
+    Drfl.set_on_monitoring_state(DSRInterface::OnMonitoringStateCB);
+    Drfl.set_on_monitoring_access_control(DSRInterface::OnMonitoringAccessControlCB);
+    Drfl.set_on_log_alarm(DSRInterface::OnLogAlarm);
+#endif
     
     m_node_ = rclcpp::Node::make_shared("dsr_hw_interface_update");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
@@ -225,8 +227,8 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
 
         if(m_nVersionDRCF >= 120500)    //M2.5 or later        
         {
-            // Drfl.set_on_monitoring_data_ex(DSRInterface::OnMonitoringDataExCB);      //Callback function in version 2.5 and higher
-            // Drfl.set_on_monitoring_ctrl_io_ex(DSRInterface::OnMonitoringCtrlIOExCB);  //Callback function in version 2.5 and higher                     
+            Drfl.set_on_monitoring_data_ex(DSRInterface::OnMonitoringDataExCB);      //Callback function in version 2.5 and higher
+            Drfl.set_on_monitoring_ctrl_io_ex(DSRInterface::OnMonitoringCtrlIOExCB);  //Callback function in version 2.5 and higher                     
             Drfl.setup_monitoring_version(1);                        //Enabling extended monitoring functions 
         }
 
@@ -249,10 +251,18 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
             m_fCmd_[i] = g_joints[i].cmd;
         }
 
-        if (!Drfl.connect_rt_control(m_host, m_port)) {
+        if (!Drfl.connect_rt_control(m_host, 12347)) {
             RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Failed to connect to RT control");
             return CallbackReturn::ERROR;
         }
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "Connected to RT control");
+
+        if (!Drfl.set_rt_control_output("v1.0", 0.001, 4)) {
+            RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Failed to configure to RT control");
+            return CallbackReturn::ERROR;
+        }
+        RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "RT control configured");
+
         if (!Drfl.start_rt_control()) {
             RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Failed to start RT control");
             return CallbackReturn::ERROR;
@@ -320,6 +330,7 @@ std::vector<hardware_interface::CommandInterface> DRHWInterface::export_command_
   return command_interfaces;
 }
 
+
 hardware_interface::return_type
 DRHWInterface::perform_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& /* stop_interfaces */ )
 {
@@ -347,6 +358,8 @@ DRHWInterface::perform_command_mode_switch(const std::vector<std::string>& start
     return return_type::OK;
 }
 
+// #define LOG_STATE_MSG
+
 return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
     double now_sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -357,9 +370,9 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     msg.header.stamp.sec = (long)now_sec;
     msg.header.stamp.nanosec = now_ns;
 
-    LPROBOT_POSE joint_pos = Drfl.get_current_posj();
-    LPROBOT_VEL joint_vel = Drfl.get_current_velj();
-    LPROBOT_FORCE joint_tau = Drfl.get_joint_torque();
+    // LPROBOT_POSE joint_pos = Drfl.get_current_posj();
+    // LPROBOT_VEL joint_vel = Drfl.get_current_velj();
+    // LPROBOT_FORCE joint_tau = Drfl.get_joint_torque();
 
     msg.name.push_back("joint_1");
     msg.name.push_back("joint_2");
@@ -369,14 +382,29 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     msg.name.push_back("joint_6");
 
     for(long i = 0; i < 6; i++) {
-        joint_position_[i] = static_cast<double>(joint_pos->_fPosition[i]);
-        joint_velocities_[i] = static_cast<double>(joint_vel->_fVelocity[i]);
-        joint_efforts_[i] = static_cast<double>(joint_tau->_fForce[i]);
+        // joint_position_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_position_abs[i]);
+        joint_position_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_position[i]);
+        joint_velocities_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_velocity[i]);
+        joint_efforts_[i] = static_cast<double>(Drfl.read_data_rt()->raw_joint_torque[i]);
 
         msg.position.push_back(joint_position_[i]);
         msg.velocity.push_back(joint_velocities_[i]);
         msg.effort.push_back(joint_efforts_[i]);
     }
+
+#ifdef LOG_STATE_MSG
+    static uint32_t msgid = 0;
+    if (++msgid % 100) {
+        std::cout << "Set torque: ";
+        for (long i = 0; i < 6; ++i)
+            std::cout << Drfl.read_data_rt()->target_motor_torque[i] << ", ";
+        std::cout << std::endl;
+        std::cout << "Meas torque: ";
+        for (long i = 0; i < 6; ++i)
+            std::cout << Drfl.read_data_rt()->raw_joint_torque[i] << ", ";
+        std::cout << std::endl;
+    }
+#endif
     m_joint_state_pub_->publish(msg);
     msg.position.clear();
     msg.velocity.clear();
@@ -392,12 +420,19 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
     float accelerations[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
     float torques[6];
 
+#ifdef LOG_STATE_MSG
+    static int id_msgs = 0;
+#endif
+
     switch(control_mode_){
         case POSITION:
             for(long i = 0; i < 6; i++)
                 positions[i] = static_cast<float>(joint_position_command_[i]);
-            if(!Drfl.servoj_rt(positions, velocities, accelerations, 0.0)) return return_type::ERROR;
-            std::cout << positions[0] << " - " << positions[1] << std::endl;
+            if(!Drfl.servoj_rt(positions, velocities, accelerations, 10.0)) return return_type::ERROR;
+#ifdef LOG_STATE_MSG
+            if(++id_msgs % 1000) 
+                std::cout << "pos: " << positions[0] << ", " << positions[1] << ", " << positions[2] << std::endl;
+#endif
             break;
 
         case VELOCITY:
@@ -409,7 +444,11 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
         case TORQUE:
             for(long i = 0; i < 6; i++)
                 torques[i] = static_cast<float>(joint_efforts_command_[i]);
-            if(!Drfl.torque_rt(torques, 0.0)) return return_type::ERROR;
+            if(!Drfl.torque_rt(torques, 1.0)) return return_type::ERROR;
+#ifdef LOG_STATE_MSG
+            if(++id_msgs % 1000) 
+                std::cout << "torque: " << torques[0] << ", " << torques[1] << ", " << torques[2] << std::endl;
+#endif
             break;
 
         case UNKNOWN:
@@ -420,8 +459,12 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
 
 DRHWInterface::~DRHWInterface()
 {
-    Drfl.stop_rt_control();
-    Drfl.disconnect_rt_control();
+    if(!Drfl.stop_rt_control()){
+        RCLCPP_WARN(rclcpp::get_logger("dsr_hw_interface2"),"Error in stop_rt_control()"); 
+}
+    if(!Drfl.disconnect_rt_control()){
+        RCLCPP_WARN(rclcpp::get_logger("dsr_hw_interface2"),"Error in disconnect_rt_control()"); 
+    }
     Drfl.close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
@@ -432,7 +475,7 @@ DRHWInterface::~DRHWInterface()
 }  
 
 
-#if 0
+#ifdef USE_FULL_LIB
 const char* GetRobotStateString(int nState)
 {
     switch(nState)
