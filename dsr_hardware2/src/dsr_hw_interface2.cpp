@@ -442,8 +442,12 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
             break;
             
         case TORQUE:
+            float grav_torques[6];
             for(long i = 0; i < 6; i++)
-                torques[i] = static_cast<float>(joint_efforts_command_[i]);
+                grav_torques[i] = Drfl.read_data_rt()->gravity_torque[i];
+            grav_torques[1] = 0.0; // second axis on H-series robot is automatically compensated
+            for(long i = 0; i < 6; i++)
+                torques[i] = static_cast<float>(joint_efforts_command_[i] - grav_torques[i]);
             if(!Drfl.torque_rt(torques, 1.0)) return return_type::ERROR;
 #ifdef LOG_STATE_MSG
             if(++id_msgs % 1000) 
