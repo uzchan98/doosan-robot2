@@ -170,19 +170,19 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
 //-----------------------------------------------------------------------------------------------------
     
 
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    INITAILIZE");
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
     //--- doosan API's call-back fuctions : Only work within 50msec in call-back functions
-    Drfl.set_on_tp_initializing_completed(DSRInterface::OnTpInitializingCompletedCB);
-    Drfl.set_on_homming_completed(DSRInterface::OnHommingCompletedCB);
-    Drfl.set_on_program_stopped(DSRInterface::OnProgramStoppedCB);
-    Drfl.set_on_monitoring_modbus(DSRInterface::OnMonitoringModbusCB);
-    Drfl.set_on_monitoring_data(DSRInterface::OnMonitoringDataCB);           // Callback function in M2.4 and earlier
-    Drfl.set_on_monitoring_ctrl_io(DSRInterface::OnMonitoringCtrlIOCB);       // Callback function in M2.4 and earlier
-    Drfl.set_on_monitoring_state(DSRInterface::OnMonitoringStateCB);
-    Drfl.set_on_monitoring_access_control(DSRInterface::OnMonitoringAccessControlCB);
-    Drfl.set_on_log_alarm(DSRInterface::OnLogAlarm);
+    // Drfl.set_on_tp_initializing_completed(DSRInterface::OnTpInitializingCompletedCB);
+    // Drfl.set_on_homming_completed(DSRInterface::OnHommingCompletedCB);
+    // Drfl.set_on_program_stopped(DSRInterface::OnProgramStoppedCB);
+    // Drfl.set_on_monitoring_modbus(DSRInterface::OnMonitoringModbusCB);
+    // Drfl.set_on_monitoring_data(DSRInterface::OnMonitoringDataCB);           // Callback function in M2.4 and earlier
+    // Drfl.set_on_monitoring_ctrl_io(DSRInterface::OnMonitoringCtrlIOCB);       // Callback function in M2.4 and earlier
+    // Drfl.set_on_monitoring_state(DSRInterface::OnMonitoringStateCB);
+    // Drfl.set_on_monitoring_access_control(DSRInterface::OnMonitoringAccessControlCB);
+    // Drfl.set_on_log_alarm(DSRInterface::OnLogAlarm);
     
     m_node_ = rclcpp::Node::make_shared("dsr_hw_interface_update");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
@@ -225,8 +225,8 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
 
         if(m_nVersionDRCF >= 120500)    //M2.5 or later        
         {
-            Drfl.set_on_monitoring_data_ex(DSRInterface::OnMonitoringDataExCB);      //Callback function in version 2.5 and higher
-            Drfl.set_on_monitoring_ctrl_io_ex(DSRInterface::OnMonitoringCtrlIOExCB);  //Callback function in version 2.5 and higher                     
+            // Drfl.set_on_monitoring_data_ex(DSRInterface::OnMonitoringDataExCB);      //Callback function in version 2.5 and higher
+            // Drfl.set_on_monitoring_ctrl_io_ex(DSRInterface::OnMonitoringCtrlIOExCB);  //Callback function in version 2.5 and higher                     
             Drfl.setup_monitoring_version(1);                        //Enabling extended monitoring functions 
         }
 
@@ -424,14 +424,15 @@ DRHWInterface::~DRHWInterface()
     Drfl.disconnect_rt_control();
     Drfl.close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"    CONNECTION IS CLOSED");
-    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n"); 
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"-----------------------------------------------"); 
 }
 
 }  
 
 
+#if 0
 const char* GetRobotStateString(int nState)
 {
     switch(nState)
@@ -852,6 +853,7 @@ void DSRInterface::OnLogAlarm(LPLOG_ALARM pLogAlarm)
 
     PubRobotError->publish(msg);
 }
+#endif
 
 
 

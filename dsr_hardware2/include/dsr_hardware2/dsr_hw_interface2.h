@@ -82,6 +82,7 @@
 #include "../../../common2/include/DRFLEx.h"
 //TODO #include "../../../common2/include/dsr_serial.h"
 
+#if 0
 #define _DEBUG_DSR_CTL      0
 
 #ifndef PI
@@ -255,6 +256,7 @@
 #define DR_MV_APP_WELD                  1
 //________________________________________________________
 
+#endif 
 typedef struct {
     int	    nLevel;         // INFO =1, WARN =2, ERROR =3 
     int	    nGroup;         // SYSTEM =1, MOTION =2, TP =3, INVERTER =4, SAFETY_CONTROLLER =5   
@@ -419,6 +421,7 @@ namespace dsr_hardware2{
         } control_mode_;
 
 }
+#if 0
     class DSRInterface : public rclcpp::Node
     {
     public:
@@ -490,4 +493,6 @@ namespace dsr_hardware2{
         DR_ERROR m_stDrError;
     
     };
+#endif
+
 #endif // end
