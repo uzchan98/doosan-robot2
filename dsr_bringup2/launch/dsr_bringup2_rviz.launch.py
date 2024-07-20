@@ -79,7 +79,7 @@ def generate_launch_description():
         namespace=LaunchConfiguration('name'),
         parameters=[
             {"name":    LaunchConfiguration('name')  }, 
-            {"rate":    100         },
+            {"rate":    1000        },
             {"standby": 5000        },
             {"command": True        },
             {"host":    LaunchConfiguration('host')  },
@@ -98,6 +98,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         namespace=LaunchConfiguration('name'),
         parameters=[robot_description, robot_controllers],
+        remappings=[("motion_control_handle/target_frame", "cartesian_impedance_controller/target_frame")],
         output="both",
     )
 

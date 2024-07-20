@@ -268,6 +268,8 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
             return CallbackReturn::ERROR;
         }
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"Started RT control");
+        float vel[6] = {100, 100, 100, 100, 100, 100};
+        Drfl.set_velj_rt(vel);
 
         return CallbackReturn::SUCCESS;
     }
@@ -383,8 +385,8 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
 
     for(long i = 0; i < 6; i++) {
         // joint_position_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_position_abs[i]);
-        joint_position_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_position[i]);
-        joint_velocities_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_velocity[i]);
+        joint_position_[i] = deg2rad(static_cast<double>(Drfl.read_data_rt()->actual_joint_position[i]));
+        joint_velocities_[i] = deg2rad(static_cast<double>(Drfl.read_data_rt()->actual_joint_velocity[i]));
         joint_efforts_[i] = static_cast<double>(Drfl.read_data_rt()->raw_joint_torque[i]);
 
         msg.position.push_back(joint_position_[i]);
@@ -427,7 +429,7 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
     switch(control_mode_){
         case POSITION:
             for(long i = 0; i < 6; i++)
-                positions[i] = static_cast<float>(joint_position_command_[i]);
+                positions[i] = rad2deg(static_cast<float>(joint_position_command_[i]));
             if(!Drfl.servoj_rt(positions, velocities, accelerations, 10.0)) return return_type::ERROR;
 #ifdef LOG_STATE_MSG
             if(++id_msgs % 1000) 
@@ -437,7 +439,7 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
 
         case VELOCITY:
             for(long i = 0; i < 6; i++)
-                velocities[i] = static_cast<float>(joint_velocities_command_[i]);
+                velocities[i] = rad2deg(static_cast<float>(joint_velocities_command_[i]));
             if(!Drfl.speedj_rt(velocities, accelerations, 0.0)) return return_type::ERROR;
             break;
             
@@ -445,10 +447,9 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
             float grav_torques[6];
             for(long i = 0; i < 6; i++)
                 grav_torques[i] = Drfl.read_data_rt()->gravity_torque[i];
-            grav_torques[1] = 0.0; // second axis on H-series robot is automatically compensated
+            // grav_torques[1] = 0.0; // second axis on H-series robot is automatically compensated
             for(long i = 0; i < 6; i++)
-                torques[i] = static_cast<float>(joint_efforts_command_[i] - grav_torques[i]);
-            if(!Drfl.torque_rt(torques, 1.0)) return return_type::ERROR;
+                torques[i] = static_cast<float>(joint_efforts_command_[i]) + grav_torques[i];
 #ifdef LOG_STATE_MSG
             if(++id_msgs % 1000) 
                 std::cout << "torque: " << torques[0] << ", " << torques[1] << ", " << torques[2] << std::endl;
