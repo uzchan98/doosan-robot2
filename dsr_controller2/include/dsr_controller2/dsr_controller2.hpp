@@ -33,6 +33,25 @@
 #include "std_msgs/msg/string.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 
+// msg
+#include <dsr_msgs2/msg/robot_error.hpp>
+#include <dsr_msgs2/msg/robot_state.hpp>
+#include <dsr_msgs2/msg/robot_stop.hpp>
+#include <dsr_msgs2/msg/jog_multi_axis.hpp>
+#include <dsr_msgs2/msg/alter_motion_stream.hpp>
+#include <dsr_msgs2/msg/servoj_stream.hpp>
+#include <dsr_msgs2/msg/servol_stream.hpp>
+#include <dsr_msgs2/msg/speedj_stream.hpp>
+#include <dsr_msgs2/msg/speedl_stream.hpp>
+
+#include <dsr_msgs2/msg/robot_state_rt.hpp>
+#include <dsr_msgs2/msg/servoj_rt_stream.hpp>
+#include <dsr_msgs2/msg/servol_rt_stream.hpp>
+#include <dsr_msgs2/msg/speedj_rt_stream.hpp>
+#include <dsr_msgs2/msg/speedl_rt_stream.hpp>
+#include <dsr_msgs2/msg/torque_rt_stream.hpp>
+
+
 //system
 #include "dsr_msgs2/srv/set_robot_mode.hpp"
 #include "dsr_msgs2/srv/get_robot_mode.hpp"
@@ -163,6 +182,25 @@
 //moveit
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/robot_trajectory.hpp>
+
+
+//RT
+#include "dsr_msgs2/srv/connect_rt_control.hpp"
+#include "dsr_msgs2/srv/disconnect_rt_control.hpp"
+#include "dsr_msgs2/srv/get_rt_control_input_data_list.hpp"
+#include "dsr_msgs2/srv/get_rt_control_input_version_list.hpp"
+#include "dsr_msgs2/srv/get_rt_control_output_data_list.hpp"
+#include "dsr_msgs2/srv/get_rt_control_output_version_list.hpp"
+#include "dsr_msgs2/srv/read_data_rt.hpp"
+#include "dsr_msgs2/srv/set_accj_rt.hpp"
+#include "dsr_msgs2/srv/set_accx_rt.hpp"
+#include "dsr_msgs2/srv/set_rt_control_input.hpp"
+#include "dsr_msgs2/srv/set_rt_control_output.hpp"
+#include "dsr_msgs2/srv/set_velj_rt.hpp"
+#include "dsr_msgs2/srv/set_velx_rt.hpp"
+#include "dsr_msgs2/srv/start_rt_control.hpp"
+#include "dsr_msgs2/srv/stop_rt_control.hpp"
+#include "dsr_msgs2/srv/write_data_rt.hpp"
 
 #include "../../../common2/include/DRFLEx.h"
 
@@ -495,6 +533,19 @@ protected:
   std::vector<std::string> command_interface_types_;
   std::vector<std::string> state_interface_types_;
 
+  rclcpp::Subscription<dsr_msgs2::msg::JogMultiAxis>::SharedPtr        m_sub_jog_multi_axis;
+  rclcpp::Subscription<dsr_msgs2::msg::AlterMotionStream>::SharedPtr   m_sub_alter_motion_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::ServojStream>::SharedPtr        m_sub_servoj_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::ServolStream>::SharedPtr        m_sub_servol_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::SpeedjStream>::SharedPtr        m_sub_speedj_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::SpeedlStream>::SharedPtr        m_sub_speedl_stream;
+
+  rclcpp::Subscription<dsr_msgs2::msg::ServojRtStream>::SharedPtr      m_sub_servoj_rt_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::ServolRtStream>::SharedPtr      m_sub_servol_rt_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::SpeedjRtStream>::SharedPtr      m_sub_speedj_rt_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::SpeedlRtStream>::SharedPtr      m_sub_speedl_rt_stream;
+  rclcpp::Subscription<dsr_msgs2::msg::TorqueRtStream>::SharedPtr      m_sub_torque_rt_stream;
+
   rclcpp::Service<dsr_msgs2::srv::GetRobotMode>::SharedPtr            m_nh_srv_get_robot_mode;
   rclcpp::Service<dsr_msgs2::srv::SetRobotMode>::SharedPtr            m_nh_srv_set_robot_mode;
   rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_command_subscriber_;
@@ -619,6 +670,24 @@ protected:
   rclcpp::Service<dsr_msgs2::srv::DrlStop>::SharedPtr                      m_nh_srv_drl_stop; 
   rclcpp::Service<dsr_msgs2::srv::DrlResume>::SharedPtr                    m_nh_srv_drl_resume; 
   rclcpp::Service<dsr_msgs2::srv::GetDrlState>::SharedPtr                  m_nh_srv_get_drl_state; 
+
+  //----- RT
+  rclcpp::Service<dsr_msgs2::srv::ConnectRtControl>::SharedPtr              m_nh_connect_rt_control;
+  rclcpp::Service<dsr_msgs2::srv::DisconnectRtControl>::SharedPtr           m_nh_disconnect_rt_control;
+  rclcpp::Service<dsr_msgs2::srv::GetRtControlOutputVersionList>::SharedPtr m_nh_get_rt_control_output_version_list;
+  rclcpp::Service<dsr_msgs2::srv::GetRtControlInputVersionList>::SharedPtr  m_nh_get_rt_control_input_version_list;
+  rclcpp::Service<dsr_msgs2::srv::GetRtControlInputDataList>::SharedPtr     m_nh_get_rt_control_input_data_list;
+  rclcpp::Service<dsr_msgs2::srv::GetRtControlOutputDataList>::SharedPtr    m_nh_get_rt_control_output_data_list;
+  rclcpp::Service<dsr_msgs2::srv::SetRtControlInput>::SharedPtr             m_nh_set_rt_control_input;
+  rclcpp::Service<dsr_msgs2::srv::SetRtControlOutput>::SharedPtr            m_nh_set_rt_control_output;
+  rclcpp::Service<dsr_msgs2::srv::StartRtControl>::SharedPtr                m_nh_start_rt_control;
+  rclcpp::Service<dsr_msgs2::srv::StopRtControl>::SharedPtr                 m_nh_stop_rt_control;
+  rclcpp::Service<dsr_msgs2::srv::SetVeljRt>::SharedPtr                     m_nh_set_velj_rt;
+  rclcpp::Service<dsr_msgs2::srv::SetAccjRt>::SharedPtr                     m_nh_set_accj_rt;
+  rclcpp::Service<dsr_msgs2::srv::SetVelxRt>::SharedPtr                     m_nh_set_velx_rt;
+  rclcpp::Service<dsr_msgs2::srv::SetAccxRt>::SharedPtr                     m_nh_set_accx_rt;
+  rclcpp::Service<dsr_msgs2::srv::ReadDataRt>::SharedPtr                    m_nh_read_data_rt;
+  rclcpp::Service<dsr_msgs2::srv::WriteDataRt>::SharedPtr                   m_nh_write_data_rt;
 
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr m_joint_state_pub_;
   rclcpp::TimerBase::SharedPtr timer_;

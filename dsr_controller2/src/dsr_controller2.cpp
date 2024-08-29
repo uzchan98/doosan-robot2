@@ -1715,6 +1715,282 @@ auto set_tool_shape_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetToolSha
     res->success = Drfl->set_tool(req->name);
     return true;
 };
+
+auto connect_rt_control_cb = [this](const std::shared_ptr<dsr_msgs2::srv::ConnectRtControl::Request> req, 
+                                    std::shared_ptr<dsr_msgs2::srv::ConnectRtControl::Response> res) -> void 
+{
+    res->success = Drfl->connect_rt_control(req->ip_address, req->port);
+};
+
+auto disconnect_rt_control_cb = [this](const std::shared_ptr<dsr_msgs2::srv::DisconnectRtControl::Request> req, 
+                                       std::shared_ptr<dsr_msgs2::srv::DisconnectRtControl::Response> res) -> void 
+{
+    res->success = Drfl->disconnect_rt_control();
+};
+
+auto get_rt_control_output_version_list_cb = [this](const std::shared_ptr<dsr_msgs2::srv::GetRtControlOutputVersionList::Request> req, 
+                                                    std::shared_ptr<dsr_msgs2::srv::GetRtControlOutputVersionList::Response> res) -> void 
+{
+    res->version = Drfl->get_rt_control_output_version_list();
+    res->success = true;
+};
+
+auto get_rt_control_input_version_list_cb = [this](const std::shared_ptr<dsr_msgs2::srv::GetRtControlInputVersionList::Request> req, 
+                                                   std::shared_ptr<dsr_msgs2::srv::GetRtControlInputVersionList::Response> res) -> void 
+{
+    res->version = Drfl->get_rt_control_input_version_list();
+    res->success = true;
+};
+
+auto get_rt_control_input_data_list_cb = [this](const std::shared_ptr<dsr_msgs2::srv::GetRtControlInputDataList::Request> req, 
+                                                std::shared_ptr<dsr_msgs2::srv::GetRtControlInputDataList::Response> res) -> void 
+{
+    res->data = Drfl->get_rt_control_input_data_list(req->version);
+    res->success = true;
+};
+
+auto get_rt_control_output_data_list_cb = [this](const std::shared_ptr<dsr_msgs2::srv::GetRtControlOutputDataList::Request> req, 
+                                                 std::shared_ptr<dsr_msgs2::srv::GetRtControlOutputDataList::Response> res) -> void 
+{
+    res->data = Drfl->get_rt_control_output_data_list(req->version);
+    res->success = true;
+};
+
+auto set_rt_control_input_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetRtControlInput::Request> req, 
+                                      std::shared_ptr<dsr_msgs2::srv::SetRtControlInput::Response> res) -> void 
+{
+    res->success = Drfl->set_rt_control_input(req->version, req->period, req->loss);
+};
+
+auto set_rt_control_output_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetRtControlOutput::Request> req, 
+                                       std::shared_ptr<dsr_msgs2::srv::SetRtControlOutput::Response> res) -> void 
+{
+    res->success = Drfl->set_rt_control_output(req->version, req->period, req->loss);
+};
+
+auto start_rt_control_cb = [this](const std::shared_ptr<dsr_msgs2::srv::StartRtControl::Request> req, 
+                                  std::shared_ptr<dsr_msgs2::srv::StartRtControl::Response> res) -> void 
+{
+    res->success = Drfl->start_rt_control();
+};
+
+auto stop_rt_control_cb = [this](const std::shared_ptr<dsr_msgs2::srv::StopRtControl::Request> req, 
+                                 std::shared_ptr<dsr_msgs2::srv::StopRtControl::Response> res) -> void 
+{
+    res->success = Drfl->stop_rt_control();
+};
+
+auto set_velj_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetVeljRt::Request> req, 
+                             std::shared_ptr<dsr_msgs2::srv::SetVeljRt::Response> res) -> void 
+{
+    std::array<float, 6> vel;
+    std::copy(req->vel.cbegin(), req->vel.cend(), vel.begin());
+    res->success = Drfl->set_velj_rt(vel.data());
+};
+
+auto set_accj_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetAccjRt::Request> req, 
+                             std::shared_ptr<dsr_msgs2::srv::SetAccjRt::Response> res) -> void 
+{
+    std::array<float, 6> acc;
+    std::copy(req->acc.cbegin(), req->acc.cend(), acc.begin());
+    res->success = Drfl->set_accj_rt(acc.data());
+};
+
+auto set_velx_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetVelxRt::Request> req, 
+                             std::shared_ptr<dsr_msgs2::srv::SetVelxRt::Response> res) -> void 
+{
+    res->success = Drfl->set_velx_rt(req->trans, req->rotation);
+};
+
+auto set_accx_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetAccxRt::Request> req, 
+                             std::shared_ptr<dsr_msgs2::srv::SetAccxRt::Response> res) -> void 
+{
+    res->success = Drfl->set_accx_rt(req->trans, req->rotation);
+};
+
+auto read_data_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::ReadDataRt::Request> req, 
+                              std::shared_ptr<dsr_msgs2::srv::ReadDataRt::Response> res) -> void 
+{
+    LPRT_OUTPUT_DATA_LIST temp = Drfl->read_data_rt();
+    res->data.time_stamp = temp->time_stamp;
+    
+    for(int i = 0; i < 6; i++) {
+        res->data.actual_joint_position[i] = temp->actual_joint_position[i];
+        // Continue for all data fields as before
+    }
+
+    std_msgs::msg::Float64MultiArray arr;
+    for(int i = 0; i < 6; i++) {
+        arr.data.clear();
+        for(int j = 0; j < 6; j++) {
+            arr.data.push_back(temp->coriolis_matrix[i][j]);
+        }
+        res->data.coriolis_matrix.push_back(arr);
+    }
+    
+    // Similar handling for mass_matrix, jacobian_matrix, and other arrays
+};
+
+auto write_data_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::WriteDataRt::Request> req, 
+                               std::shared_ptr<dsr_msgs2::srv::WriteDataRt::Response> res) -> void 
+{
+    std::array<float, 6> external_force_torque;
+    std::array<float, 6> external_analog_output;
+    std::array<float, 6> external_analog_input;
+
+    std::copy(req->external_force_torque.cbegin(), req->external_force_torque.cend(), external_force_torque.begin());
+    std::copy(req->external_analog_output.cbegin(), req->external_analog_output.cend(), external_analog_output.begin());
+    std::copy(req->external_analog_input.cbegin(), req->external_analog_input.cend(), external_analog_input.begin());
+
+    res->success = Drfl->write_data_rt(external_force_torque.data(), req->external_digital_input, 
+                                       req->external_digital_output, external_analog_input.data(), 
+                                       external_analog_output.data());
+};
+
+
+  // Callback for jog_multi
+auto jog_multi_axis_cb = [this](const std::shared_ptr<dsr_msgs2::msg::JogMultiAxis> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_pos;
+    std::copy(msg->jog_axis.cbegin(), msg->jog_axis.cend(), target_pos.begin());
+    Drfl->multi_jog(target_pos.data(), static_cast<MOVE_REFERENCE>(msg->move_reference), msg->speed);
+};
+
+// Callback for alter_motion_stream
+auto alter_cb = [this](const std::shared_ptr<dsr_msgs2::msg::AlterMotionStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_pos;
+    std::copy(msg->pos.cbegin(), msg->pos.cend(), target_pos.begin());
+    Drfl->alter_motion(target_pos.data());
+};
+
+// Callback for servoj_stream
+auto servoj_cb = [this](const std::shared_ptr<dsr_msgs2::msg::ServojStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_pos;
+    std::copy(msg->pos.cbegin(), msg->pos.cend(), target_pos.begin());
+    std::array<float, NUM_JOINT> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_JOINT> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->servoj(target_pos.data(), target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for servol_stream
+auto servol_cb = [this](const std::shared_ptr<dsr_msgs2::msg::ServolStream> msg) -> void
+{
+    std::array<float, NUM_TASK> target_pos;
+    std::copy(msg->pos.cbegin(), msg->pos.cend(), target_pos.begin());
+    std::array<float, 2> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, 2> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->servol(target_pos.data(), target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for speedj_stream
+auto speedj_cb = [this](const std::shared_ptr<dsr_msgs2::msg::SpeedjStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_JOINT> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->speedj(target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for speedl_stream
+auto speedl_cb = [this](const std::shared_ptr<dsr_msgs2::msg::SpeedlStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, 2> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->speedl(target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for servoj_rt_stream
+auto servoj_rt_cb = [this](const std::shared_ptr<dsr_msgs2::msg::ServojRtStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_pos;
+    std::copy(msg->pos.cbegin(), msg->pos.cend(), target_pos.begin());
+    std::array<float, NUM_JOINT> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_JOINT> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->servoj_rt(target_pos.data(), target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for servol_rt_stream
+auto servol_rt_cb = [this](const std::shared_ptr<dsr_msgs2::msg::ServolRtStream> msg) -> void
+{
+    std::array<float, NUM_TASK> target_pos;
+    std::copy(msg->pos.cbegin(), msg->pos.cend(), target_pos.begin());
+    std::array<float, NUM_TASK> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_TASK> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->servol_rt(target_pos.data(), target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for speedj_rt_stream
+auto speedj_rt_cb = [this](const std::shared_ptr<dsr_msgs2::msg::SpeedjRtStream> msg) -> void
+{
+    std::array<float, NUM_JOINT> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_JOINT> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->speedj_rt(target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for speedl_rt_stream
+auto speedl_rt_cb = [this](const std::shared_ptr<dsr_msgs2::msg::SpeedlRtStream> msg) -> void
+{
+    std::array<float, NUM_TASK> target_vel;
+    std::copy(msg->vel.cbegin(), msg->vel.cend(), target_vel.begin());
+    std::array<float, NUM_TASK> target_acc;
+    std::copy(msg->acc.cbegin(), msg->acc.cend(), target_acc.begin());
+    float time = msg->time;
+
+    Drfl->speedl_rt(target_vel.data(), target_acc.data(), time);
+};
+
+// Callback for torque_rt_stream
+auto torque_rt_cb = [this](const std::shared_ptr<dsr_msgs2::msg::TorqueRtStream> msg) -> void
+{
+    std::array<float, NUM_TASK> tor;
+    std::copy(msg->tor.cbegin(), msg->tor.cend(), tor.begin());
+    float time = msg->time;
+
+    Drfl->torque_rt(tor.data(), time);
+};
+
+  // Subscription declarations
+  m_sub_jog_multi_axis                = get_node()->create_subscription<dsr_msgs2::msg::JogMultiAxis>("jog_multi", 10, jog_multi_axis_cb);
+  m_sub_alter_motion_stream           = get_node()->create_subscription<dsr_msgs2::msg::AlterMotionStream>("alter_motion_stream", 20, alter_cb);
+  m_sub_servoj_stream                 = get_node()->create_subscription<dsr_msgs2::msg::ServojStream>("servoj_stream", 20, servoj_cb);
+  m_sub_servol_stream                 = get_node()->create_subscription<dsr_msgs2::msg::ServolStream>("servol_stream", 20, servol_cb);
+  m_sub_speedj_stream                 = get_node()->create_subscription<dsr_msgs2::msg::SpeedjStream>("speedj_stream", 20, speedj_cb);
+  m_sub_speedl_stream                 = get_node()->create_subscription<dsr_msgs2::msg::SpeedlStream>("speedl_stream", 10, speedl_cb);
+
+  m_sub_servoj_rt_stream              = get_node()->create_subscription<dsr_msgs2::msg::ServojRtStream>("servoj_rt_stream", 20, servoj_rt_cb);
+  m_sub_servol_rt_stream              = get_node()->create_subscription<dsr_msgs2::msg::ServolRtStream>("servol_rt_stream", 20, servol_rt_cb);
+  m_sub_speedj_rt_stream              = get_node()->create_subscription<dsr_msgs2::msg::SpeedjRtStream>("speedj_rt_stream", 20, speedj_rt_cb);
+  m_sub_speedl_rt_stream              = get_node()->create_subscription<dsr_msgs2::msg::SpeedlRtStream>("speedl_rt_stream", 20, speedl_rt_cb);
+  m_sub_torque_rt_stream              = get_node()->create_subscription<dsr_msgs2::msg::TorqueRtStream>("torque_rt_stream", 20, torque_rt_cb);
   
   
   m_nh_srv_set_robot_mode             = get_node()->create_service<dsr_msgs2::srv::SetRobotMode>("system/set_robot_mode", set_robot_mode_cb);
@@ -1841,6 +2117,24 @@ auto set_tool_shape_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetToolSha
   m_nh_srv_drl_stop               = get_node()->create_service<dsr_msgs2::srv::DrlStop>("drl/drl_stop", drl_stop_cb);    
   m_nh_srv_drl_resume             = get_node()->create_service<dsr_msgs2::srv::DrlResume>("drl/drl_resume", drl_resume_cb);        
   m_nh_srv_get_drl_state          = get_node()->create_service<dsr_msgs2::srv::GetDrlState>("drl/get_drl_state", get_drl_state_cb);       
+
+  // RT
+  m_nh_connect_rt_control = get_node()->create_service<dsr_msgs2::srv::ConnectRtControl>("realtime/connect_rt_control", connect_rt_control_cb);
+  m_nh_disconnect_rt_control = get_node()->create_service<dsr_msgs2::srv::DisconnectRtControl>("realtime/disconnect_rt_control", disconnect_rt_control_cb);
+  m_nh_get_rt_control_output_version_list = get_node()->create_service<dsr_msgs2::srv::GetRtControlOutputVersionList>("realtime/get_rt_control_output_version_list", get_rt_control_output_version_list_cb);
+  m_nh_get_rt_control_input_version_list = get_node()->create_service<dsr_msgs2::srv::GetRtControlInputVersionList>("realtime/get_rt_control_input_version_list", get_rt_control_input_version_list_cb);
+  m_nh_get_rt_control_input_data_list = get_node()->create_service<dsr_msgs2::srv::GetRtControlInputDataList>("realtime/get_rt_control_input_data_list", get_rt_control_input_data_list_cb);
+  m_nh_get_rt_control_output_data_list = get_node()->create_service<dsr_msgs2::srv::GetRtControlOutputDataList>("realtime/get_rt_control_output_data_list", get_rt_control_output_data_list_cb);
+  m_nh_set_rt_control_input = get_node()->create_service<dsr_msgs2::srv::SetRtControlInput>("realtime/set_rt_control_input", set_rt_control_input_cb);
+  m_nh_set_rt_control_output = get_node()->create_service<dsr_msgs2::srv::SetRtControlOutput>("realtime/set_rt_control_output", set_rt_control_output_cb);
+  m_nh_start_rt_control = get_node()->create_service<dsr_msgs2::srv::StartRtControl>("realtime/start_rt_control", start_rt_control_cb);
+  m_nh_stop_rt_control = get_node()->create_service<dsr_msgs2::srv::StopRtControl>("realtime/stop_rt_control", stop_rt_control_cb);
+  m_nh_set_velj_rt = get_node()->create_service<dsr_msgs2::srv::SetVeljRt>("realtime/set_velj_rt", set_velj_rt_cb);
+  m_nh_set_accj_rt = get_node()->create_service<dsr_msgs2::srv::SetAccjRt>("realtime/set_accj_rt", set_accj_rt_cb);
+  m_nh_set_velx_rt = get_node()->create_service<dsr_msgs2::srv::SetVelxRt>("realtime/set_velx_rt", set_velx_rt_cb);
+  m_nh_set_accx_rt = get_node()->create_service<dsr_msgs2::srv::SetAccxRt>("realtime/set_accx_rt", set_accx_rt_cb);
+  m_nh_read_data_rt = get_node()->create_service<dsr_msgs2::srv::ReadDataRt>("realtime/read_data_rt", read_data_rt_cb);
+  m_nh_write_data_rt = get_node()->create_service<dsr_msgs2::srv::WriteDataRt>("realtime/write_data_rt", write_data_rt_cb);
 
   memset(&g_joints,    0x00, sizeof(ROBOT_JOINT_DATA)*NUM_JOINT);
   memset(&g_stDrState, 0x00, sizeof(DR_STATE)); 
