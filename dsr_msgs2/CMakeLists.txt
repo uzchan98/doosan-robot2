@@ -16,12 +16,25 @@ find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  
   "msg/LogAlarm.msg"
   "msg/ModbusState.msg"
   "msg/RobotError.msg"
   "msg/RobotState.msg"
   "msg/RobotStop.msg"
   "msg/JogMultiAxis.msg"
+  "msg/AlterMotionStream.msg"
+  "msg/ServojStream.msg"
+  "msg/ServolStream.msg"
+  "msg/SpeedjStream.msg"
+  "msg/SpeedlStream.msg"
+
+  "msg/RobotStateRt.msg"
+  "msg/ServojRtStream.msg"
+  "msg/ServolRtStream.msg"
+  "msg/SpeedjRtStream.msg"
+  "msg/SpeedlRtStream.msg"
+  "msg/TorqueRtStream.msg"
 
   "srv/system/SetRobotMode.srv"
   "srv/system/GetRobotMode.srv"
@@ -144,6 +157,24 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/gripper/Robotiq2FOpen.srv"
   "srv/gripper/Robotiq2FMove.srv"
   "srv/gripper/SerialSendData.srv"
+  
+
+  "srv/realtime/ConnectRtControl.srv"
+  "srv/realtime/DisconnectRtControl.srv"
+  "srv/realtime/GetRtControlInputDataList.srv"
+  "srv/realtime/GetRtControlInputVersionList.srv"
+  "srv/realtime/GetRtControlOutputDataList.srv"
+  "srv/realtime/GetRtControlOutputVersionList.srv"
+  "srv/realtime/ReadDataRt.srv"
+  "srv/realtime/SetAccjRt.srv"
+  "srv/realtime/SetAccxRt.srv"
+  "srv/realtime/SetRtControlInput.srv"
+  "srv/realtime/SetRtControlOutput.srv"
+  "srv/realtime/SetVeljRt.srv"
+  "srv/realtime/SetVelxRt.srv"
+  "srv/realtime/StartRtControl.srv"
+  "srv/realtime/StopRtControl.srv"
+  "srv/realtime/WriteDataRt.srv"
 
   DEPENDENCIES builtin_interfaces std_msgs  
 )
