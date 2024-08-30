@@ -36,9 +36,13 @@ endif()
 add_executable(client_to_publish src/client_to_publish.cpp)
 ament_target_dependencies(client_to_publish rclcpp dsr_msgs2)
 
+add_executable(client_n_publish src/client_n_publish.cpp)
+ament_target_dependencies(client_n_publish rclcpp dsr_msgs2)
+
 
 install(TARGETS
   client_to_publish
+  client_n_publish
   DESTINATION lib/${PROJECT_NAME}
 )
 
