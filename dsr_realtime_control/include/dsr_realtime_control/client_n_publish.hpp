@@ -119,11 +119,14 @@ private:
     std::thread thread_;
     rclcpp::Client<dsr_msgs2::srv::ReadDataRt>::SharedPtr client_;
     rclcpp::Publisher<dsr_msgs2::msg::TorqueRtStream>::SharedPtr publisher_;
-    std::atomic<float> q[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    std::atomic<float> q_dot[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    // std::atomic<float> q[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    // std::atomic<float> q_dot[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    // std::atomic<float> trq_g[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    float q[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    float q_dot[NUMBER_OF_JOINT]={0,0,0,0,0,0};
     float q_d[NUMBER_OF_JOINT]={90,0,};
     float q_dot_d[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    std::atomic<float> trq_g[NUMBER_OF_JOINT]={0,0,0,0,0,0};
+    float trq_g[NUMBER_OF_JOINT]={0,0,0,0,0,0};
     float trq_d[NUMBER_OF_JOINT]={0,0,0,0,0,0};
     float kp[NUMBER_OF_JOINT]={0.1,0.1,0.1,0.1,0.1,0.1};
     float kd[NUMBER_OF_JOINT]={0.1,0.1,0.1,0.1,0.1,0.1};

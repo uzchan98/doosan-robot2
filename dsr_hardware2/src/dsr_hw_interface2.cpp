@@ -654,12 +654,13 @@ void DSRInterface::OnMonitoringStateCB(const ROBOT_STATE eState)
         if (g_bHasControlAuthority) {
             Drfl.set_safe_stop_reset_type(SAFE_STOP_RESET_TYPE_DEFAULT);
             Drfl.set_robot_control(CONTROL_RESET_SAFET_STOP);
+            Drfl.set_safety_mode(SAFETY_MODE_AUTONOMOUS,SAFETY_MODE_EVENT_MOVE);
         }
         break;
     case STATE_SAFE_OFF:
         if (g_bHasControlAuthority){
             Drfl.set_robot_control(CONTROL_SERVO_ON);
-            Drfl.set_robot_mode(ROBOT_MODE_MANUAL);   //Idle Servo Off 후 servo on 하는 상황 발생 시 set_robot_mode 명령을 전송해 manual 로 전환. add 2020/04/28
+            Drfl.set_robot_mode(ROBOT_MODE_AUTONOMOUS);   //Idle Servo Off 후 servo on 하는 상황 발생 시 set_robot_mode 명령을 전송해 manual 로 전환. add 2020/04/28
         } 
         break;
     case STATE_SAFE_STOP2:
