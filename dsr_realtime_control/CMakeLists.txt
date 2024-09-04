@@ -33,8 +33,8 @@ else()
   message($ENV{ROS_DISTRO})
 endif()
 
-add_executable(client_to_publish src/client_to_publish.cpp)
-ament_target_dependencies(client_to_publish rclcpp dsr_msgs2)
+add_executable(realtime_control src/realtime_control.cpp)
+ament_target_dependencies(realtime_control rclcpp dsr_msgs2)
 
 add_executable(client_n_publish src/client_n_publish.cpp)
 ament_target_dependencies(client_n_publish rclcpp dsr_msgs2)
@@ -46,7 +46,7 @@ add_executable(rt_shutdown src/rt_shutdown.cpp)
 ament_target_dependencies(rt_shutdown rclcpp dsr_msgs2)
 
 install(TARGETS
-  client_to_publish
+  realtime_control
   client_n_publish
   rt_init
   rt_shutdown

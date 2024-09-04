@@ -116,27 +116,33 @@ typedef struct {
 
 static ContextSwitchesCounter context_switches_counter(RUSAGE_THREAD);
 
-class ClientToPublishNode : public rclcpp::Node
+class ReadDataRtNode : public rclcpp::Node
 {
 public:
-    explicit ClientToPublishNode();
-    virtual ~ClientToPublishNode();
+    explicit ReadDataRtNode();
+    virtual ~ReadDataRtNode();
 
     void ReadDataRtClient();
-    void TorqueRtStreamPublisher();
-    void ServolRtStreamPublisher();
-    void ServojRtStreamPublisher();
 
 private:  
-    std::thread client_thread_;
-    std::thread publisher_thread_;
-    std::thread publisher2_thread_;
-    std::thread publisher3_thread_;
-    rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Client<dsr_msgs2::srv::ReadDataRt>::SharedPtr client_;
+    std::thread client_thread_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
+};
+
+class TorqueRtNode : public rclcpp::Node
+{
+public:
+    explicit TorqueRtNode();
+    virtual ~TorqueRtNode();
+
+    void TorqueRtStreamPublisher();
+
+private:  
     rclcpp::Publisher<dsr_msgs2::msg::TorqueRtStream>::SharedPtr publisher_;
-    rclcpp::Publisher<dsr_msgs2::msg::ServolRtStream>::SharedPtr publisher2_;
-    rclcpp::Publisher<dsr_msgs2::msg::ServojRtStream>::SharedPtr publisher3_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
     float q[NUMBER_OF_JOINT]={0,0,};
     float q_dot[NUMBER_OF_JOINT]={0,0,};
     float q_d[NUMBER_OF_JOINT]={0,0,90};
@@ -144,19 +150,41 @@ private:
     float trq_g[NUMBER_OF_JOINT]={0,0,};
     float trq_d[NUMBER_OF_JOINT]={0,0,};
 
-    float vel_d[NUMBER_OF_JOINT]={0,0,};
-    float acc_d[NUMBER_OF_JOINT]={0,0,};
+    float kp[NUMBER_OF_JOINT]={1,1,1,1,1,1};
+    float kd[NUMBER_OF_JOINT]={1,1,1,1,1,1};
+};
 
+class ServojRtNode : public rclcpp::Node
+{
+public:
+    explicit ServojRtNode();
+    virtual ~ServojRtNode();
+
+    void ServojRtStreamPublisher();
+
+private:  
+    rclcpp::Publisher<dsr_msgs2::msg::ServojRtStream>::SharedPtr publisher_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
+    
+};
+
+class ServolRtNode : public rclcpp::Node
+{
+public:
+    explicit ServolRtNode();
+    virtual ~ServolRtNode();
+
+    void ServolRtStreamPublisher();
+
+private:  
+    rclcpp::Publisher<dsr_msgs2::msg::ServolRtStream>::SharedPtr publisher_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
     float fTargetPos[6]={1500,3,100,0,0,0};
     float fTargetVel[6]={100,100,100,100,100,100};
     float fTargetAcc[6]={100,100,100,100,100,100};
     float fTargetTime=6;
-
-    float kp[NUMBER_OF_JOINT]={1,1,1,1,1,1};
-    float kd[NUMBER_OF_JOINT]={1,1,1,1,1,1};
-    float ki[NUMBER_OF_JOINT]={1.0,1.0,1.0,1.0,1.0,1.0};
-    float kv[NUMBER_OF_JOINT]={1.0,1.0,1.0,1.0,1.0,1.0};
-    float integral_v_error[NUMBER_OF_JOINT]={0,0,};
 };
 
 struct PlanParam
