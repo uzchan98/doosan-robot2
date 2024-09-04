@@ -1817,6 +1817,31 @@ auto read_data_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::ReadDataRt::
     for(int i = 0; i < 6; i++) {
         res->data.actual_joint_position[i] = temp->actual_joint_position[i];
         // Continue for all data fields as before
+        res->data.actual_joint_position_abs[i] = temp->actual_joint_position_abs[i];
+        res->data.actual_joint_velocity[i] = temp->actual_joint_velocity[i];
+        res->data.actual_joint_velocity_abs[i] = temp->actual_joint_velocity_abs[i];
+        res->data.actual_tcp_position[i] = temp->actual_tcp_position[i];
+        res->data.actual_tcp_velocity[i] = temp->actual_tcp_velocity[i];
+        res->data.actual_flange_position[i] = temp->actual_flange_position[i];
+        res->data.actual_flange_velocity[i] = temp->actual_flange_velocity[i];
+        res->data.actual_motor_torque[i] = temp->actual_motor_torque[i];
+        res->data.actual_joint_torque[i] = temp->actual_joint_torque[i];
+        res->data.raw_joint_torque[i] = temp->raw_joint_torque[i];
+        res->data.raw_force_torque[i] = temp->raw_force_torque[i];
+        res->data.external_joint_torque[i] = temp->external_joint_torque[i];
+        res->data.external_tcp_force[i] = temp->external_tcp_force[i];
+        res->data.target_joint_position[i] = temp->target_joint_position[i];
+        res->data.target_joint_velocity[i] = temp->target_joint_velocity[i];
+        res->data.target_joint_acceleration[i] = temp->target_joint_acceleration[i];
+        res->data.target_motor_torque[i] = temp->target_motor_torque[i];
+        res->data.target_tcp_position[i] = temp->target_tcp_position[i];
+        res->data.target_tcp_velocity[i] = temp->target_tcp_velocity[i];
+        res->data.gravity_torque[i] = temp->gravity_torque[i];
+        res->data.joint_temperature[i] = temp->joint_temperature[i];
+        res->data.goal_joint_position[i] = temp->goal_joint_position[i];
+        res->data.goal_tcp_position[i] = temp->goal_tcp_position[i];
+        res->data.goal_joint_position[i] = temp->goal_joint_position[i];
+        res->data.goal_tcp_position[i] = temp->goal_tcp_position[i];
     }
 
     std_msgs::msg::Float64MultiArray arr;
@@ -1827,8 +1852,47 @@ auto read_data_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::ReadDataRt::
         }
         res->data.coriolis_matrix.push_back(arr);
     }
-    
     // Similar handling for mass_matrix, jacobian_matrix, and other arrays
+    std_msgs::msg::Float64MultiArray arr1;
+    for(int i=0; i<6; i++){
+        arr1.data.clear();
+        for(int j=0; j<6; j++){
+            arr1.data.push_back(temp->mass_matrix[i][j]);
+        }
+        res->data.mass_matrix.push_back(arr1);
+    }
+    std_msgs::msg::Float64MultiArray arr2;
+    for(int i=0; i<6; i++){
+        arr2.data.clear();
+        for(int j=0; j<6; j++){
+            arr2.data.push_back(temp->jacobian_matrix[i][j]);
+        }
+        res->data.jacobian_matrix.push_back(arr2);
+    }
+    res->data.solution_space = temp->solution_space;
+    res->data.singularity = temp->singularity;
+    res->data.operation_speed_rate = temp->operation_speed_rate;
+    res->data.controller_digital_input = temp->controller_digital_input;
+    res->data.controller_digital_output = temp->controller_digital_output;
+
+    for(int i=0; i<2; i++){
+        res->data.controller_analog_input_type[i] = temp->controller_analog_input_type[i];
+        res->data.controller_analog_input[i] = temp->controller_analog_input[i];
+        res->data.controller_analog_output_type[i] = temp->controller_analog_output_type[i];
+        res->data.controller_analog_output[i] = temp->controller_analog_output[i];
+        res->data.external_encoder_strobe_count[i] = temp->external_encoder_strobe_count[i];
+        res->data.external_encoder_count[i] = temp->external_encoder_count[i];
+    }
+
+    res->data.flange_digital_input = temp->flange_digital_input;
+    res->data.flange_digital_output = temp->flange_digital_output;
+
+    for(int i=0; i<4; i++){
+        res->data.flange_analog_input[i] = temp->flange_analog_input[i];
+    }
+    res->data.robot_mode = temp->robot_mode;
+    res->data.robot_state = temp->robot_state;
+    res->data.control_mode = temp->control_mode;
 };
 
 auto write_data_rt_cb = [this](const std::shared_ptr<dsr_msgs2::srv::WriteDataRt::Request> req, 
