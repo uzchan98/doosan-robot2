@@ -1,6 +1,13 @@
 #include "rclcpp/rclcpp.hpp"
 #include "dsr_msgs2/srv/read_data_rt.hpp"
 #include "dsr_msgs2/msg/torque_rt_stream.hpp"
+#include "dsr_msgs2/msg/servol_rt_stream.hpp"
+#include "dsr_msgs2/msg/servoj_rt_stream.hpp"
+
+#include "dsr_realtime_control/rusage_utils.hpp"
+#include "dsr_realtime_control/sched_utils.hpp"
+#include "dsr_realtime_control/command_line_options.hpp"
+#include "dsr_realtime_control/burn_cpu_cycles.hpp"
 
 #include <chrono>
 #include <memory>
@@ -107,27 +114,53 @@ typedef struct {
 
 } RT_STATE, *LPRT_STATE;
 
-class ClientNPublisher : public rclcpp::Node
+static ContextSwitchesCounter context_switches_counter(RUSAGE_THREAD);
+
+class SetOnRtMonitoringDataNode : public rclcpp::Node
 {
 public:
-    explicit ClientNPublisher();
-    virtual ~ClientNPublisher();
+    explicit SetOnRtMonitoringDataNode();
+    virtual ~SetOnRtMonitoringDataNode();
 
-    void client_n_publish();
+    static void OnRtMonitoringData(LPRT_OUTPUT_DATA_LIST tData);
 
 private:  
-    std::thread thread_;
-    rclcpp::Client<dsr_msgs2::srv::ReadDataRt>::SharedPtr client_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
+};
+
+class ReadDataRtNode : public rclcpp::Node
+{
+public:
+    explicit ReadDataRtNode();
+    virtual ~ReadDataRtNode();
+
+    void ReadDataRtAPI();
+
+private:  
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
+};
+
+class TorqueRtNode : public rclcpp::Node
+{
+public:
+    explicit TorqueRtNode();
+    virtual ~TorqueRtNode();
+
+    void TorqueRtStreamPublisher();
+
+private:  
     rclcpp::Publisher<dsr_msgs2::msg::TorqueRtStream>::SharedPtr publisher_;
-    // std::atomic<float> q[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    // std::atomic<float> q_dot[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    // std::atomic<float> trq_g[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float q[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float q_dot[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float q_d[NUMBER_OF_JOINT]={90,0,};
-    float q_dot_d[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float trq_g[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float trq_d[NUMBER_OF_JOINT]={0,0,0,0,0,0};
-    float kp[NUMBER_OF_JOINT]={0.1,0.1,0.1,0.1,0.1,0.1};
-    float kd[NUMBER_OF_JOINT]={0.1,0.1,0.1,0.1,0.1,0.1};
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr context_timer_;
+    float q[NUMBER_OF_JOINT]={0,0,};
+    float q_dot[NUMBER_OF_JOINT]={0,0,};
+    float q_d[NUMBER_OF_JOINT]={0,0,90};
+    float q_dot_d[NUMBER_OF_JOINT]={0,0,};
+    float trq_g[NUMBER_OF_JOINT]={0,0,};
+    float trq_d[NUMBER_OF_JOINT]={0,0,};
+
+    float kp[NUMBER_OF_JOINT]={1,1,1,1,1,1};
+    float kd[NUMBER_OF_JOINT]={1,1,1,1,1,1};
 };

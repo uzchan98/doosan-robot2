@@ -36,8 +36,8 @@ endif()
 add_executable(realtime_control src/realtime_control.cpp)
 ament_target_dependencies(realtime_control rclcpp dsr_msgs2)
 
-add_executable(client_n_publish src/client_n_publish.cpp)
-ament_target_dependencies(client_n_publish rclcpp dsr_msgs2)
+add_executable(rt_api_test src/rt_api_test.cpp)
+ament_target_dependencies(rt_api_test rclcpp dsr_msgs2)
 
 add_executable(rt_init src/rt_init.cpp)
 ament_target_dependencies(rt_init rclcpp dsr_msgs2)
@@ -47,7 +47,7 @@ ament_target_dependencies(rt_shutdown rclcpp dsr_msgs2)
 
 install(TARGETS
   realtime_control
-  client_n_publish
+  rt_api_test
   rt_init
   rt_shutdown
   DESTINATION lib/${PROJECT_NAME}
