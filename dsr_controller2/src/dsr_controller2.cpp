@@ -1717,7 +1717,7 @@ auto set_tool_shape_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetToolSha
 };
   
   
-  m_nh_srv_set_robot_mode             = get_node()->create_service<dsr_msgs2::srv::SetRobotMode>("dsr_test/system/set_robot_mode", set_robot_mode_cb);
+  m_nh_srv_set_robot_mode             = get_node()->create_service<dsr_msgs2::srv::SetRobotMode>("system/set_robot_mode", set_robot_mode_cb);
   m_nh_srv_get_robot_mode             = get_node()->create_service<dsr_msgs2::srv::GetRobotMode>("system/get_robot_mode", get_robot_mode_cb);     
   m_nh_srv_set_robot_system           = get_node()->create_service<dsr_msgs2::srv::SetRobotSystem>("system/set_robot_system", set_robot_system_cb);         
   m_nh_srv_get_robot_system           = get_node()->create_service<dsr_msgs2::srv::GetRobotSystem>("system/get_robot_system", get_robot_system_cb);         
