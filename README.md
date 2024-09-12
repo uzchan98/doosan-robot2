@@ -20,7 +20,7 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
 #### *Doosan Robot ROS2 Package is implemented at ROS2-humble.*
     ### Prerequisite installation elements before package installation
     sudo apt-get update
-    sudo apt-get install -y libpoco-dev libyaml-cpp-dev
+    sudo apt-get install -y libpoco-dev libyaml-cpp-dev wget
     sudo apt-get install -y ros-humble-control-msgs ros-humble-realtime-tools ros-humble-xacro ros-humble-joint-state-publisher-gui ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-gazebo-msgs ros-humble-moveit-msgs dbus-x11 ros-humble-moveit-configs-utils ros-humble-moveit-ros-move-group
 
     ### install gazebo sim
