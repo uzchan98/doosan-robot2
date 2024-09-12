@@ -20,14 +20,14 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
 #### *Doosan Robot ROS2 Package is implemented at ROS2-humble.*
     ### Prerequisite installation elements before package installation
     $ sudo apt-get install libpoco-dev libyaml-cpp-dev
-    $ sudo apt-get install ros-humble-control-msgs ros-humble-realtime-tools ros-humble-xacro ros-humble-joint-state-publisher-gui ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-gazebo-msgs ros-humble-moveit-msgs dbus-x11
+    $ sudo apt-get install ros-humble-control-msgs ros-humble-realtime-tools ros-humble-xacro ros-humble-joint-state-publisher-gui ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-gazebo-msgs ros-humble-moveit-msgs dbus-x11 ros-humble-moveit-configs-utils
 
     ### install gazebo sim
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-    sudo apt-get update
-    sudo apt-get install libignition-gazebo6-dev
-    sudo apt-get install ros-humble-gazebo-ros-pkgs ros-humble-moveit-msgs ros-humble-ros-gz-sim
+    $ sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    $ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+    $ sudo apt-get update
+    $ sudo apt-get install libignition-gazebo6-dev
+    $ sudo apt-get install ros-humble-gazebo-ros-pkgs ros-humble-moveit-msgs ros-humble-ros-gz-sim
     
     ### We assume that you have installed the ros-humble-desktop package using the apt-get command.
     ### We recommand the /home/<user_home>/ros2_ws/src
@@ -36,7 +36,7 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
     $ git clone -b humble-devel https://github.com/doosan-robotics/doosan-robot2.git
     $ git clone -b humble https://github.com/ros-controls/gz_ros2_control
     $ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
-    $ ./install_emulator.sh
+    $ cd doosan-robo2 && ./install_emulator.sh
     $ cd ~/ros2_ws
     $ colcon build
     $ . install/setup.bash
