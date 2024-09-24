@@ -91,10 +91,24 @@ def generate_launch_description():
         'robot_description': Command(['xacro', ' ', xacro_path, '/', LaunchConfiguration('model'), '.urdf.xacro color:=', LaunchConfiguration('color')])           
     }])
     
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("dsr_description2"), "rviz", "default.rviz"]
+    )
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        namespace=LaunchConfiguration('name'),
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        # condition=IfCondition(gui),
+    )
+
     nodes = [
         connection_node,
         control_node,
         robot_state_pub_node,
+        rviz_node
     ]
 
     return LaunchDescription(ARGUMENTS + nodes)
