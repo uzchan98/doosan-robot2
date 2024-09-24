@@ -143,9 +143,15 @@ void ReadDataRtNode::ReadDataRtClient()
                 g_stRTState.actual_joint_position[i] = response->data.actual_joint_position[i];
                 g_stRTState.actual_joint_velocity[i] = response->data.actual_joint_velocity[i];
                 g_stRTState.gravity_torque[i] = response->data.gravity_torque[i];
-                // q[i]    =response->data.actual_joint_position[i];
-                // q_dot[i]=response->data.actual_joint_velocity[i];
-                // trq_g[i]=response->data.gravity_torque[i];
+            }
+            for(int i = 0; i < 6; i++)
+            {
+                for(int j = 0; j < 6; j++)
+                {
+                    g_stRTState.coriolis_matrix[i][j] = response->data.coriolis_matrix[i].data[j];
+                    g_stRTState.mass_matrix[i][j] = response->data.coriolis_matrix[i].data[j];
+                    g_stRTState.jacobian_matrix[i][j] = response->data.coriolis_matrix[i].data[j];
+                }
             }
             // RCLCPP_INFO(this->get_logger(), "g_stRTState updated");
         }
@@ -166,6 +172,14 @@ void TorqueRtNode::TorqueRtStreamPublisher()
         trq_g[i]    =   g_stRTState.gravity_torque[i];
         mtx.unlock(); 
     }
+    // for(int i = 0; i < 6; i++)
+    // {
+    //     for(int j = 0; j < 6; j++)
+    //     {
+    //         trq_c = g_stRTState.coriolis_matrix[i][j];
+    //         trq_m = g_stRTState.mass_matrix[i][j];
+    //     }
+    // }
     for(int i=0; i<6; i++)
     {
         trq_d[i]    =   trq_g[i]+kp[i]*(q_d[i]-q[i])+kd[i]*(q_dot_d[i]-q_dot[i]);  
@@ -183,11 +197,50 @@ void TorqueRtNode::TorqueRtStreamPublisher()
 
 void ServojRtNode::ServojRtStreamPublisher()
 {
+    // ----- your control logic start -----
 
+    // float64[6] pos               # position  
+    // float64[6] vel               # velocity
+    // float64[6] acc               # acceleration
+    // float64    time              # time
+
+    // ----- your control logic end -----
+    
+    auto message = dsr_msgs2::msg::ServojRtStream(); 
+    message.pos={pos_d[0],pos_d[1],pos_d[2],pos_d[3],pos_d[4],pos_d[5]};
+    message.vel={vel_d[0],vel_d[1],vel_d[2],vel_d[3],vel_d[4],vel_d[5]};
+    message.acc={acc_d[0],acc_d[1],acc_d[2],acc_d[3],acc_d[4],acc_d[5]};
+    message.time=time_d;
+
+    if(first_get)
+    {
+        this->publisher_->publish(message);
+        RCLCPP_INFO(this->get_logger(), "ServojRtStream Published");
+    }
 }
 
 void ServolRtNode::ServolRtStreamPublisher()
 {
+    // ----- your control logic start -----
+
+    // float64[6] pos               # position  
+    // float64[6] vel               # velocity
+    // float64[6] acc               # acceleration
+    // float64    time              # time
+
+    // ----- your control logic end -----
+
+    auto message = dsr_msgs2::msg::ServolRtStream(); 
+    message.pos={pos_d[0],pos_d[1],pos_d[2],pos_d[3],pos_d[4],pos_d[5]};
+    message.vel={vel_d[0],vel_d[1],vel_d[2],vel_d[3],vel_d[4],vel_d[5]};
+    message.acc={acc_d[0],acc_d[1],acc_d[2],acc_d[3],acc_d[4],acc_d[5]};
+    message.time=time_d;
+
+    if(first_get)
+    {
+        this->publisher_->publish(message);
+        RCLCPP_INFO(this->get_logger(), "ServolRtStream Published");
+    }
 }
 
 int main(int argc, char **argv)
@@ -199,6 +252,7 @@ int main(int argc, char **argv)
     // cpu_set_t cpuset;
     // CPU_ZERO(&cpuset);
     // CPU_SET(cpu_id, &cpuset);
+    // Pin the main thread to CPU 3 //
 
     // Pin the main thread to CPUs 2 and 3
     uint32_t cpu_bit_mask = 0b1100;
@@ -234,6 +288,8 @@ int main(int argc, char **argv)
             std::cout << "  CPU" << std::to_string(i) << std::endl;
         }
     }
+    // Pin the main thread to CPUs 2 and 3 //
+
     // -------------------- cpu affinity set    -------------------- //
     // -------------------- process scheduling  -------------------- //
     auto options_reader = SchedOptionsReader();
@@ -244,9 +300,7 @@ int main(int argc, char **argv)
     }
     auto options = options_reader.get_options();
     // -------------------- process scheduling  -------------------- //
-    // $ ros2 run dsr_realtime_control realtime_control --sched SCHED_FIFO --priority 80
-    // $ ros2 run dsr_realtime_control realtime_control --sched SCHED_RR --priority 80
-    // $ ps -C realtime_control -L -o tid,comm,rtprio,cls,psr
+
     // -------------------- middleware thread scheduling -------------------- //
     // set_thread_scheduling(pthread_self(), options.policy, options.priority);
     // rclcpp::init(argc,argv);
@@ -280,34 +334,47 @@ int main(int argc, char **argv)
     // rclcpp::shutdown();
     // return 0;
     // -------------------- main thread scheduling -------------------- //
+
     // -------------------- realtime executor scheduling -------------------- //
     rclcpp::init(argc,argv);
+
     auto node1= std::make_shared<ReadDataRtNode>();
-    auto node2= std::make_shared<TorqueRtNode>();
-    // auto node3= std::make_shared<ServojRtNode>();
-    // auto node4= std::make_shared<ServolRtNode>();
-
     rclcpp::executors::SingleThreadedExecutor executor1;
-    rclcpp::executors::SingleThreadedExecutor executor2;
-    // rclcpp::executors::SingleThreadedExecutor executor3;
-    // rclcpp::executors::SingleThreadedExecutor executor4;
     executor1.add_node(node1);
-    executor2.add_node(node2);
-    // executor3.add_node(node3);
-    // executor4.add_node(node4);
     auto executor1_thread = std::thread([&](){executor1.spin();});
-    auto executor2_thread = std::thread([&](){executor2.spin();});
-
     set_thread_scheduling(executor1_thread.native_handle(), options.policy, options.priority);
+
+    auto node2= std::make_shared<TorqueRtNode>();
+    rclcpp::executors::SingleThreadedExecutor executor2;
+    executor2.add_node(node2);
+    auto executor2_thread = std::thread([&](){executor2.spin();});
     set_thread_scheduling(executor2_thread.native_handle(), options.policy, options.priority);
+
+    // auto node3= std::make_shared<ServojRtNode>();
+    // rclcpp::executors::SingleThreadedExecutor executor3;
+    // executor3.add_node(node3);
+    // auto executor3_thread = std::thread([&](){executor3.spin();});
+    // set_thread_scheduling(executor3_thread.native_handle(), options.policy, options.priority);
+
+    // auto node4= std::make_shared<ServolRtNode>();
+    // rclcpp::executors::SingleThreadedExecutor executor4;
+    // executor4.add_node(node4);
+    // auto executor4_thread = std::thread([&](){executor4.spin();});
+    // set_thread_scheduling(executor4_thread.native_handle(), options.policy, options.priority);
     
+    // -------------------- realtime executor scheduling -------------------- //
+
     executor1_thread.join();
     executor2_thread.join();
+    // executor3_thread.join();
+    // executor4_thread.join();
+    
     rclcpp::shutdown();
     return 0;
-    // -------------------- realtime executor scheduling -------------------- //
 }
 
-
-
-            
+// ----------scheduling command example----------//
+// $ ros2 run dsr_realtime_control realtime_control --sched SCHED_FIFO --priority 80
+// $ ros2 run dsr_realtime_control realtime_control --sched SCHED_RR --priority 80
+// $ ps -C realtime_control -L -o tid,comm,rtprio,cls,psr
+// ----------scheduling command example----------//

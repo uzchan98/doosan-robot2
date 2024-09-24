@@ -145,13 +145,13 @@ private:
     rclcpp::TimerBase::SharedPtr context_timer_;
     float q[NUMBER_OF_JOINT]={0,0,};
     float q_dot[NUMBER_OF_JOINT]={0,0,};
-    float q_d[NUMBER_OF_JOINT]={0,0,90};
+    float q_d[NUMBER_OF_JOINT]={0,0,90,0,90,0};
     float q_dot_d[NUMBER_OF_JOINT]={0,0,};
     float trq_g[NUMBER_OF_JOINT]={0,0,};
     float trq_d[NUMBER_OF_JOINT]={0,0,};
 
-    float kp[NUMBER_OF_JOINT]={1,1,1,1,1,1};
-    float kd[NUMBER_OF_JOINT]={1,1,1,1,1,1};
+    float kp[NUMBER_OF_JOINT]={0.01,0.01,0.08,0.01,0.01,0.01};
+    float kd[NUMBER_OF_JOINT]={0.00,0.00,0.00,0.00,0.00,0.00};
 };
 
 class ServojRtNode : public rclcpp::Node
@@ -166,6 +166,10 @@ private:
     rclcpp::Publisher<dsr_msgs2::msg::ServojRtStream>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr context_timer_;
+    float pos_d[NUMBER_OF_JOINT]={0,0,};
+    float vel_d[NUMBER_OF_JOINT]={0,0,};
+    float acc_d[NUMBER_OF_JOINT]={0,0,};
+    float time_d=0.0;
     
 };
 
@@ -181,90 +185,8 @@ private:
     rclcpp::Publisher<dsr_msgs2::msg::ServolRtStream>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr context_timer_;
-    float fTargetPos[6]={1500,3,100,0,0,0};
-    float fTargetVel[6]={100,100,100,100,100,100};
-    float fTargetAcc[6]={100,100,100,100,100,100};
-    float fTargetTime=6;
+    float pos_d[NUMBER_OF_JOINT]={0,0,};
+    float vel_d[NUMBER_OF_JOINT]={0,0,};
+    float acc_d[NUMBER_OF_JOINT]={0,0,};
+    float time_d=0.0;
 };
-
-struct PlanParam
-{
-    float time;
-    
-    float ps[6];
-    float vs[6];
-    float as[6];
-    float pf[6];
-    float vf[6];
-    float af[6];
-
-    float A0[6];
-    float A1[6];
-    float A2[6];
-    float A3[6];
-    float A4[6];
-    float A5[6];
-};
-
-struct TraParam
-{
-    float time;
-
-    float pos[6];
-    float vel[6];
-    float acc[6];
-};
-
-void TrajectoryPlan(PlanParam* plan)
-{
-    float ps[6],vs[6],as[6];
-    float pf[6],vf[6],af[6];
-    float tf;
-
-    tf = plan->time;
-
-    for(int i=0;i<6;i++)
-    {
-        ps[i]=plan->ps[i];
-        vs[i]=plan->vs[i];
-        as[i]=plan->as[i];
-        pf[i]=plan->pf[i];
-        vf[i]=plan->vf[i];
-        af[i]=plan->af[i];
-    }
-
-    for(int i=0;i<6;i++)
-    {
-        plan->A0[i]=ps[i];
-        plan->A1[i]=vs[i];
-        plan->A2[i]=as[i]/2;
-        plan->A3[i]=(20*pf[i]-20*ps[i]-(8*vf[i]+12*vs[i])*tf-(3*as[i]-af[i])*tf*tf)/(2*tf*tf*tf);
-        plan->A4[i]=(30*pf[i]-30*ps[i]+(14*vf[i]+16*vs[i])*tf+(3*as[i]-2*af[i])*tf*tf)/(2*tf*tf*tf*tf);
-        plan->A5[i]=(12*pf[i]-12*ps[i]-(6*vf[i]+6*vs[i])*tf-(as[i]-af[i])*tf*tf)/(2*tf*tf*tf*tf*tf);
-        
-        
-    }
-}
-
-void TrajectoryGenerator(PlanParam *plan, TraParam *tra)
-{
-    double A0[6],A1[6],A2[6],A3[6],A4[6],A5[6];
-    double t = tra->time;
-
-    for(int i=0;i<6;i++)
-    {
-        A0[i] = plan->A0[i];
-        A1[i] = plan->A1[i];
-        A2[i] = plan->A2[i];
-        A3[i] = plan->A3[i];
-        A4[i] = plan->A4[i];
-        A5[i] = plan->A5[i];
-    }
-    for(int i=0;i<6;i++)
-    {
-        tra->pos[i] = A0[i] + A1[i]*t + A2[i]*t*t + A3[i]*t*t*t + A4[i]*t*t*t*t + A5[i]*t*t*t*t*t;
-        tra->pos[i] = A1[i] + 2*A2[i]*t + 3*A3[i]*t*t + 4*A4[i]*t*t*t + 5*A5[i]*t*t*t*t;
-        tra->pos[i] = 2*A2[i] + 6*A3[i]*t + 12*A4[i]*t*t + 20*A5[i]*t*t*t;
-    
-    }
-}
