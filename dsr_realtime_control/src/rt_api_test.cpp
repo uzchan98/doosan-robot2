@@ -175,7 +175,7 @@ void SetOnRtMonitoringDataNode::OnRtMonitoringData(const LPRT_OUTPUT_DATA_LIST t
         g_stRTState.target_tcp_position[i] = tData->target_tcp_position[i];
         g_stRTState.target_tcp_velocity[i] = tData->target_tcp_velocity[i];
         g_stRTState.gravity_torque[i] = tData->gravity_torque[i];
-        g_stRTState.joint_tDataerature[i] = tData->joint_temperature[i];
+        g_stRTState.joint_temperature[i] = tData->joint_temperature[i];
         g_stRTState.goal_joint_position[i] = tData->goal_joint_position[i];
         g_stRTState.goal_tcp_position[i] = tData->goal_tcp_position[i];
         g_stRTState.goal_joint_position[i] = tData->goal_joint_position[i];
@@ -223,13 +223,14 @@ void SetOnRtMonitoringDataNode::OnRtMonitoringData(const LPRT_OUTPUT_DATA_LIST t
         g_stRTState.actual_joint_velocity[i] = tData->actual_joint_velocity[i];
         g_stRTState.gravity_torque[i] = tData->gravity_torque[i];
     }
-    RCLCPP_INFO(rclcpp::get_logger("OnMonitoringData"),"time_stamp:%f",tData->time_stamp);
+    RCLCPP_INFO(rclcpp::get_logger("OnRTMonitoringData"),"time_stamp:%f",tData->time_stamp);
 }
 
 void ReadDataRtNode::ReadDataRtAPI()
 {
+    RCLCPP_INFO(this->get_logger(), "call ReadDataRt API");
     LPRT_OUTPUT_DATA_LIST tData = Drfl.read_data_rt();
-    // RCLCPP_INFO(this->get_logger(), "call ReadDataRt API");
+    RCLCPP_INFO(this->get_logger(), "Received ReadDataRt");
 
     g_stRTState.time_stamp=tData->time_stamp;
     for(int i=0; i<6; i++)
@@ -281,16 +282,15 @@ void TorqueRtNode::TorqueRtAPI()
         mtx.unlock();
         for(int i=0; i<6; i++)
         {
-            // trq_d[i] = trq(i)*Torque_Ratio(i);
             trq_d[i] = trq(i);  
         }
         Drfl.torque_rt(trq_d,0);
         // RCLCPP_INFO(this->get_logger(), "trq_imp[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_imp[0],trq_imp[1],trq_imp[2],trq_imp[3],trq_imp[4],trq_imp[5]);
         // RCLCPP_INFO(this->get_logger(), "trq_c[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_c[0],trq_c[1],trq_c[2],trq_c[3],trq_c[4],trq_c[5]);
         // RCLCPP_INFO(this->get_logger(), "trq_g[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_g[0],trq_g[1],trq_g[2],trq_g[3],trq_g[4],trq_g[5]);
-        RCLCPP_INFO(this->get_logger(), "trq_f_hat[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_f_hat[0],trq_f_hat[1],trq_f_hat[2],trq_f_hat[3],trq_f_hat[4],trq_f_hat[5]);
-        RCLCPP_INFO(this->get_logger(), "trq_e[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_e[0],trq_e[1],trq_e[2],trq_e[3],trq_e[4],trq_e[5]);
-        RCLCPP_INFO(this->get_logger(), "trq_j[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_j[0],trq_j[1],trq_j[2],trq_j[3],trq_j[4],trq_j[5]);
+        // RCLCPP_INFO(this->get_logger(), "trq_f_hat[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_f_hat[0],trq_f_hat[1],trq_f_hat[2],trq_f_hat[3],trq_f_hat[4],trq_f_hat[5]);
+        // RCLCPP_INFO(this->get_logger(), "trq_e[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_e[0],trq_e[1],trq_e[2],trq_e[3],trq_e[4],trq_e[5]);
+        // RCLCPP_INFO(this->get_logger(), "trq_j[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_j[0],trq_j[1],trq_j[2],trq_j[3],trq_j[4],trq_j[5]);
         RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
     }
     else
@@ -400,25 +400,24 @@ int main(int argc, char **argv)
 
     // -------------------- realtime executor scheduling -------------------- //
     rclcpp::init(argc,argv);
+
     // auto node = std::make_shared<SetOnRtMonitoringDataNode>();
-    auto node1= std::make_shared<ReadDataRtNode>();
-    auto node2= std::make_shared<TorqueRtNode>();
-
-
     // rclcpp::executors::SingleThreadedExecutor executor;
-    rclcpp::executors::SingleThreadedExecutor executor1;
-    rclcpp::executors::SingleThreadedExecutor executor2;
-
     // executor.add_node(node);
-    executor1.add_node(node1);
-    executor2.add_node(node2);
-
     // auto executor_thread  = std::thread([&](){executor.spin();});
-    auto executor1_thread = std::thread([&](){executor1.spin();});
-    auto executor2_thread = std::thread([&](){executor2.spin();});
-
     // set_thread_scheduling(executor_thread.native_handle(), options.policy, options.priority);
+    // executor_thread.join();
+
+    auto node1= std::make_shared<ReadDataRtNode>();
+    rclcpp::executors::SingleThreadedExecutor executor1;
+    executor1.add_node(node1);
+    auto executor1_thread = std::thread([&](){executor1.spin();});
     set_thread_scheduling(executor1_thread.native_handle(), options.policy, options.priority);
+
+    auto node2= std::make_shared<TorqueRtNode>();
+    rclcpp::executors::SingleThreadedExecutor executor2;
+    executor2.add_node(node2);
+    auto executor2_thread = std::thread([&](){executor2.spin();});
     set_thread_scheduling(executor2_thread.native_handle(), options.policy, options.priority);
     
     // executor_thread.join();
