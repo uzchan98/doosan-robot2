@@ -96,7 +96,6 @@ typedef struct {
     float                       flange_analog_input[4];
     /* strobe count(increased by 1 when detecting setting edge) */
     unsigned char               external_encoder_strobe_count[2];
-    
     /* external encoder count */
     unsigned int                external_encoder_count[2];
     /* final goal joint position (reserved) */
