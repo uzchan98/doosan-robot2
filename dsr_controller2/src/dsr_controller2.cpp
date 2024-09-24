@@ -1716,6 +1716,7 @@ auto set_tool_shape_cb = [this](const std::shared_ptr<dsr_msgs2::srv::SetToolSha
     return true;
 };
 
+// RT control
 auto connect_rt_control_cb = [this](const std::shared_ptr<dsr_msgs2::srv::ConnectRtControl::Request> req, 
                                     std::shared_ptr<dsr_msgs2::srv::ConnectRtControl::Response> res) -> void 
 {

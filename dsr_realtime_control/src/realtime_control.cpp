@@ -138,6 +138,7 @@ void ReadDataRtNode::ReadDataRtClient()
                 first_get=true;
             }
             RCLCPP_INFO(this->get_logger(), "ReadDataRt Service Response");
+            g_stRTState.time_stamp = response->data.time_stamp;
             for(int i=0; i<6; i++)
             {
                 g_stRTState.actual_joint_position[i] = response->data.actual_joint_position[i];
@@ -153,7 +154,7 @@ void ReadDataRtNode::ReadDataRtClient()
                     g_stRTState.jacobian_matrix[i][j] = response->data.coriolis_matrix[i].data[j];
                 }
             }
-            // RCLCPP_INFO(this->get_logger(), "g_stRTState updated");
+            // RCLCPP_INFO(this->get_logger(), "time stamp : %f",g_stRTState.time_stamp);
         }
         catch(const std::exception &e)
         {
@@ -191,7 +192,7 @@ void TorqueRtNode::TorqueRtStreamPublisher()
     if(first_get)
     {
         this->publisher_->publish(message);
-        RCLCPP_INFO(this->get_logger(), "TorqueRtStream Published");
+        // RCLCPP_INFO(this->get_logger(), "TorqueRtStream Published");
     } 
 }
 
