@@ -10,6 +10,8 @@ find_package(rclcpp REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(dsr_msgs2 REQUIRED)
+find_package(Eigen3 REQUIRED)
+
 
 SET( COMMON_INC_FILES
   ../common2/include
@@ -22,6 +24,7 @@ include_directories(
   include
   ${Boost_INCLUDE_DIRS}
   ${COMMON_INC_FILES}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 LINK_LIBRARIES(DRFL PocoFoundation PocoNet)
@@ -37,7 +40,7 @@ add_executable(realtime_control src/realtime_control.cpp)
 ament_target_dependencies(realtime_control rclcpp dsr_msgs2)
 
 add_executable(rt_api_test src/rt_api_test.cpp)
-ament_target_dependencies(rt_api_test rclcpp dsr_msgs2)
+ament_target_dependencies(rt_api_test rclcpp dsr_msgs2 Eigen3)
 
 add_executable(rt_init src/rt_init.cpp)
 ament_target_dependencies(rt_init rclcpp dsr_msgs2)

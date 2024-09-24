@@ -96,6 +96,7 @@ typedef struct {
     float                       flange_analog_input[4];
     /* strobe count(increased by 1 when detecting setting edge) */
     unsigned char               external_encoder_strobe_count[2];
+    
     /* external encoder count */
     unsigned int                external_encoder_count[2];
     /* final goal joint position (reserved) */
@@ -148,19 +149,11 @@ public:
     explicit TorqueRtNode();
     virtual ~TorqueRtNode();
 
-    void TorqueRtStreamPublisher();
+    void TorqueRtAPI();
+    void CalculateFriction();
 
 private:  
-    rclcpp::Publisher<dsr_msgs2::msg::TorqueRtStream>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr context_timer_;
-    float q[NUMBER_OF_JOINT]={0,0,};
-    float q_dot[NUMBER_OF_JOINT]={0,0,};
-    float q_d[NUMBER_OF_JOINT]={0,0,90};
-    float q_dot_d[NUMBER_OF_JOINT]={0,0,};
-    float trq_g[NUMBER_OF_JOINT]={0,0,};
-    float trq_d[NUMBER_OF_JOINT]={0,0,};
-
-    float kp[NUMBER_OF_JOINT]={1,1,1,1,1,1};
-    float kd[NUMBER_OF_JOINT]={1,1,1,1,1,1};
+    float trq_d[NUMBER_OF_JOINT];
 };
