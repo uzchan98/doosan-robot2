@@ -18,7 +18,7 @@ class GazeboConnection(Node):
         )
         self.publisher = self.create_publisher(
             Float64MultiArray,
-            'gz/dsr_position_controller/commands',
+            'gz/dsr_effort_controller/commands',
             10
         )
         self.buffer = 0

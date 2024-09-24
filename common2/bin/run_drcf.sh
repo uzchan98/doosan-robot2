@@ -29,7 +29,7 @@ if [ "$(docker ps -q -f name=$container_name)" ]; then
     echo "The emulator '$container_name' is already running."
 else
     # run
-    docker run -dit --rm --name $container_name -p $server_port:12345 $emulator_image
+    docker run -dit --rm --net=host --name $container_name -p $server_port:12345 $emulator_image
 fi
 
 if [ `getconf LONG_BIT` = "64" ]

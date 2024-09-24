@@ -33,6 +33,8 @@ set(CONTROLLER_INCLUDE_DEPENDS
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+# find_package(Eigen3 REQUIRED)
+find_package(pinocchio REQUIRED)
 foreach(Dependency IN ITEMS ${HW_IF_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
@@ -94,7 +96,7 @@ target_include_directories(dsr_hardware2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/dsr_hardware2>
 )
-target_link_libraries(dsr_hardware2 yaml-cpp)
+target_link_libraries(dsr_hardware2 yaml-cpp pinocchio::pinocchio)
 ament_target_dependencies(
   dsr_hardware2 
   ${HW_IF_INCLUDE_DEPENDS}

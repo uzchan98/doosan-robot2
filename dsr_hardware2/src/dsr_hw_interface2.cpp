@@ -10,11 +10,18 @@
 #include "DRFS.h"
 #include "ament_index_cpp/get_package_share_directory.hpp"
 
+#include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/algorithm/compute-all-terms.hpp>
+#include <pinocchio/algorithm/model.hpp>
+#include <pinocchio/algorithm/joint-configuration.hpp>
+#include <Eigen/Dense>
+
 // #include "dsr_hardware2/dsr_connection_node2.h"
 #include <boost/thread/thread.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
 #include <rclcpp/logger.hpp>
+#include <rclcpp/node_interfaces/get_node_base_interface.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -26,7 +33,12 @@
 #include <math.h>
 #include "../../common2/include/DRFLEx.h"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
+#include "pinocchio/multibody/fwd.hpp"
 using namespace DRAFramework;
+
+
+using Vec6 = Eigen::Vector<double, 6>;
+
 rclcpp::Node::SharedPtr s_node_ = nullptr;
 rclcpp::Node::SharedPtr m_node_ = nullptr; //ROS2
 CDRFLEx Drfl;
@@ -130,7 +142,21 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     {
         return CallbackReturn::ERROR;
     }
-    sleep(3);
+
+    const std::string rob_desc = info.original_xml;
+    const std::string filepath ="/home/user/robot.urdf";
+    std::ofstream file(filepath);
+    file << info.original_xml;
+    file.close();
+    std::cerr << "building model" << std::endl;
+    pinocchio::urdf::buildModel(filepath, robot_mdl_);
+    std::cerr << "model built" << std::endl;
+
+    robot_data_ = pinocchio::Data(robot_mdl_);
+    RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"), "Prepared pinocchio model"); 
+
+
+    sleep(4);
     control_mode_ = UNKNOWN;
 
     // robot has 6 joints and 2 interfaces
@@ -271,6 +297,8 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         float vel[6] = {100, 100, 100, 100, 100, 100};
         Drfl.set_velj_rt(vel);
 
+        Drfl.change_collision_sensitivity(0.0);
+
         return CallbackReturn::SUCCESS;
     }
     RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"),"    DSRInterface::init() DRCF connecting ERROR!!!");
@@ -383,16 +411,37 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     msg.name.push_back("joint_5");
     msg.name.push_back("joint_6");
 
+    Eigen::VectorXd  q(6);
+    Eigen::VectorXd  qd(6);
+    Eigen::VectorXd  tau(6);
+    
     for(long i = 0; i < 6; i++) {
         // joint_position_[i] = static_cast<double>(Drfl.read_data_rt()->actual_joint_position_abs[i]);
         joint_position_[i] = deg2rad(static_cast<double>(Drfl.read_data_rt()->actual_joint_position[i]));
         joint_velocities_[i] = deg2rad(static_cast<double>(Drfl.read_data_rt()->actual_joint_velocity[i]));
         joint_efforts_[i] = static_cast<double>(Drfl.read_data_rt()->raw_joint_torque[i]);
+        q[i] = joint_position_[i];
+        qd[i] = joint_velocities_[i];
+        tau[i] = joint_efforts_[i];
 
         msg.position.push_back(joint_position_[i]);
         msg.velocity.push_back(joint_velocities_[i]);
         msg.effort.push_back(joint_efforts_[i]);
     }
+
+#if 1
+    pinocchio::computeAllTerms(robot_mdl_, robot_data_, q, qd);
+
+    static uint32_t msgid = 0;
+    if (++msgid % 1000 == 0) {
+        Eigen::VectorXd doosan_grav_torque(6);
+        for(int j = 0; j < 6; j++)
+            doosan_grav_torque(j) = Drfl.read_data_rt()->gravity_torque[j];
+        std::cout << "Doosan grav torque: " << doosan_grav_torque.transpose()  << std::endl;
+        std::cout << "Pinocchio   torque: " << robot_data_.g.transpose()  << std::endl;
+
+    }
+#endif
 
 #ifdef LOG_STATE_MSG
     static uint32_t msgid = 0;
@@ -407,6 +456,25 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
         std::cout << std::endl;
     }
 #endif
+#if 0
+    static uint32_t msgid = 0;
+    if (++msgid % 100) {
+        std::cout << "----\n";
+        std::cout << "Des. pos.: ";
+        for (long i = 0; i < 6; ++i)
+            std::cout << Drfl.read_data_rt()->target_joint_position[i] << ", ";
+        std::cout << std::endl;
+        std::cout << "Des. vel.: ";
+        for (long i = 0; i < 6; ++i)
+            std::cout << Drfl.read_data_rt()->target_joint_velocity[i] << ", ";
+        std::cout << std::endl;
+        // std::cout << "Meas torque: ";
+        // for (long i = 0; i < 6; ++i)
+        //     std::cout << Drfl.read_data_rt()->raw_joint_torque[i] << ", ";
+        // std::cout << std::endl;
+    }
+#endif
+
     m_joint_state_pub_->publish(msg);
     msg.position.clear();
     msg.velocity.clear();
@@ -422,18 +490,19 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
     float accelerations[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
     float torques[6];
 
-#ifdef LOG_STATE_MSG
-    static int id_msgs = 0;
+#ifdef LOG_STATE_MSG 
 #endif
+    static int id_msgs = 0;
 
     switch(control_mode_){
         case POSITION:
             for(long i = 0; i < 6; i++)
                 positions[i] = rad2deg(static_cast<float>(joint_position_command_[i]));
+            positions[5] = Drfl.read_data_rt()->actual_joint_position[5];
             if(!Drfl.servoj_rt(positions, velocities, accelerations, 10.0)) return return_type::ERROR;
 #ifdef LOG_STATE_MSG
             if(++id_msgs % 1000) 
-                std::cout << "pos: " << positions[0] << ", " << positions[1] << ", " << positions[2] << std::endl;
+                std::cout << "pos: " << positions[0] << ", " << positions[1] << ", " << positions[2] << ", " << positions[3] << ", " << positions[4] << ", " << positions[5] <<std::endl;
 #endif
             break;
 
@@ -447,12 +516,26 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
             float grav_torques[6];
             for(long i = 0; i < 6; i++)
                 grav_torques[i] = Drfl.read_data_rt()->gravity_torque[i];
+            for(long i = 0; i < 6; i++)
+                grav_torques[i] = robot_data_.g(i);
             // grav_torques[1] = 0.0; // second axis on H-series robot is automatically compensated
             for(long i = 0; i < 6; i++)
                 torques[i] = static_cast<float>(joint_efforts_command_[i]) + grav_torques[i];
+
+            if(!Drfl.torque_rt(torques, 0.5)) return return_type::ERROR;
+#if 0
+            if(++id_msgs % 1000 == 0) {
+                // std::cout << "torque: " << joint_efforts_command_[0] << ", " << joint_efforts_command_[1] << ", " << joint_efforts_command_[2] << std::endl;
+                std::cout << "Gravity torque: ";
+                for (long j =0; j < 6; ++j) std::cout << grav_torques[j] << ", ";
+                std::cout << std::endl;
+
+                std::cout << "Controlled torque: ";
+                for (long j =0; j < 6; ++j) std::cout << joint_efforts_command_[j] << ", ";
+                std::cout << std::endl;
+            }
+#endif
 #ifdef LOG_STATE_MSG
-            if(++id_msgs % 1000) 
-                std::cout << "torque: " << torques[0] << ", " << torques[1] << ", " << torques[2] << std::endl;
 #endif
             break;
 

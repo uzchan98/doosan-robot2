@@ -66,6 +66,7 @@
     ros__parameters:
       end_effector_link: "link_6"
       robot_base_link: "base_link"
+      ft_sensor_ref_link: "link_6"
       joints:
         - joint_1
         - joint_2
@@ -81,12 +82,12 @@
           error_scale: 0.5
   
       stiffness:
-          trans_x: 3000.0
-          trans_y: 3000.0
-          trans_z: 3000.0
-          rot_x: 100.0
-          rot_y: 100.0
-          rot_z: 100.0 
+          trans_x: 1500.0
+          trans_y: 1500.0
+          trans_z: 1500.0
+          rot_x: 10.0
+          rot_y: 10.0
+          rot_z: 10.0 
 
       state_interfaces:
         - position

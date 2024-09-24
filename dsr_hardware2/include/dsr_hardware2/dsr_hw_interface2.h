@@ -35,6 +35,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
+#include "pinocchio/multibody/fwd.hpp"
 #define _DEBUG_DSR_CTL      1
 
 #define USE_FULL_LIB
@@ -61,6 +62,9 @@
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+
+#include <pinocchio/multibody/model.hpp>
+#include <pinocchio/multibody/data.hpp>
 
 #include "std_msgs/msg/float64_multi_array.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -421,6 +425,10 @@ namespace dsr_hardware2{
             VELOCITY,
             TORQUE
         } control_mode_;
+
+        pinocchio::Model robot_mdl_;
+        pinocchio::Data robot_data_;
+
 
 }
 #ifdef USE_FULL_LIB
