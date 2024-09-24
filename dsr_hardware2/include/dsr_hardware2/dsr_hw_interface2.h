@@ -414,6 +414,14 @@ namespace dsr_hardware2{
         std::vector<double> joint_efforts_;
         std::vector<double> ft_states_;
         std::vector<double> ft_command_;
+        
+
+        rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_cmd_torque;
+        rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_act_joint_torque;
+        rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_raw_joint_torque;
+        rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_ext_joint_torque;
+        float torque_state[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
 
         std::unordered_map<std::string, std::vector<std::string>> joint_interfaces = {
             {"position", {}}, {"velocity", {}}, {"effort", {}}};

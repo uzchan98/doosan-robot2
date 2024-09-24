@@ -7,6 +7,7 @@
 // */
 
 #include "dsr_hardware2/dsr_hw_interface2.h"
+#include "DRFC.h"
 #include "DRFS.h"
 #include "ament_index_cpp/get_package_share_directory.hpp"
 
@@ -22,6 +23,7 @@
 #include <boost/bind.hpp>
 #include <rclcpp/logger.hpp>
 #include <rclcpp/node_interfaces/get_node_base_interface.hpp>
+#include <std_msgs/msg/detail/float64_multi_array__struct.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -58,6 +60,7 @@ int g_nAnalogOutputModeCh1;
 int g_nAnalogOutputModeCh2;
 int m_nVersionDRCF;
 
+bool unitn_log = false;
 
 int nDelay = 5000;
 #define STABLE_BAND_JNT     0.05
@@ -215,6 +218,11 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
     m_node_ = rclcpp::Node::make_shared("dsr_hw_interface_update");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
     m_joint_state_pub_ = m_node_->create_publisher<sensor_msgs::msg::JointState>("joint_states", qos);
+
+    pub_cmd_torque = m_node_->create_publisher<std_msgs::msg::Float64MultiArray>("dbg_commanded_torque", rclcpp::QoS(10));
+    pub_act_joint_torque = m_node_->create_publisher<std_msgs::msg::Float64MultiArray>("dbg_actual_torque", rclcpp::QoS(10));
+    pub_raw_joint_torque = m_node_->create_publisher<std_msgs::msg::Float64MultiArray>("dbg_raw_torque", rclcpp::QoS(10));
+    pub_ext_joint_torque = m_node_->create_publisher<std_msgs::msg::Float64MultiArray>("dbg_external_torque", rclcpp::QoS(10));
     //------------------------------------------------------------------------------
     // await for values from ros parameters
     while(m_host == "")
@@ -294,10 +302,11 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
             return CallbackReturn::ERROR;
         }
         RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"Started RT control");
-        float vel[6] = {100, 100, 100, 100, 100, 100};
-        Drfl.set_velj_rt(vel);
+        // float vel[6] = {100, 100, 100, 100, 100, 100};
+        // Drfl.set_velj_rt(vel);
 
         Drfl.change_collision_sensitivity(0.0);
+        Drfl.set_robot_speed_mode(SPEED_NORMAL_MODE);
 
         return CallbackReturn::SUCCESS;
     }
@@ -392,6 +401,10 @@ DRHWInterface::perform_command_mode_switch(const std::vector<std::string>& start
 
 return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
+    static long unitn_i = 0;
+    unitn_log = (unitn_i % 3000) == 0;
+    unitn_log = false;
+    unitn_i++;
     double now_sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     long int now_ns;
     struct timespec spec;
@@ -429,11 +442,9 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
         msg.effort.push_back(joint_efforts_[i]);
     }
 
-#if 1
     pinocchio::computeAllTerms(robot_mdl_, robot_data_, q, qd);
-
-    static uint32_t msgid = 0;
-    if (++msgid % 1000 == 0) {
+#if 0
+    if (unitn_log) {
         Eigen::VectorXd doosan_grav_torque(6);
         for(int j = 0; j < 6; j++)
             doosan_grav_torque(j) = Drfl.read_data_rt()->gravity_torque[j];
@@ -443,9 +454,8 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     }
 #endif
 
-#ifdef LOG_STATE_MSG
-    static uint32_t msgid = 0;
-    if (++msgid % 100) {
+#if 0
+    if (unitn_log) {
         std::cout << "Set torque: ";
         for (long i = 0; i < 6; ++i)
             std::cout << Drfl.read_data_rt()->target_motor_torque[i] << ", ";
@@ -457,8 +467,7 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
     }
 #endif
 #if 0
-    static uint32_t msgid = 0;
-    if (++msgid % 100) {
+    if (unitn_log) {
         std::cout << "----\n";
         std::cout << "Des. pos.: ";
         for (long i = 0; i < 6; ++i)
@@ -487,12 +496,15 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
 {
     float positions[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
     float velocities[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
-    float accelerations[6] = {-10000, -10000, -10000, -10000, -10000, -10000};
+    float accelerations[6] = {-10000.0, -10000.0, -10000.0, -10000.0, -10000.0, -10000.0};
     float torques[6];
+    float max_velocities[6] = {70.0, 70.0, 70.0, 70.0, 70.0, 70.0};
+    float max_accelerations[6] = {500.0, 500.0, 500.0, 500.0, 500.0, 500.0};
 
-#ifdef LOG_STATE_MSG 
-#endif
     static int id_msgs = 0;
+
+    static bool is_initialiased = false;
+
 
     switch(control_mode_){
         case POSITION:
@@ -500,10 +512,6 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
                 positions[i] = rad2deg(static_cast<float>(joint_position_command_[i]));
             positions[5] = Drfl.read_data_rt()->actual_joint_position[5];
             if(!Drfl.servoj_rt(positions, velocities, accelerations, 10.0)) return return_type::ERROR;
-#ifdef LOG_STATE_MSG
-            if(++id_msgs % 1000) 
-                std::cout << "pos: " << positions[0] << ", " << positions[1] << ", " << positions[2] << ", " << positions[3] << ", " << positions[4] << ", " << positions[5] <<std::endl;
-#endif
             break;
 
         case VELOCITY:
@@ -513,35 +521,112 @@ return_type DRHWInterface::write(const rclcpp::Time &, const rclcpp::Duration &)
             break;
             
         case TORQUE:
+            if(!is_initialiased) {
+                for (int i = 0; i < 6; i++) 
+                    torque_state[i] =Drfl.read_data_rt()->external_joint_torque[i];
+                    // torque_state[i] = static_cast<float>(joint_efforts_command_[i]);
+                Drfl.set_velj_rt(max_velocities);
+                Drfl.set_accj_rt(max_accelerations);
+                is_initialiased = true;
+            }
+        
             float grav_torques[6];
             for(long i = 0; i < 6; i++)
                 grav_torques[i] = Drfl.read_data_rt()->gravity_torque[i];
-            for(long i = 0; i < 6; i++)
-                grav_torques[i] = robot_data_.g(i);
+            // for(long i = 0; i < 6; i++)
+            //     grav_torques[i] = robot_data_.g(i);
             // grav_torques[1] = 0.0; // second axis on H-series robot is automatically compensated
+
+            for (int i = 0; i < 6; ++i) 
+                torque_state[i] += 1e-3*(static_cast<float>(joint_efforts_command_[i]) - torque_state[i]);
             for(long i = 0; i < 6; i++)
                 torques[i] = static_cast<float>(joint_efforts_command_[i]) + grav_torques[i];
+            for(long i = 0; i < 6; i++)
+                torques[i] = torque_state[i] + grav_torques[i];
 
-            if(!Drfl.torque_rt(torques, 0.5)) return return_type::ERROR;
-#if 0
-            if(++id_msgs % 1000 == 0) {
+            for(long i = 0; i < 6; i++)
+                Drfl.read_data_rt()->target_joint_position[i] = Drfl.read_data_rt()->actual_joint_position[i];
+
+            // Drfl.servoj_rt(
+            //         Drfl.read_data_rt()->actual_joint_position,
+            //         Drfl.read_data_rt()->actual_joint_velocity,
+            //         accelerations, 
+            //         00.0
+            //         );
+
+            if(!Drfl.torque_rt(torques, 0.0)) return return_type::ERROR;
+            #if 1
+            if(unitn_log) {
                 // std::cout << "torque: " << joint_efforts_command_[0] << ", " << joint_efforts_command_[1] << ", " << joint_efforts_command_[2] << std::endl;
                 std::cout << "Gravity torque: ";
                 for (long j =0; j < 6; ++j) std::cout << grav_torques[j] << ", ";
                 std::cout << std::endl;
 
-                std::cout << "Controlled torque: ";
+                std::cout << "Commanded torque: ";
                 for (long j =0; j < 6; ++j) std::cout << joint_efforts_command_[j] << ", ";
                 std::cout << std::endl;
+
+                std::cout << "Actual joint torque: ";
+                for (long j =0; j < 6; ++j) std::cout << Drfl.read_data_rt()->actual_joint_torque[j] << ", ";
+                std::cout << std::endl;
+
+                std::cout << "Raw joint torque: ";
+                for (long j =0; j < 6; ++j) std::cout << Drfl.read_data_rt()->raw_joint_torque[j] << ", ";
+                std::cout << std::endl;
+
+                std::cout << "External joint torque: ";
+                for (long j =0; j < 6; ++j) std::cout << Drfl.read_data_rt()->external_joint_torque[j] << ", ";
+                std::cout << std::endl;
+
             }
-#endif
-#ifdef LOG_STATE_MSG
 #endif
             break;
 
         case UNKNOWN:
             break;
     }
+
+    std_msgs::msg::Float64MultiArray msg_cmd_torque;
+    std::transform(
+            torque_state,
+            torque_state+6,
+            std::back_inserter(msg_cmd_torque.data),
+            [](const float& data) -> double {
+                return static_cast<double>(data);
+            });
+    pub_cmd_torque->publish(msg_cmd_torque);
+
+    std_msgs::msg::Float64MultiArray msg_act_torque;
+    std::transform(
+            Drfl.read_data_rt()->actual_joint_torque,
+            Drfl.read_data_rt()->actual_joint_torque+6,
+            std::back_inserter(msg_act_torque.data),
+            [](const float& data) -> double {
+                return static_cast<double>(data);
+            });
+    pub_act_joint_torque->publish(msg_act_torque);
+
+    std_msgs::msg::Float64MultiArray msg_raw_torque;
+    std::transform(
+            Drfl.read_data_rt()->raw_joint_torque,
+            Drfl.read_data_rt()->raw_joint_torque+6,
+            std::back_inserter(msg_raw_torque.data),
+            [](const float& data) -> double {
+                return static_cast<double>(data);
+            });
+    pub_raw_joint_torque->publish(msg_raw_torque);
+
+    std_msgs::msg::Float64MultiArray msg_ext_torque;
+    std::transform(
+            Drfl.read_data_rt()->external_joint_torque,
+            Drfl.read_data_rt()->external_joint_torque+6,
+            std::back_inserter(msg_ext_torque.data),
+            [](const float& data) -> double {
+                return static_cast<double>(data);
+            });
+    pub_ext_joint_torque->publish(msg_ext_torque);
+
+
     return return_type::OK;
 }
 

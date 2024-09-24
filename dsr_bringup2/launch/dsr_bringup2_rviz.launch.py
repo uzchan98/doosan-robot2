@@ -162,8 +162,29 @@ def generate_launch_description():
         event_handler=OnProcessExit(
             target_action=joint_state_broadcaster_spawner,
             on_exit=[robot_controller_spawner],
-        )
     )
+        )
+
+    rqt_node = Node(
+            executable="rqt_controller_manager",
+            package="rqt_controller_manager",
+            )
+    handle_node = Node(
+            package="controller_manager",
+            executable="spawner",
+            arguments=[
+                "motion_control_handle",
+                "-c", "/dsr01/controller_manager",
+                "--activate"
+                ])
+    controller_node = Node(
+            package="controller_manager",
+            executable="spawner",
+            arguments=[
+                "cartesian_impedance_controller",
+                "-c", "/dsr01/controller_manager",
+                "--activate"
+                ])
 
     nodes = [
         connection_node,
@@ -172,6 +193,9 @@ def generate_launch_description():
         robot_controller_spawner,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
+        rqt_node,
+        handle_node,
+        # controller_node,
         # delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 

@@ -78,16 +78,16 @@
       command_interfaces:
         - "effort"
   
-      solver:
-          error_scale: 0.5
+        # solver:
+        #     error_scale: 0.5
   
       stiffness:
-          trans_x: 1500.0
-          trans_y: 1500.0
-          trans_z: 1500.0
-          rot_x: 10.0
-          rot_y: 10.0
-          rot_z: 10.0 
+          trans_x: 500.0
+          trans_y: 500.0
+          trans_z: 500.0
+          rot_x: 1.0
+          rot_y: 1.0
+          rot_z: 1.0 
 
       state_interfaces:
         - position
