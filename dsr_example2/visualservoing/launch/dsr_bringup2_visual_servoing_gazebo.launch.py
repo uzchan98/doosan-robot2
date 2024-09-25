@@ -127,7 +127,7 @@ def generate_launch_description():
 
     rgbd_camera_bridge = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("dsr_visualservoing_ex"), "/launch/rgbd_camera.launch.py"]   
+            [FindPackageShare("visualservoing"), "/launch/rgbd_camera.launch.py"]   
         ),
         launch_arguments={"image_topic": "/rgbd_camera"}.items(),
     )
@@ -190,7 +190,7 @@ def generate_launch_description():
 
     
     included_launch_file_path = os.path.join(
-        get_package_share_directory('dsr_visualservoing_ex'),
+        get_package_share_directory('visualservoing'),
         'launch',
         'dsr_gazebo_visual_servoing.launch.py'
     )

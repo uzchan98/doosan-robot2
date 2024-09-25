@@ -33,7 +33,7 @@ class DetectMarkerGz(Node):
         self.bridge = CvBridge()
         self.aruco_dict = cv.aruco.Dictionary_get(cv.aruco.DICT_4X4_1000)
         self.aruo_params = cv.aruco.DetectorParameters_create()
-        calibration_file = self.get_parameter_or("calibration_file",os.path.join(get_package_share_directory('dsr_visualservoing_ex'), 'config', 'rgbd_camera_gz.yaml'))
+        calibration_file = self.get_parameter_or("calibration_file",os.path.join(get_package_share_directory('visualservoing'), 'config', 'rgbd_camera_gz.yaml'))
 
         with open(calibration_file, "r") as file:
             calib_data = yaml.safe_load(file)

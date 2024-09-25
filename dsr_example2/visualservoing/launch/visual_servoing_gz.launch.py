@@ -12,7 +12,7 @@ def generate_launch_description():
     return LaunchDescription([
         # detect_marker_gz 노드 실행
         Node(
-            package='dsr_visualservoing_ex',
+            package='visualservoing',
             executable='detect_marker_gz',
             name='detect_marker_gz',
             output='screen'
@@ -20,7 +20,7 @@ def generate_launch_description():
         
         # send_pose_servol_gz 노드 실행
         Node(
-            package='dsr_visualservoing_ex',
+            package='visualservoing',
             executable='send_pose_servol_gz',
             name='send_pose_servol_gz',
             output='screen'
