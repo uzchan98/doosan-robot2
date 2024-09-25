@@ -291,7 +291,7 @@ void TorqueRtNode::TorqueRtAPI()
         // RCLCPP_INFO(this->get_logger(), "trq_f_hat[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_f_hat[0],trq_f_hat[1],trq_f_hat[2],trq_f_hat[3],trq_f_hat[4],trq_f_hat[5]);
         // RCLCPP_INFO(this->get_logger(), "trq_e[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_e[0],trq_e[1],trq_e[2],trq_e[3],trq_e[4],trq_e[5]);
         // RCLCPP_INFO(this->get_logger(), "trq_j[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_j[0],trq_j[1],trq_j[2],trq_j[3],trq_j[4],trq_j[5]);
-        RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
+        // RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
     }
     else
     {
