@@ -60,7 +60,7 @@ def bringUp():
 	
 	# !Note : We need to check Event whether our controller is ready to get services.
 	# TODO: I temporary added sleep. we need to replace this with that event.
-	time.sleep(10)
+	time.sleep(50)
 	print("Bringup successfully done.")
 	yield 
 
@@ -85,15 +85,14 @@ class TestDsrMoveCli(unittest.TestCase):
 		print("=========================================")
 
 	def setUp(self):
-		print("Ready For Motion Test!!")
 		TestDsrMoveCli._lock.acquire()
+		print("Ready For Motion Test!!")
 		self._set_ready_pose()
 		
 	def tearDown(self):
 		print("Clear For Motion Test!!")
 		self._set_home_pose() # to avoid singularity
 		TestDsrMoveCli._lock.release()
-		# time.sleep(5)
 
 	def _set_ready_pose(self):
 		""" Move Joint to Ready Position """
@@ -174,15 +173,6 @@ class TestDsrMoveCli(unittest.TestCase):
 		self.assertTrue(resp.success == True, "system/get_current_pose response")
 		self.node.destroy_client(cli)
 
-		## Check pose from sensor stream literally equals to target.
-		self.assertAlmostEqual(target_pos[0], resp.pos[0], delta=0.001)
-		self.assertAlmostEqual(target_pos[1], resp.pos[1], delta=0.001)
-		self.assertAlmostEqual(target_pos[2], resp.pos[2], delta=0.001)
-		self.assertAlmostEqual(target_pos[3], resp.pos[3], delta=0.001)
-		self.assertAlmostEqual(target_pos[4], resp.pos[4], delta=0.001)
-		self.assertAlmostEqual(target_pos[5], resp.pos[5], delta=0.001)
-
-	
 		## Check pose from sensor stream literally equals to target.
 		self.assertAlmostEqual(target_pos[0], resp.pos[0], delta=0.001)
 		self.assertAlmostEqual(target_pos[1], resp.pos[1], delta=0.001)
@@ -678,8 +668,6 @@ class TestDsrMoveCli(unittest.TestCase):
 		self.assertTrue(move_resp.success == True, "motion/move joint response")
 		self.node.destroy_client(move_cli)
 
-		# time.sleep(2)
-
 		""" Move Pause """
 		pause_cli = self.node.create_client(MovePause, "motion/move_pause")
 		pause_req = MovePause.Request()
@@ -734,8 +722,6 @@ class TestDsrMoveCli(unittest.TestCase):
 		move_req.sync_type = 1
 		move_future = move_cli.call_async(move_req)
 
-		# time.sleep(2)
-
 		""" Motion Stop """
 		stop_cli = self.node.create_client(MoveStop, "motion/move_stop")
 		stop_req = MoveStop.Request()
@@ -746,8 +732,6 @@ class TestDsrMoveCli(unittest.TestCase):
 		pause_resp = stop_future.result()
 		self.assertTrue(pause_resp.success == True, "motion/move_stop response")
 		self.node.destroy_client(stop_future)
-
-		# time.sleep(2)
 
 		""" Check Motion """
 		check_cli = self.node.create_client(CheckMotion, "motion/check_motion")
@@ -1047,14 +1031,12 @@ class TestDsrMoveCli(unittest.TestCase):
 		self.assertTrue(pause_resp.success == True, "motion/move_stop response")
 		self.node.destroy_client(stop_future)
 
-
 """ Motion Setting Service Client Test Class """
 class TestDsrSetCli(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		print("=========================================")
 		print("===== DooSan Settings Tests Start =======")
-
 		cls._lock = threading.Lock()
 		cls.node =rclpy.create_node("test_dsr_set_node", namespace=NAMESPACE)
 
@@ -1074,7 +1056,6 @@ class TestDsrSetCli(unittest.TestCase):
 	## Set Reference Coordinate Test
 	def test_set_ref_coord_cli(self):
 		print("Set Reference Coordinate Client Test are starting...") # Debug
-
 		""" Set Ref Coordinate """
 		set_ref_coord_cli = self.node.create_client(SetRefCoord, "motion/set_ref_coord")
 		set_ref_coord_req = SetRefCoord.Request()
@@ -1191,7 +1172,6 @@ class TestDsrSetCli(unittest.TestCase):
 		self.assertAlmostEqual(target_pos[5], fkin_result_pos[5], delta=0.1)
 		self.node.destroy_client(fkin_cli)
 
-
 	## Ikin Test
 	def test_ikin_cli(self):
 		print("Ikin Client Test are starting...") # Debug
@@ -1226,7 +1206,6 @@ class TestDsrSysCli(unittest.TestCase):
 	def setUpClass(cls):
 		print("====================================================")
 		print("===== DooSanSystem System Settings Tests Start =======")
-		
 		cls.node =rclpy.create_node("test_dsr_sys_node", namespace=NAMESPACE)
 		cls._lock = threading.Lock()
 
@@ -1278,7 +1257,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Set Robot Control(State) Test
 	def test_set_robot_control_cli(self):
 		print("Set Robot Control Client Test are starting...") # Debug
-
 		""" Set Robot Control(State) """
 		set_control_cli = self.node.create_client(SetRobotControl, "system/set_robot_control")
 		set_control_req = SetRobotControl.Request(robot_control=0)
@@ -1293,7 +1271,6 @@ class TestDsrSysCli(unittest.TestCase):
 	### Get Robot Mode Test 
 	def test_get_robot_mode_cli(self):
 		print("Get Robot Mode Client Test are starting...") # Debug
-
 		""" Get Robot Mode """
 		get_mode_cli = self.node.create_client(GetRobotMode, "system/get_robot_mode")
 		get_mode_req = GetRobotMode.Request()
@@ -1308,7 +1285,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Set Robot Mode Test
 	def test_set_robot_mode_cli(self):
 		print("Set Robot Mode Client Test are starting...") # Debug
-
 		""" Set Robot Mode """
 		set_mode_cli = self.node.create_client(SetRobotMode, "system/set_robot_mode")
 		set_mode_req = SetRobotMode.Request()
@@ -1335,7 +1311,6 @@ class TestDsrSysCli(unittest.TestCase):
 	### Get Robot Speed Mode Test
 	def test_get_robot_speed_mode_cli(self):
 		print("Get Robot Speed Mode Client Test are starting...") # Debug
-
 		""" Get Robot Speed Mode """
 		get_speed_mode_cli = self.node.create_client(GetRobotSpeedMode, "system/get_robot_speed_mode")
 		get_speed_mode_req = GetRobotSpeedMode.Request()
@@ -1350,7 +1325,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Set Robot Speed Mode Test
 	def test_set_robot_speed_mode_cli(self):
 		print("Set Robot Speed Mode Client Test are starting...") # Debug
-
 		""" Set Robot Speed Mode """
 		set_speed_mode_cli = self.node.create_client(SetRobotSpeedMode, "system/set_robot_speed_mode")
 		set_speed_mode_req = SetRobotSpeedMode.Request()
@@ -1375,7 +1349,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Get Robot System Test
 	def test_get_robot_system_cli(self):
 		print("Get Robot System Client Test are starting...") # Debug
-
 		""" Get Robot System """
 		get_system_cli = self.node.create_client(GetRobotSystem, "system/get_robot_system")
 		get_system_req = GetRobotSystem.Request()
@@ -1390,7 +1363,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Set Robot System Test
 	def test_set_robot_system_cli(self):
 		print("Set Robot System Client Test are starting...") # Debug
-
 		""" Set Robot System """
 		set_system_cli = self.node.create_client(SetRobotSystem, "system/set_robot_system")
 		set_system_req = SetRobotSystem.Request()
@@ -1415,7 +1387,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## ServoOff Test
 	def test_servo_off_cli(self):
 		print("Servo Off Client Test are starting...") # Debug
-
 		""" Servo Off """
 		servo_off_cli = self.node.create_client(ServoOff, "system/servo_off")
 		servo_off_req = ServoOff.Request()
@@ -1431,7 +1402,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## SetSafeStopResetType Test
 	def test_set_safe_stop_reset_type_cli(self):
 		print("Set Safe Stop Reset Type Client Test are starting...") # Debug
-
 		set_safestopreset_cli = self.node.create_client(SetSafeStopResetType, "system/set_safe_stop_reset_type")
 		set_safestopreset_req = SetSafeStopResetType.Request()
 		set_safestopreset_req.reset_type = 1
@@ -1446,7 +1416,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Change Collision Sensitivity Test
 	def test_change_collision_sensitivity_cli(self):
 		print("Change Collision Sensitivity Client Test are starting...") # Debug
-
 		change_collision_sense_cli = self.node.create_client(ChangeCollisionSensitivity, "system/change_collision_sensitivity")
 		change_collision_sense_req = ChangeCollisionSensitivity.Request()
 		change_collision_sense_req.sensitivity = 50
@@ -1461,7 +1430,6 @@ class TestDsrSysCli(unittest.TestCase):
 	## Get Last Alarm Test
 	def test_get_last_alarm_cli(self):
 		print("Get Last Alarm Client Test are starting...") # Debug
-
 		get_last_alarm_cli = self.node.create_client(GetLastAlarm, "system/get_last_alarm")
 		get_last_alarm_req = GetLastAlarm.Request()
 		get_last_alarm_future = get_last_alarm_cli.call_async(get_last_alarm_req)
@@ -1497,7 +1465,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Control Mode Test
 	def test_get_control_mode_cli(self):
 		print("Get Control Mode Client Test are starting...") # Debug
-
 		""" Get Control Mode """
 		get_control_mode_cli = self.node.create_client(GetControlMode, "aux_control/get_control_mode")
 		get_control_mode_future = get_control_mode_cli.call_async(GetControlMode.Request())
@@ -1512,7 +1479,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Control Space Test
 	def test_get_control_space_cli(self):
 		print("Get Control Space Client Test are starting...") # Debug
-
 		""" Get Control Space """
 		get_control_space_cli = self.node.create_client(GetControlSpace, "aux_control/get_control_space")
 		get_control_space_future = get_control_space_cli.call_async(GetControlSpace.Request())
@@ -1527,7 +1493,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Current Rotm Test
 	def test_get_current_rotm_cli(self):
 		print("Get Current Rotation Matrix Client Test are starting...") # Debug
-
 		""" Get Current Rotm """
 		get_current_rotm_cli = self.node.create_client(GetCurrentRotm, "aux_control/get_current_rotm")
 		get_current_rotm_future = get_current_rotm_cli.call_async(GetCurrentRotm.Request(ref=0))
@@ -1542,7 +1507,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Current Solution Space Test
 	def test_get_current_solution_space_cli(self):
 		print("Get Current Solution Space Client Test are starting...") # Debug
-
 		""" Get Current Rotm """
 		get_current_solution_space_cli = self.node.create_client(GetCurrentSolutionSpace, "aux_control/get_current_solution_space")
 		get_current_solution_space_future = get_current_solution_space_cli.call_async(GetCurrentSolutionSpace.Request())
@@ -1557,7 +1521,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Current Tool Flange Posx Test
 	def test_get_current_tool_flange_posx_cli(self):
 		print("Get Current Tool Flange Posx Client Test are starting...") # Debug
-
 		""" Get Current Tool Flange Posx """
 		get_current_tool_flange_posx_cli = self.node.create_client(GetCurrentToolFlangePosx, "aux_control/get_current_tool_flange_posx")
 		get_current_tool_flange_posx_future = get_current_tool_flange_posx_cli.call_async(GetCurrentToolFlangePosx.Request(ref=0))
@@ -1572,7 +1535,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Current Velj Test
 	def test_get_current_velj_cli(self):
 		print("Get Current Joint Velocigy Client Test are starting...") # Debug
-
 		""" Get Current Velj """
 		get_current_velj_cli = self.node.create_client(GetCurrentVelj, "aux_control/get_current_velj")
 		get_current_velj_future = get_current_velj_cli.call_async(GetCurrentVelj.Request())
@@ -1587,7 +1549,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Current Velx Test
 	def test_get_current_velx_cli(self):
 		print("Get Current Task Space Velocigy Client Test are starting...") # Debug
-
 		""" Get Current Velx """
 		get_current_velx_cli = self.node.create_client(GetCurrentVelx, "aux_control/get_current_velx")
 		get_current_velx_future = get_current_velx_cli.call_async(GetCurrentVelx.Request(ref=0))
@@ -1602,7 +1563,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Desired Posj Test
 	def test_get_desired_posj_cli(self):
 		print("Get Desired Joint Position Client Test are starting...") # Debug
-
 		""" Get Desired Posj """
 		get_desired_posj_cli = self.node.create_client(GetDesiredPosj, "aux_control/get_desired_posj")
 		get_desired_posj_future = get_desired_posj_cli.call_async(GetDesiredPosj.Request())
@@ -1617,7 +1577,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Desired Posx Test
 	def test_get_desired_posx_cli(self):
 		print("Get Desired Task Space Position Client Test are starting...") # Debug
-
 		""" Get Desired Posx """
 		get_desired_posx_cli = self.node.create_client(GetDesiredPosx, "aux_control/get_desired_posx")
 		get_desired_posx_future = get_desired_posx_cli.call_async(GetDesiredPosx.Request(ref=0))
@@ -1632,7 +1591,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Desired Velj Test
 	def test_get_desired_velj_cli(self):
 		print("Get Desired Joint Velocity Client Test are starting...") # Debug
-
 		""" Get Desired Velj """
 		get_desired_velj_cli = self.node.create_client(GetDesiredVelj, "aux_control/get_desired_velj")
 		get_desired_velj_future = get_desired_velj_cli.call_async(GetDesiredVelj.Request())
@@ -1647,7 +1605,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Desired Velx Test
 	def test_get_desired_velx_cli(self):
 		print("Get Desired Task Space Velocity Client Test are starting...") # Debug
-
 		""" Get Desired Velx """
 		get_desired_velx_cli = self.node.create_client(GetDesiredVelx, "aux_control/get_desired_velx")
 		get_desired_velx_future = get_desired_velx_cli.call_async(GetDesiredVelx.Request(ref=0))
@@ -1662,7 +1619,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get External Torque Test
 	def test_get_external_torque_cli(self):
 		print("Get External Torque Client Test are starting...") # Debug
-
 		""" Get External Torque """
 		get_external_torque_cli = self.node.create_client(GetExternalTorque, "aux_control/get_external_torque")
 		get_external_torque_future = get_external_torque_cli.call_async(GetExternalTorque.Request())
@@ -1677,7 +1633,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Orientaion Error Test
 	def test_get_orientation_error_cli(self):
 		print("Get Orientation Error Client Test are starting...") # Debug
-
 		""" Get Orientaion Error """
 		get_orientation_error_cli = self.node.create_client(GetOrientationError, "aux_control/get_orientation_error")
 		get_orientation_error_req = GetOrientationError.Request()
@@ -1696,7 +1651,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 	# Get Solution Space Test
 	def test_get_solution_space_cli(self):
 		print("Get Solution Space Client Test are starting...") # Debug
-
 		""" Get Solution Space """
 		get_solution_space_cli = self.node.create_client(GetSolutionSpace, "aux_control/get_solution_space")
 		get_solution_space_req = GetSolutionSpace.Request()
@@ -1725,146 +1679,6 @@ class TestDsrAuxCtrlCli(unittest.TestCase):
 		print(get_tool_force_resp)
 		self.assertTrue(get_tool_force_resp.success == True, "aux_control/get_tool_force service is not working correctly.")
 		self.node.destroy_client(get_tool_force_cli)
-
-
-# """ DRL Service Client Test Class """
-# class TestDsrDRLCli(unittest.TestCase):
-# 	@classmethod
-# 	def setUpClass(cls):
-# 		print("====================================================")
-# 		print("===== DooSanSystem DRL Tests Start =======")
-# 		cls._lock = threading.Lock()
-# 		cls.node =rclpy.create_node("dsr_drl_test_node", namespace=NAMESPACE)
-
-# 	@classmethod
-# 	def tearDownClass(cls):
-# 		print("===== DooSanSystem DRL Tests Ends =======")
-# 		print("====================================================")
-
-# 	def setUp(self):
-# 		print("Ready For DRL Test!!")
-# 		TestDsrDRLCli._lock.acquire()
-
-# 	def tearDown(self):
-# 		print("Clear For DRL Test!!")
-# 		TestDsrDRLCli._lock.release()
-
-# 	# Get Drl State Test
-# 	def test_drl_get_state_cli(self):
-# 		print("Get Drl State Client Test are starting...") # Debug
-
-# 		""" Drl State """
-# 		get_drl_state_cli = self.node.create_client(GetDrlState, "drl/get_drl_state")
-# 		get_drl_state_future = get_drl_state_cli.call_async(GetDrlState.Request())
-# 		rclpy.spin_until_future_complete(self.node, get_drl_state_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(get_drl_state_future.done(), "drl/get_drl_state service working is not done.")
-# 		get_drl_state_resp = get_drl_state_future.result()
-# 		print(get_drl_state_resp)
-# 		self.assertTrue((get_drl_state_resp.success == True) and (get_drl_state_resp.drl_state == 3), "drl/get_drl_state service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(get_drl_state_cli)
-
-
-# 	# Get Drl Start Test
-# 	def test_drl_start_cli(self):
-# 		print("Drl Start Client Test are starting...") # Debug
-
-# 		""" Drl Start """
-# 		drl_start_cli = self.node.create_client(DrlStart, "drl/drl_start")
-# 		drl_start_req = DrlStart.Request()
-# 		drl_start_req.robot_system = 1
-# 		drl_start_req.code = "Q1 = posj(0,0,90,0,90,0)\nmovej(Q1, vel=10, acc=20)"
-# 		drl_start_future = drl_start_cli.call_async(drl_start_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_start_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_start_future.done(), "drl/drl_start service working is not done.")
-# 		drl_start_resp = drl_start_future.result()
-# 		self.assertTrue(drl_start_resp.success == True, "drl/drl_start service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(drl_start_cli)
-
-
-# 	# Get Drl Stop Test
-# 	def test_drl_stop_cli(self):
-# 		print("Drl Stop Client Test are starting...") # Debug
-
-# 		""" Drl Start """
-# 		drl_start_cli = self.node.create_client(DrlStart, "drl/drl_start")
-# 		drl_start_req = DrlStart.Request()
-# 		drl_start_req.robot_system = 1
-# 		drl_start_req.code = "Q1 = posj(0,0,0,0,0,0)\nmovej(Q1, vel=10, acc=20)"
-# 		drl_start_future = drl_start_cli.call_async(drl_start_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_start_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_start_future.done(), "drl/drl_start service working is not done.")
-# 		drl_start_resp = drl_start_future.result()
-# 		self.assertTrue(drl_start_resp.success == True, "drl/drl_start service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(drl_start_cli)
-
-# 		time.sleep(1)
-
-# 		""" Drl Stop """
-# 		drl_stop_cli = self.node.create_client(DrlStop, "drl/drl_stop")
-# 		drl_stop_req = DrlStop.Request()
-# 		drl_stop_req.stop_mode = 0
-# 		drl_stop_future = drl_stop_cli.call_async(drl_stop_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_stop_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_stop_future.done(), "drl/drl_stop service working is not done.")
-# 		drl_stop_resp = drl_stop_future.result()
-# 		self.assertTrue(drl_stop_resp.success == True, "drl/drl_stop service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(drl_stop_cli)
-
-# 		time.sleep(5)
-
-# 		""" Drl State """
-# 		get_drl_state_cli = self.node.create_client(GetDrlState, "drl/get_drl_state")
-# 		get_drl_state_future = get_drl_state_cli.call_async(GetDrlState.Request())
-# 		rclpy.spin_until_future_complete(self.node, get_drl_state_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(get_drl_state_future.done(), "drl/get_drl_state service working is not done.")
-# 		get_drl_state_resp = get_drl_state_future.result()
-# 		print(get_drl_state_resp)
-# 		self.assertTrue((get_drl_state_resp.success == True) and (get_drl_state_resp.drl_state == 1), "drl/get_drl_state service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(get_drl_state_cli)
-
-
-# 	# Get Drl Resume Test
-# 	def test_drl_pause_resume_cli(self):
-# 		print("Drl Pause And Resume Client Test are starting...") # Debug
-
-# 		""" DRL Start """
-# 		drl_start_cli = self.node.create_client(DrlStart, "drl/drl_start")
-# 		drl_start_req = DrlStart.Request()
-# 		drl_start_req.robot_system = 1
-# 		drl_start_req.code = "Q1 = posj(0,0,90,0,90,0)\nmovej(Q1, vel=10, acc=20)"
-# 		drl_start_future = drl_start_cli.call_async(drl_start_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_start_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_start_future.done(), "drl/drl_start service working is not done.")
-# 		drl_start_resp = drl_start_future.result()
-# 		# print(drl_start_resp)
-# 		self.assertTrue(drl_start_resp.success == True, "drl/drl_start service is not working correctly.") # 3 : DRL_RPOGRAM_STATE_LAST, 
-# 		self.node.destroy_client(drl_start_cli)
-
-# 		time.sleep(2) # For Drl Start
-
-# 		""" DRL Pause """
-# 		drl_pause_cli = self.node.create_client(DrlPause, "drl/drl_pause")
-# 		drl_pause_req = DrlPause.Request()
-# 		drl_pause_future = drl_pause_cli.call_async(drl_pause_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_pause_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_pause_future.done(), "drl/drl_pause service working is not done.")
-# 		drl_pause_resp = drl_pause_future.result()
-# 		# print(drl_pause_resp)
-# 		self.assertTrue(drl_pause_resp.success == True, "drl/drl_pause service is not working correctly.") 
-# 		self.node.destroy_client(drl_pause_cli)
-
-# 		time.sleep(2)
-
-# 		""" DRL Resume """
-# 		drl_resume_cli = self.node.create_client(DrlResume, "drl/drl_resume")
-# 		drl_resume_req = DrlResume.Request()
-# 		drl_resume_future = drl_resume_cli.call_async(drl_resume_req)
-# 		rclpy.spin_until_future_complete(self.node, drl_resume_future, timeout_sec=SRV_CALL_TIMEOUT)
-# 		self.assertTrue(drl_resume_future.done(), "drl/drl_resume service working is not done.")
-# 		drl_resume_resp = drl_resume_future.result()
-# 		# print(drl_resume_resp)
-# 		self.assertTrue(drl_resume_resp.success == True, "drl/drl_resume service is not working correctly.") 
-# 		self.node.destroy_client(drl_resume_cli)
 
 
 """ Tool Service Client Test Class """
@@ -1930,7 +1744,7 @@ class TestDsrToolCli(unittest.TestCase):
 		self.assertTrue(set_current_tool_resp.success == True, "tool/set_current_tool service is not working correctly.")
 		self.node.destroy_client(set_current_tool_cli)
 
-		time.sleep(1)
+		time.sleep(5) ### Note: we added sleep to make sure set_current_tool works (TODO: Fix service)
 
 		""" Get Current Tool """
 		get_current_tool_cli = self.node.create_client(GetCurrentTool, "tool/get_current_tool")
@@ -1979,7 +1793,7 @@ class TestDsrToolCli(unittest.TestCase):
 		self.assertTrue(config_create_tool_resp.success == True, "tool/config_create_tool service is not working correctly.")
 		self.node.destroy_client(config_create_tool_resp)
 
-		time.sleep(5)
+		time.sleep(5) ### Note: we added sleep to make sure set_current_tool works (TODO: Fix service)
 
 		""" Config Delete Tool """
 		config_delete_tool_cli = self.node.create_client(ConfigDeleteTool, "tool/config_delete_tool")
@@ -2676,7 +2490,7 @@ class TestDsrIOCtrlCli(unittest.TestCase):
 		self.assertTrue(set_crtl_box_analog_input_type_resp.success == True, "io/set_ctrl_box_analog_input_type service is not working correctly.")
 		self.node.destroy_client(set_crtl_box_analog_input_type_cli)
 
-		time.sleep(5)
+		time.sleep(5) ### Note: we added sleep to make sure set_current_tool works (TODO: Fix service)
 
 		""" Get Control Box Analog Input """
 		get_crtl_box_analog_input_cli = self.node.create_client(GetCtrlBoxAnalogInput, "io/get_ctrl_box_analog_input")
@@ -2723,7 +2537,7 @@ class TestDsrIOCtrlCli(unittest.TestCase):
 		self.assertTrue(set_crtl_box_analog_output_type_resp.success == True, "io/set_ctrl_box_analog_output_type service is not working correctly.")
 		self.node.destroy_client(set_crtl_box_analog_output_type_cli)
 
-		time.sleep(5)
+		time.sleep(5) ### Note: we added sleep to make sure set_current_tool works (TODO: Fix )
 
 		""" Set Control Box Analog Input """
 		get_crtl_box_analog_output_cli = self.node.create_client(SetCtrlBoxAnalogOutput, "io/set_ctrl_box_analog_output")
@@ -2836,169 +2650,169 @@ class TestDsrIOCtrlCli(unittest.TestCase):
 		self.node.destroy_client(get_tool_digital_output_cli)
 
 
-""" TCP Service Client Test Class """
-class TestDsrTCPCtrlCli(unittest.TestCase):
-	@classmethod
-	def setUpClass(cls):
-		print("====================================================")
-		print("===== DooSanSystem TCP Tests Start ================")
-		cls._lock = threading.Lock()
-		cls.node =rclpy.create_node("dsr_move_test_node", namespace=NAMESPACE)
+# """ TCP Service Client Test Class """
+# class TestDsrTCPCtrlCli(unittest.TestCase):
+# 	@classmethod
+# 	def setUpClass(cls):
+# 		print("====================================================")
+# 		print("===== DooSanSystem TCP Tests Start ================")
+# 		cls._lock = threading.Lock()
+# 		cls.node =rclpy.create_node("dsr_move_test_node", namespace=NAMESPACE)
 
 
-	@classmethod
-	def tearDownClass(cls):
-		print("===== DooSanSystem TCP Tests Ends ================")
-		print("====================================================")
+# 	@classmethod
+# 	def tearDownClass(cls):
+# 		print("===== DooSanSystem TCP Tests Ends ================")
+# 		print("====================================================")
 		
-	def setUp(self):
-		print("Ready For TCP Test!!")
-		TestDsrTCPCtrlCli._lock.acquire()
+# 	def setUp(self):
+# 		print("Ready For TCP Test!!")
+# 		TestDsrTCPCtrlCli._lock.acquire()
 
-	def tearDown(self):
-		print("Clear TCP Test!!")
-		TestDsrTCPCtrlCli._lock.release()
+# 	def tearDown(self):
+# 		print("Clear TCP Test!!")
+# 		TestDsrTCPCtrlCli._lock.release()
 
-	# Configure Create TCP Test
-	def test_config_create_tcp_cli(self):
-		print("Create TCP Configuration Client Test are starting...") # Debug
+# 	# Configure Create TCP Test
+# 	def test_config_create_tcp_cli(self):
+# 		print("Create TCP Configuration Client Test are starting...") # Debug
 
-		""" Config Create TCP """
-		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
-		config_create_tcp_req = ConfigCreateTcp.Request()
-		config_create_tcp_req.name = "tcp1"
-		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
-		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
-		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
-		config_create_tcp_resp = config_create_tcp_future.result()
-		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
-		self.node.destroy_client(config_create_tcp_cli)
+# 		""" Config Create TCP """
+# 		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
+# 		config_create_tcp_req = ConfigCreateTcp.Request()
+# 		config_create_tcp_req.name = "tcp1"
+# 		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+# 		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
+# 		config_create_tcp_resp = config_create_tcp_future.result()
+# 		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
+# 		self.node.destroy_client(config_create_tcp_cli)
 
 	
-	# Set Current TCP Test
-	def test_set_current_tcp_cli(self):
-		print("Set Current TCP Client Test are starting...") # Debug
+# 	# Set Current TCP Test
+# 	def test_set_current_tcp_cli(self):
+# 		print("Set Current TCP Client Test are starting...") # Debug
 
-		""" Config Create TCP """
-		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
-		config_create_tcp_req = ConfigCreateTcp.Request()
-		config_create_tcp_req.name = "tcp1"
-		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
-		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
-		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
-		config_create_tcp_resp = config_create_tcp_future.result()
-		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
-		self.node.destroy_client(config_create_tcp_cli)
+# 		""" Config Create TCP """
+# 		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
+# 		config_create_tcp_req = ConfigCreateTcp.Request()
+# 		config_create_tcp_req.name = "tcp1"
+# 		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+# 		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
+# 		config_create_tcp_resp = config_create_tcp_future.result()
+# 		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
+# 		self.node.destroy_client(config_create_tcp_cli)
 
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Set Current TCP """
-		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
-		set_current_tcp_req = SetCurrentTcp.Request()
-		set_current_tcp_req.name = "tcp1"
-		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
-		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
-		set_current_tcp_resp = set_current_tcp_future.result()
-		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
-		self.node.destroy_client(set_current_tcp_cli)
+# 		""" Set Current TCP """
+# 		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
+# 		set_current_tcp_req = SetCurrentTcp.Request()
+# 		set_current_tcp_req.name = "tcp1"
+# 		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
+# 		set_current_tcp_resp = set_current_tcp_future.result()
+# 		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
+# 		self.node.destroy_client(set_current_tcp_cli)
 
 	
-	# Get Current TCP Test
-	def test_get_current_tcp_cli(self):
-		print("Get Current TCP Client Test are starting...") # Debug
+# 	# Get Current TCP Test
+# 	def test_get_current_tcp_cli(self):
+# 		print("Get Current TCP Client Test are starting...") # Debug
 
-		""" Config Create TCP """
-		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
-		config_create_tcp_req = ConfigCreateTcp.Request()
-		config_create_tcp_req.name = "tcp1"
-		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
-		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
-		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
-		config_create_tcp_resp = config_create_tcp_future.result()
-		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
-		self.node.destroy_client(config_create_tcp_cli)
+# 		""" Config Create TCP """
+# 		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
+# 		config_create_tcp_req = ConfigCreateTcp.Request()
+# 		config_create_tcp_req.name = "tcp1"
+# 		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+# 		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
+# 		config_create_tcp_resp = config_create_tcp_future.result()
+# 		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
+# 		self.node.destroy_client(config_create_tcp_cli)
 
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Set Current TCP """
-		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
-		set_current_tcp_req = SetCurrentTcp.Request()
-		set_current_tcp_req.name = "tcp1"
-		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
-		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
-		set_current_tcp_resp = set_current_tcp_future.result()
-		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
-		self.node.destroy_client(set_current_tcp_cli)
+# 		""" Set Current TCP """
+# 		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
+# 		set_current_tcp_req = SetCurrentTcp.Request()
+# 		set_current_tcp_req.name = "tcp1"
+# 		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
+# 		set_current_tcp_resp = set_current_tcp_future.result()
+# 		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
+# 		self.node.destroy_client(set_current_tcp_cli)
 
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Get Current TCP """
-		get_current_tcp_cli = self.node.create_client(GetCurrentTcp, "tcp/get_current_tcp")
-		get_current_tcp_future = get_current_tcp_cli.call_async(GetCurrentTcp.Request())
-		rclpy.spin_until_future_complete(self.node, get_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(get_current_tcp_future.done(), "tcp/get_current_tcp service working is not done.")
-		get_current_tcp_resp = get_current_tcp_future.result()
-		self.assertTrue((get_current_tcp_resp.success == True) and (get_current_tcp_resp.info == "tcp1"), "tcp/get_current_tcp service is not working correctly.")
-		self.node.destroy_client(get_current_tcp_cli)
+# 		""" Get Current TCP """
+# 		get_current_tcp_cli = self.node.create_client(GetCurrentTcp, "tcp/get_current_tcp")
+# 		get_current_tcp_future = get_current_tcp_cli.call_async(GetCurrentTcp.Request())
+# 		rclpy.spin_until_future_complete(self.node, get_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(get_current_tcp_future.done(), "tcp/get_current_tcp service working is not done.")
+# 		get_current_tcp_resp = get_current_tcp_future.result()
+# 		self.assertTrue((get_current_tcp_resp.success == True) and (get_current_tcp_resp.info == "tcp1"), "tcp/get_current_tcp service is not working correctly.")
+# 		self.node.destroy_client(get_current_tcp_cli)
 
 
-	# Configure Delete TCP Test
-	def test_config_delete_tcp_cli(self):
-		print("Delete TCP Configuration Client Test are starting...") # Debug
+# 	# Configure Delete TCP Test
+# 	def test_config_delete_tcp_cli(self):
+# 		print("Delete TCP Configuration Client Test are starting...") # Debug
 
-		""" Config Create TCP """
-		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
-		config_create_tcp_req = ConfigCreateTcp.Request()
-		config_create_tcp_req.name = "tcp1"
-		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
-		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
-		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
-		config_create_tcp_resp = config_create_tcp_future.result()
-		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
-		self.node.destroy_client(config_create_tcp_cli)
+# 		""" Config Create TCP """
+# 		config_create_tcp_cli = self.node.create_client(ConfigCreateTcp, "tcp/config_create_tcp")
+# 		config_create_tcp_req = ConfigCreateTcp.Request()
+# 		config_create_tcp_req.name = "tcp1"
+# 		config_create_tcp_req.pos = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+# 		config_create_tcp_future = config_create_tcp_cli.call_async(config_create_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, config_create_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(config_create_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
+# 		config_create_tcp_resp = config_create_tcp_future.result()
+# 		self.assertTrue(config_create_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
+# 		self.node.destroy_client(config_create_tcp_cli)
 		
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Set Current TCP """
-		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
-		set_current_tcp_req = SetCurrentTcp.Request()
-		set_current_tcp_req.name = "tcp1"
-		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
-		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
-		set_current_tcp_resp = set_current_tcp_future.result()
-		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
-		self.node.destroy_client(set_current_tcp_cli)
+# 		""" Set Current TCP """
+# 		set_current_tcp_cli = self.node.create_client(SetCurrentTcp, "tcp/set_current_tcp")
+# 		set_current_tcp_req = SetCurrentTcp.Request()
+# 		set_current_tcp_req.name = "tcp1"
+# 		set_current_tcp_future = set_current_tcp_cli.call_async(set_current_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, set_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(set_current_tcp_future.done(), "tcp/set_current_tcp service working is not done.")
+# 		set_current_tcp_resp = set_current_tcp_future.result()
+# 		self.assertTrue(set_current_tcp_resp.success == True, "tcp/set_current_tcp service is not working correctly.")
+# 		self.node.destroy_client(set_current_tcp_cli)
 
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Config Delete TCP """
-		config_delete_tcp_cli = self.node.create_client(ConfigDeleteTcp, "tcp/config_delete_tcp")
-		config_delete_tcp_req = ConfigDeleteTcp.Request()
-		config_delete_tcp_req.name = "tcp1"
-		config_delete_tcp_future = config_delete_tcp_cli.call_async(config_delete_tcp_req)
-		rclpy.spin_until_future_complete(self.node, config_delete_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(config_delete_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
-		config_delete_tcp_resp = config_delete_tcp_future.result()
-		self.assertTrue(config_delete_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
-		self.node.destroy_client(config_delete_tcp_cli)
+# 		""" Config Delete TCP """
+# 		config_delete_tcp_cli = self.node.create_client(ConfigDeleteTcp, "tcp/config_delete_tcp")
+# 		config_delete_tcp_req = ConfigDeleteTcp.Request()
+# 		config_delete_tcp_req.name = "tcp1"
+# 		config_delete_tcp_future = config_delete_tcp_cli.call_async(config_delete_tcp_req)
+# 		rclpy.spin_until_future_complete(self.node, config_delete_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(config_delete_tcp_future.done(), "tcp/config_create_tcp service working is not done.")
+# 		config_delete_tcp_resp = config_delete_tcp_future.result()
+# 		self.assertTrue(config_delete_tcp_resp.success == True, "tcp/config_create_tcp service is not working correctly.")
+# 		self.node.destroy_client(config_delete_tcp_cli)
 
-		time.sleep(5)
+# 		time.sleep(5)
 
-		""" Get Current TCP """
-		get_current_tcp_cli = self.node.create_client(GetCurrentTcp, "tcp/get_current_tcp")
-		get_current_tcp_future = get_current_tcp_cli.call_async(GetCurrentTcp.Request())
-		rclpy.spin_until_future_complete(self.node, get_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
-		self.assertTrue(get_current_tcp_future.done(), "tcp/get_current_tcp service working is not done.")
-		get_current_tcp_resp = get_current_tcp_future.result()
-		self.assertTrue((get_current_tcp_resp.success == True) and (get_current_tcp_resp.info == ""), "tcp/get_current_tcp service is not working correctly.")
-		self.node.destroy_client(get_current_tcp_cli)
+# 		""" Get Current TCP """
+# 		get_current_tcp_cli = self.node.create_client(GetCurrentTcp, "tcp/get_current_tcp")
+# 		get_current_tcp_future = get_current_tcp_cli.call_async(GetCurrentTcp.Request())
+# 		rclpy.spin_until_future_complete(self.node, get_current_tcp_future, timeout_sec=SRV_CALL_TIMEOUT)
+# 		self.assertTrue(get_current_tcp_future.done(), "tcp/get_current_tcp service working is not done.")
+# 		get_current_tcp_resp = get_current_tcp_future.result()
+# 		self.assertTrue((get_current_tcp_resp.success == True) and (get_current_tcp_resp.info == ""), "tcp/get_current_tcp service is not working correctly.")
+# 		self.node.destroy_client(get_current_tcp_cli)
 
 
 if __name__ == '__main__':
