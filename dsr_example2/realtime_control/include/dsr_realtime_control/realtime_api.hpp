@@ -14,6 +14,9 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <Eigen/Dense>
+typedef Eigen::Matrix<double, 6, 6> Matrix6f;
+typedef Eigen::Matrix<double, 6, 1> Vector6f;
 
 #include "../../common2/include/DRFLEx.h"
 
@@ -149,6 +152,9 @@ public:
     virtual ~TorqueRtNode();
 
     void TorqueRtAPI();
+    Vector6f GravityCompensation();
+    Vector6f PositionHoldingControl();
+    Vector6f JointImpedanceControl();
     void CalculateFriction();
 
 private:  

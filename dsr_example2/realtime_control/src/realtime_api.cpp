@@ -5,14 +5,13 @@
 
 #include <pthread.h>
 #include <string>
-#include <Eigen/Dense>
+
 
 RT_STATE g_stRTState;
 std::mutex mtx;
 std::atomic_bool first_get(false);
 
-typedef Eigen::Matrix<double, 6, 6> Matrix6f;
-typedef Eigen::Matrix<double, 6, 1> Vector6f;
+// constant variables
 
 Matrix6f J_m{
     {0.0004956, 0, 0, 0, 0, 0},
@@ -25,8 +24,6 @@ Matrix6f J_m{
 Vector6f Gear_Ratio{100,100,100,80,80,80};
 Vector6f Torque_Ratio{0.01,0.01,0.01,0.0125,0.0125,0.0125};
 
-Matrix6f M_hat;
-Matrix6f C_hat;
 Matrix6f M_d{
     {1, 0, 0, 0, 0, 0},
     {0, 1, 0, 0, 0, 0},
@@ -60,12 +57,23 @@ Matrix6f K_o{
     {0, 0, 0, 0, 0, 0.01},
 };
 
+Vector6f deg_q_d{0,0,90,0,90,0};
+Vector6f deg_q_dot_d{0,0,0,0,0,0};
+Vector6f deg_q_ddot_d{0,0,0,0,0,0};
+
+Vector6f q_d{0,0,1.5707963268,0,1.5707963268,0};
+Vector6f q_dot_d{0,0,0,0,0,0};
+Vector6f q_ddot_d{0,0,0,0,0,0};
+// update variables
+
+Matrix6f M_hat;
+Matrix6f C_hat;
+
 Vector6f trq_g;
 Vector6f trq_j;
 Vector6f trq_m;
 Vector6f trq_e;
 
-Vector6f trq_imp;
 Vector6f trq_c;
 Vector6f trq_f_hat{0,0,0,0,0,0};
 
@@ -73,22 +81,11 @@ Vector6f trq;
 
 Vector6f deg_q;
 Vector6f deg_q_dot;
-Vector6f deg_q_d{0,0,90,0,90,0};
-Vector6f deg_q_dot_d{0,0,0,0,0,0};
-Vector6f deg_q_ddot_d{0,0,0,0,0,0};
 
 Vector6f q;
 Vector6f q_dot;
 Vector6f q_dot_prev{0,0,0,0,0,0};
 Vector6f q_ddot;
-
-Vector6f q_d{0,0,1.5707963268,0,1.5707963268,0};
-Vector6f q_dot_d{0,0,0,0,0,0};
-Vector6f q_ddot_d{0,0,0,0,0,0};
-
-// q_d=0.0174532925 * deg_q_d;
-// q_dot_d = 0.0174532925 * deg_q_dot_d;
-// q_ddot_d= 0.0174532925 * deg_q_ddot_d;
 
 using namespace DRAFramework;
 CDRFLEx Drfl;
@@ -228,9 +225,9 @@ void SetOnRtMonitoringDataNode::OnRtMonitoringData(const LPRT_OUTPUT_DATA_LIST t
 
 void ReadDataRtNode::ReadDataRtAPI()
 {
-    RCLCPP_INFO(this->get_logger(), "call ReadDataRt API");
+    // RCLCPP_INFO(this->get_logger(), "call ReadDataRt API");
     LPRT_OUTPUT_DATA_LIST tData = Drfl.read_data_rt();
-    RCLCPP_INFO(this->get_logger(), "Received ReadDataRt");
+    // RCLCPP_INFO(this->get_logger(), "Received ReadDataRt");
 
     g_stRTState.time_stamp=tData->time_stamp;
     for(int i=0; i<6; i++)
@@ -264,44 +261,61 @@ void TorqueRtNode::TorqueRtAPI()
 {
     if(first_get)
     {
-        mtx.lock();
-        q       = deg_q * 0.0174532925;
-        q_dot   = deg_q_dot * 0.0174532925;
-
-        q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-
-        // trq_imp = M_hat*M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-        // trq_f = trq_m - trq_j;   
-        TorqueRtNode::CalculateFriction();
-        trq = J_m * q_ddot + trq_j;
-        // trq = J_m * q_ddot + trq_j + trq_f_hat;
-        // trq = trq_imp + trq_c + trq_g + trq_f + trq_e;
-        // trq = M_hat * q_ddot + C_hat * q_dot + trq_g + trq_c + trq_f + trq_e;
-        // trq = trq_c + trq_g + trq_e;
-        // trq = trq_g;
-        mtx.unlock();
+        // trq = TorqueRtNode::GravityCompensation();
+        // trq = TorqueRtNode::PositionHoldingControl();
+        trq = TorqueRtNode::JointImpedanceControl();
+        
         for(int i=0; i<6; i++)
         {
             trq_d[i] = trq(i);  
         }
         Drfl.torque_rt(trq_d,0);
-        // RCLCPP_INFO(this->get_logger(), "trq_imp[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_imp[0],trq_imp[1],trq_imp[2],trq_imp[3],trq_imp[4],trq_imp[5]);
-        // RCLCPP_INFO(this->get_logger(), "trq_c[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_c[0],trq_c[1],trq_c[2],trq_c[3],trq_c[4],trq_c[5]);
-        // RCLCPP_INFO(this->get_logger(), "trq_g[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_g[0],trq_g[1],trq_g[2],trq_g[3],trq_g[4],trq_g[5]);
-        // RCLCPP_INFO(this->get_logger(), "trq_f_hat[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_f_hat[0],trq_f_hat[1],trq_f_hat[2],trq_f_hat[3],trq_f_hat[4],trq_f_hat[5]);
-        // RCLCPP_INFO(this->get_logger(), "trq_e[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_e[0],trq_e[1],trq_e[2],trq_e[3],trq_e[4],trq_e[5]);
-        // RCLCPP_INFO(this->get_logger(), "trq_j[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_j[0],trq_j[1],trq_j[2],trq_j[3],trq_j[4],trq_j[5]);
         // RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
     }
     else
     {
-        RCLCPP_INFO(this->get_logger(), "data not updated");        
+        RCLCPP_INFO(this->get_logger(), "data not updated yet");        
     }
+}
+Vector6f TorqueRtNode::GravityCompensation()
+{
+    mtx.lock();
+    trq_c = trq_g;
+    mtx.unlock();
+    return trq_c;
+}
+Vector6f TorqueRtNode::PositionHoldingControl()
+{
+    mtx.lock();
+    q       = deg_q * 0.0174532925;
+    q_dot   = deg_q_dot * 0.0174532925;
+
+    q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
+    trq_c = J_m * q_ddot;
+    mtx.unlock();
+
+    return trq_c;
+}
+Vector6f TorqueRtNode::JointImpedanceControl()
+{
+    
+    mtx.lock();
+    q       = deg_q * 0.0174532925;
+    q_dot   = deg_q_dot * 0.0174532925;
+
+    q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
+    mtx.unlock();
+    TorqueRtNode::CalculateFriction();
+    trq_c = J_m * q_ddot + trq_j + trq_f_hat;
+
+    return trq_c;
 }
 void TorqueRtNode::CalculateFriction()
 {
-    trq_f_hat = K_o * (trq_m - trq_j -trq_f_hat) + trq_f_hat + K_o * J_m * (q_dot_prev - q_dot);
+    mtx.lock();
+    trq_f_hat = K_o * (trq_m - trq_j -trq_f_hat)*0.001 + trq_f_hat + K_o * J_m * (q_dot_prev - q_dot);
     q_dot_prev = q_dot;
+    mtx.unlock();
 }
 
 int main(int argc, char **argv)
