@@ -10,7 +10,7 @@
 # Prequiste List
 ## To run the visual servoing example, Have to download these packages and library.
 
-1. [doosan-robot2 (rt-feature branch)](https://github.com/doosan-robotics/doosan-robot2/tree/rt_feature)
+1. [doosan-robot2 (humble-devel branch)](https://github.com/doosan-robotics/doosan-robot2/tree/humble-devel)
 
 2. [ros-gz: gazebo (humble branch)](https://github.com/gazebosim/ros_gz/tree/humble) at humble
 
@@ -18,17 +18,22 @@
 
 ```bash
 pip3 install tf-transformations
+```
+
+or
+
+```bash
 sudo apt install ros-humble-tf-transformations
 ```
 
 ---
-# How to install `dsr_visualservoing_ex` package.
+# How to install `visualservoing` package.
 1. Move to `doosan-robot2` package.
 ```bash
 cd ~/ros2_ws/src/doosan-robot2
 ```
 
-2. Clone `dsr_visualservoing_ex` package.
+2. Clone `visualservoing` package.
 ```bash
 git clone 
 ```
@@ -63,7 +68,10 @@ source install/setup.bash
             │   ├── dsr_hardware2
             │   ├── dsr_moveit2
             │   ├── dsr_msgs2
-            │   ├── dsr_visualservoing_ex
+            │   ├── dsr_example2
+            │   │   ├── visualservoing
+            │   │   ├── realtime_control
+            │   │   ├── example
             │   ├── install_emulator.sh
             │   ├── LICENSE
             │   ├── README.md
@@ -77,21 +85,21 @@ source install/setup.bash
 # How to run visual servoing example
 1. Start the Simulation
 ```bash
-ros2 launch dsr_visualservoing_ex dsr_visual_servoing_gazebo.launch.py
+ros2 launch visualservoing dsr_visual_servoing_gazebo.launch.py
 ```
 
 2. Move to the home position
 ```bash
-ros2 run dsr_visualservoing_ex joint90
+ros2 run visualservoing joint90
 ```
 
 3. Run the visual servoing example, when the cobot reaches the home position ([0, 0, 90, 0, 90, 0]).
 ```bash
-ros2 launch dsr_visualservoing_ex  visual_servoing_gz.launch.py
+ros2 launch visualservoing  visual_servoing_gz.launch.py
 ```
 
 ---
-# Explain the `dsr_visualsesrvoing_ex` package
+# Explain the `visualservoing` package
 ## 1.`dsr_bringup2_visual_servoing_gazebo.launch.py`
 Explain:
 - This is a launch file that utilizes `dsr_bringup2_gazebo.launch.py`.
@@ -165,7 +173,7 @@ sudo apt install ros-humble-image-pipeline
 
 3. Run `camera_calibration.launch.py`:
 ```bash
-ros2 launch dsr_visualsercoing_ex camera_calibration.launch.py
+ros2 launch visualservoing camera_calibration.launch.py
 ```
 
 4. Run the Camera Calibration Node:
