@@ -155,7 +155,6 @@ public:
     Vector6f GravityCompensation();
     Vector6f PositionHoldingControl();
     Vector6f JointImpedanceControl();
-    void CalculateFriction();
 
 private:  
     rclcpp::TimerBase::SharedPtr timer_;

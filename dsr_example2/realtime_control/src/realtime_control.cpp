@@ -165,26 +165,19 @@ void ReadDataRtNode::ReadDataRtClient()
 
 void TorqueRtNode::TorqueRtStreamPublisher()
 {
+    // ----- your control logic start -----
     for(int i=0; i<6; i++)
     {
         mtx.lock();
-        q[i]        =   g_stRTState.actual_joint_velocity[i];
-        q_dot[i]    =   g_stRTState.actual_joint_velocity[i];
         trq_g[i]    =   g_stRTState.gravity_torque[i];
-        mtx.unlock(); 
+        mtx.unlock();
     }
-    // for(int i = 0; i < 6; i++)
-    // {
-    //     for(int j = 0; j < 6; j++)
-    //     {
-    //         trq_c = g_stRTState.coriolis_matrix[i][j];
-    //         trq_m = g_stRTState.mass_matrix[i][j];
-    //     }
-    // }
     for(int i=0; i<6; i++)
     {
-        trq_d[i]    =   trq_g[i]+kp[i]*(q_d[i]-q[i])+kd[i]*(q_dot_d[i]-q_dot[i]);  
+        trq_d[i]    =   trq_g[i];  
     }
+    // ----- your control logic end -----
+
     auto message = dsr_msgs2::msg::TorqueRtStream(); 
     message.tor={trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]};
     message.time=0.0;
@@ -222,14 +215,14 @@ void ServojRtNode::ServojRtStreamPublisher()
 
 void ServolRtNode::ServolRtStreamPublisher()
 {
-    // ----- your control logic start -----
+    // </----- your control logic start ----->
 
     // float64[6] pos               # position  
     // float64[6] vel               # velocity
     // float64[6] acc               # acceleration
     // float64    time              # time
 
-    // ----- your control logic end -----
+    // <----- your control logic end -----/>
 
     auto message = dsr_msgs2::msg::ServolRtStream(); 
     message.pos={pos_d[0],pos_d[1],pos_d[2],pos_d[3],pos_d[4],pos_d[5]};

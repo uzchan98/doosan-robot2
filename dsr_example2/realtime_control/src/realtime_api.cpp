@@ -6,13 +6,11 @@
 #include <pthread.h>
 #include <string>
 
-
 RT_STATE g_stRTState;
 std::mutex mtx;
 std::atomic_bool first_get(false);
 
-// constant variables
-
+// </-------------------- constant variables --------------------> //
 Matrix6f J_m{
     {0.0004956, 0, 0, 0, 0, 0},
     {0, 0.0004956, 0, 0, 0, 0},
@@ -49,12 +47,12 @@ Matrix6f K_d{
     {0, 0, 0, 0, 0, 1},
 };
 Matrix6f K_o{
-    {0.01, 0, 0, 0, 0, 0},
-    {0, 0.01, 0, 0, 0, 0},
-    {0, 0, 0.01, 0, 0, 0},
-    {0, 0, 0, 0.01, 0, 0},
-    {0, 0, 0, 0, 0.01, 0},
-    {0, 0, 0, 0, 0, 0.01},
+    {0.1, 0, 0, 0, 0, 0},
+    {0, 0.1, 0, 0, 0, 0},
+    {0, 0, 0.1, 0, 0, 0},
+    {0, 0, 0, 0.1, 0, 0},
+    {0, 0, 0, 0, 0.1, 0},
+    {0, 0, 0, 0, 0, 0.1},
 };
 
 Vector6f deg_q_d{0,0,90,0,90,0};
@@ -64,8 +62,9 @@ Vector6f deg_q_ddot_d{0,0,0,0,0,0};
 Vector6f q_d{0,0,1.5707963268,0,1.5707963268,0};
 Vector6f q_dot_d{0,0,0,0,0,0};
 Vector6f q_ddot_d{0,0,0,0,0,0};
-// update variables
+// <-------------------- constant variables --------------------/> //
 
+// </-------------------- update variables --------------------> //
 Matrix6f M_hat;
 Matrix6f C_hat;
 
@@ -86,6 +85,7 @@ Vector6f q;
 Vector6f q_dot;
 Vector6f q_dot_prev{0,0,0,0,0,0};
 Vector6f q_ddot;
+// <-------------------- update variables --------------------/> //
 
 using namespace DRAFramework;
 CDRFLEx Drfl;
@@ -249,6 +249,7 @@ void ReadDataRtNode::ReadDataRtAPI()
             C_hat(i,j) = tData->coriolis_matrix[i][j];
         }
     }
+
     if(!first_get)
     {
         first_get=true;
@@ -259,29 +260,29 @@ void ReadDataRtNode::ReadDataRtAPI()
 
 void TorqueRtNode::TorqueRtAPI()
 {
-    if(first_get)
-    {
-        // trq = TorqueRtNode::GravityCompensation();
-        // trq = TorqueRtNode::PositionHoldingControl();
-        trq = TorqueRtNode::JointImpedanceControl();
-        
-        for(int i=0; i<6; i++)
-        {
-            trq_d[i] = trq(i);  
-        }
-        Drfl.torque_rt(trq_d,0);
-        // RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
-    }
-    else
+    if(!first_get)
     {
         RCLCPP_INFO(this->get_logger(), "data not updated yet");        
+        return;
     }
+    // trq = TorqueRtNode::GravityCompensation();
+    // trq = TorqueRtNode::PositionHoldingControl();
+    trq = TorqueRtNode::JointImpedanceControl();
+    
+    for(int i=0; i<6; i++)
+    {
+        trq_d[i] = trq(i);  
+    }
+    Drfl.torque_rt(trq_d,0);
+    RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
 }
 Vector6f TorqueRtNode::GravityCompensation()
 {
     mtx.lock();
+    //control input
     trq_c = trq_g;
     mtx.unlock();
+
     return trq_c;
 }
 Vector6f TorqueRtNode::PositionHoldingControl()
@@ -289,9 +290,10 @@ Vector6f TorqueRtNode::PositionHoldingControl()
     mtx.lock();
     q       = deg_q * 0.0174532925;
     q_dot   = deg_q_dot * 0.0174532925;
-
     q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-    trq_c = J_m * q_ddot;
+
+    //control input
+    trq_c = J_m * q_ddot + trq_j;
     mtx.unlock();
 
     return trq_c;
@@ -302,20 +304,17 @@ Vector6f TorqueRtNode::JointImpedanceControl()
     mtx.lock();
     q       = deg_q * 0.0174532925;
     q_dot   = deg_q_dot * 0.0174532925;
-
     q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-    mtx.unlock();
-    TorqueRtNode::CalculateFriction();
-    trq_c = J_m * q_ddot + trq_j + trq_f_hat;
 
-    return trq_c;
-}
-void TorqueRtNode::CalculateFriction()
-{
-    mtx.lock();
+    //friction observer
     trq_f_hat = K_o * (trq_m - trq_j -trq_f_hat)*0.001 + trq_f_hat + K_o * J_m * (q_dot_prev - q_dot);
     q_dot_prev = q_dot;
+    
+    //control input
+    trq_c = J_m * q_ddot + trq_j + trq_f_hat;
     mtx.unlock();
+    
+    return trq_c;
 }
 
 int main(int argc, char **argv)
@@ -440,15 +439,15 @@ int main(int argc, char **argv)
     rclcpp::shutdown();
     // -------------------- realtime executor scheduling -------------------- //
 
-    // -------------------- RT Shutdown -------------------- // 
+    // </-------------------- RT Shutdown -------------------- > // 
     Drfl.stop_rt_control();
     Drfl.disconnect_rt_control();
-    // -------------------- RT Shutdown -------------------- // 
+    // < -------------------- RT Shutdown --------------------/> // 
     return 0;
 }
             
-// ----------scheduling command example----------//
+// </----------scheduling command example---------- >//
 // $ ros2 run dsr_realtime_control realtime_control --sched SCHED_FIFO --priority 80
 // $ ros2 run dsr_realtime_control realtime_control --sched SCHED_RR --priority 80
 // $ ps -C realtime_control -L -o tid,comm,rtprio,cls,psr
-// ----------scheduling command example----------//
+// < ----------scheduling command example----------/>//
