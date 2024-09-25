@@ -8,7 +8,7 @@ import glob
 import os
 from setuptools import find_packages, setup
 
-package_name = 'dsr_visualservoing_ex'
+package_name = 'visualservoing'
 share_dir = 'share/' + package_name
 
 setup(
@@ -34,16 +34,16 @@ setup(
         'console_scripts': [
                 
                 # Camera_publisher
-                'camera_publisher = dsr_visualservoing_ex.camera_publisher:main',
+                'camera_publisher = visualservoing.camera_publisher:main',
 
                 #Cobot pos: [0, 0, 90, 0, 90, 0]
-                'joint90 = dsr_visualservoing_ex.joint90:main',
+                'joint90 = visualservoing.joint90:main',
 
                 # Visual Servoing @ Gazebo
                 # 마커 좌표 인식 (Gazebo 용도)
-                'detect_marker_gz = dsr_visualservoing_ex.detect_marker_gz:main',
+                'detect_marker_gz = visualservoing.detect_marker_gz:main',
                 # 인식한 마커를 기반으로 Cobot 제어 (Gazebo 용도))
-                'send_pose_servol_gz = dsr_visualservoing_ex.send_pose_servol_gz:main',
+                'send_pose_servol_gz = visualservoing.send_pose_servol_gz:main',
 
 
         ],
