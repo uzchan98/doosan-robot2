@@ -36,7 +36,7 @@ g_node = DR_init.__dsr__node
 
 _robot_id    = DR_init.__dsr__id
 _robot_model = DR_init.__dsr__model
-_srv_name_prefix   = '' #'/' + _robot_id + _robot_model #ROS2  
+_srv_name_prefix   = '' # _robot_id + '/' #ROS2  
 _topic_name_prefix = _srv_name_prefix
 
 print("_robot_id ={0}".format(_robot_id))
@@ -61,7 +61,7 @@ _ros2_get_last_alarm             = g_node.create_client(GetLastAlarm,           
 _ros2_get_current_pose           = g_node.create_client(GetCurrentPose,         _srv_name_prefix +"system/get_current_pose")
 
 #  motion Operations
-_ros2_movej                      = g_node.create_client(MoveJoint,              _srv_name_prefix +"motion/move_joint")
+_ros2_movej                      = g_node.create_client(MoveJoint,              _srv_name_prefix + "motion/move_joint")
 _ros2_movel                      = g_node.create_client(MoveLine,               _srv_name_prefix +"motion/move_line")
 _ros2_movejx                     = g_node.create_client(MoveJointx,             _srv_name_prefix +"motion/move_jointx")
 _ros2_movec                      = g_node.create_client(MoveCircle,             _srv_name_prefix +"motion/move_circle")
@@ -356,8 +356,8 @@ DR_MV_APP_WELD   = 1
 # =============================================================================================
 # global variable
 
-DR_CONFIG_PRT_EXT_RESULT = False
-DR_CONFIG_PRT_RESULT     = False
+DR_CONFIG_PRT_EXT_RESULT = True # False
+DR_CONFIG_PRT_RESULT     = True # False
 
 _g_blend_state  = False
 _g_blend_radius = 0.0
@@ -581,6 +581,9 @@ def set_robot_mode(robot_mode):
         req.robot_mode = robot_mode
 
         #ret = 0 if (srv.success == True) else -1
+        while not _ros2_set_robot_mode.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("Set Robot Mode Service is not available, waiting for service to becom available...")
+
         future = _ros2_set_robot_mode.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -1504,6 +1507,9 @@ def _movej(pos, vel=None, acc=None, time=None, radius=None, mod= DR_MV_MOD_ABS, 
         req.sync_type   = int(_async)
 
         #RRR ret = 0 if (srv.success == True) else -1
+        while not _ros2_movej.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("MoveJ Service is not available, waiting for service to becom available...")
+        
         future = _ros2_movej.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -1514,7 +1520,7 @@ def _movej(pos, vel=None, acc=None, time=None, radius=None, mod= DR_MV_MOD_ABS, 
         else:
             if result == None:
                 ret = -1    
-            else:        
+            else:
                 ret = 0 if (result.success == True) else -1                
     else:   
         ret = PythonMgr.py_movej(_pos, _vel, _acc, _time, _radius, mod, ra, _async)
@@ -1655,6 +1661,9 @@ def _movejx(pos, vel=None, acc=None, time=None, radius=None, ref=None, mod= DR_M
 
         #ret = srv.success
         #ret = 0 if (srv.success == True) else -1
+        while not _ros2_movejx.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("MoveJx Service is not available, waiting for service to becom available...")
+
         future = _ros2_movejx.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -1816,6 +1825,9 @@ def _movel(pos, vel=None, acc=None, time=None, radius=None, ref=None, mod=DR_MV_
         req.sync_type   = int(_async)
 
         #RRR ret = 0 if (srv.success == True) else -1
+        while not _ros2_movel.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("Service is not available, waiting for service to becom available...")
+
         future = _ros2_movel.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -2007,6 +2019,9 @@ def _movec(pos1, pos2, vel=None, acc=None, time=None, radius=None, ref=None, mod
         req.sync_type   = int(_async)
 
         #RRR ret = 0 if (srv.success == True) else -1
+        while not _ros2_movec.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("Service is not available, waiting for service to becom available...")
+
         future = _ros2_movec.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -2549,6 +2564,9 @@ def _move_spiral(rev=10, rmax=10, lmax=0, vel=None, acc=None, time=None, axis=DR
         req.sync_type   = int(_async)
 
         #RRR ret = 0 if (srv.success == True) else -1
+        while not _ros2_move_spiral.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("Service is not available, waiting for service to becom available...")
+
         future = _ros2_move_spiral.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -2646,6 +2664,9 @@ def _move_periodic(amp, period, atime=None, repeat=None, ref=DR_TOOL, _async=0):
         req.sync_type   = int(_async)
 
         #RRR ret = 0 if (srv.success == True) else -1
+        while not _ros2_move_periodic.wait_for_service(timeout_sec=1.0):
+            g_node.get_logger().info("Service is not available, waiting for service to becom available...")
+        
         future = _ros2_move_periodic.call_async(req)
         rclpy.spin_until_future_complete(g_node, future)
 
@@ -5648,6 +5669,7 @@ class CDsrRobot:
             req.robot_mode = robot_mode
 
             #ret = 0 if (srv.success == True) else -1
+            print("self._ros2_set_robot_mode.name ")
             future = self._ros2_set_robot_mode.call_async(req)
             rclpy.spin_until_future_complete(g_node, future)
 
@@ -7066,6 +7088,7 @@ class CDsrRobot:
             req.sync_type   = int(_async)
 
             #RRR ret = 0 if (srv.success == True) else -1
+            
             future = self._ros2_movec.call_async(req)
             rclpy.spin_until_future_complete(g_node, future)
 

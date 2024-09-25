@@ -9,7 +9,9 @@
 # @details
 #
 
+
 import collections
+import collections.abc
 import numpy            #for ROS2 add type ndarray 
 from DR_error2 import *
 
@@ -299,7 +301,7 @@ def dr_form(val):
             if str_val != "[":
                 str_val += ", "
 
-            if isinstance(item, collections.Iterable):
+            if isinstance(item, collections.abc.Iterable):
                 str_val += dr_form(item)
             elif type(item) == int or type(item) == float:
                 str_val += "{0:0.3f}".format(item)
@@ -360,7 +362,7 @@ def get_kargs(kargs, name):
 #
 def is_number(data):
     try:
-        if isinstance(data, collections.Iterable):
+        if isinstance(data, collections.abc.Iterable):
             for item in data:
                 if type(item) == str:
                     return False
