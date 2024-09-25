@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(dsr_realtime_control)
+project(realtime_control)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -14,10 +14,10 @@ find_package(Eigen3 REQUIRED)
 
 
 SET( COMMON_INC_FILES
-  ../common2/include
+  ../../common2/include
 )
 SET( COMMON_LIB_FILES
-  ../common2/lib
+  ../../common2/lib
 )
 
 include_directories(
@@ -36,23 +36,23 @@ else()
   message($ENV{ROS_DISTRO})
 endif()
 
-add_executable(realtime_control src/realtime_control.cpp)
-ament_target_dependencies(realtime_control rclcpp dsr_msgs2)
-
-add_executable(rt_api_test src/rt_api_test.cpp)
-ament_target_dependencies(rt_api_test rclcpp dsr_msgs2 Eigen3)
-
 add_executable(rt_init src/rt_init.cpp)
 ament_target_dependencies(rt_init rclcpp dsr_msgs2)
+
+add_executable(realtime_control src/realtime_control.cpp)
+ament_target_dependencies(realtime_control rclcpp dsr_msgs2)
 
 add_executable(rt_shutdown src/rt_shutdown.cpp)
 ament_target_dependencies(rt_shutdown rclcpp dsr_msgs2)
 
+add_executable(realtime_api src/realtime_api.cpp)
+ament_target_dependencies(realtime_api rclcpp dsr_msgs2 Eigen3)
+
 install(TARGETS
+  rt_init  
   realtime_control
-  rt_api_test
-  rt_init
   rt_shutdown
+  realtime_api
   DESTINATION lib/${PROJECT_NAME}
 )
 

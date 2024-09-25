@@ -18,6 +18,7 @@
 
 ```bash
 pip3 install tf-transformations
+sudo apt install ros-humble-tf-transformations
 ```
 
 ---

@@ -34,6 +34,7 @@ from launch.substitutions import LaunchConfiguration
 
 from launch_ros.actions import Node
 
+WORKSPACENAME = 'doosan_ws'
 
 def generate_launch_description():
 
@@ -44,7 +45,7 @@ def generate_launch_description():
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
         launch_arguments={
             #'gz_args': '-r sensors_demo.sdf'
-            'gz_args': '-r ~/ros2_ws/src/doosan-robot2/dsr_visualservoing_ex/description/camera_calibration.sdf'
+            'gz_args': '-r ~/'+ WORKSPACENAME +'/src/doosan-robot2/dsr_example2/visualservoing/description/camera_calibration.sdf'
 
 
         }.items(),

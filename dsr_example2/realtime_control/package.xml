@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>dsr_realtime_control</name>
+  <name>realtime_control</name>
   <version>0.0.0</version>
   <description> doosan-robot control example using realtime-api of doosan-api </description>
-  <maintainer email="uzchan@doosan.com">uzchan</maintainer>
+  <maintainer email="uzchan98@gmail.com">Jichan You</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

@@ -492,7 +492,7 @@
     <include>
         <pose>1.0 0 0.25 0 0 0</pose>  
         <name>markerbox1</name>
-        <uri>model://doosan-robot2/dsr_visualservoing_ex/description/markerbox1.sdf</uri>
+        <uri>model://doosan-robot2/dsr_example2/visualservoing/description/markerbox1.sdf</uri>
 
     </include>
 
@@ -507,7 +507,7 @@
     <include>
         <pose>0.7 0.5 0.25 0 0 0</pose>  
         <name>markerbox2</name>
-        <uri>model://doosan-robot2/dsr_visualservoing_ex/description/markerbox2.sdf</uri>
+        <uri>model://doosan-robot2/dsr_example2/visualservoing/description/markerbox2.sdf</uri>
     </include>
 
 
@@ -522,7 +522,7 @@
     <include>
         <pose>0.7 -0.5 0.25 0 0 0</pose>  
         <name>markerbox3</name>        
-        <uri>model://doosan-robot2/dsr_visualservoing_ex/description/markerbox3.sdf</uri>
+        <uri>model://doosan-robot2/dsr_example2/visualservoing/description/markerbox3.sdf</uri>
     </include>
 
   </world>

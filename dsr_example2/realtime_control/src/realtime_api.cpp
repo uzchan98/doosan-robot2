@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
-#include "dsr_realtime_control/rt_api_test.hpp"
+#include "dsr_realtime_control/realtime_api.hpp"
 
 #include <pthread.h>
 #include <string>
