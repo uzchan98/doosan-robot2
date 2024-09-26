@@ -121,7 +121,6 @@ void ReadDataRtNode::ReadDataRtClient()
     while(rclcpp::ok())
     {
         rate.sleep();
-        // std::this_thread::sleep_for(std::chrono::microseconds(50));
         if (!client_->wait_for_service(std::chrono::seconds(1)))
         {
             RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
@@ -165,7 +164,7 @@ void ReadDataRtNode::ReadDataRtClient()
 
 void TorqueRtNode::TorqueRtStreamPublisher()
 {
-    // ----- your control logic start -----
+    // </----- your control logic start ----->
     for(int i=0; i<6; i++)
     {
         mtx.lock();
@@ -176,7 +175,7 @@ void TorqueRtNode::TorqueRtStreamPublisher()
     {
         trq_d[i]    =   trq_g[i];  
     }
-    // ----- your control logic end -----
+    // <----- your control logic end -----/>
 
     auto message = dsr_msgs2::msg::TorqueRtStream(); 
     message.tor={trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]};
@@ -191,14 +190,14 @@ void TorqueRtNode::TorqueRtStreamPublisher()
 
 void ServojRtNode::ServojRtStreamPublisher()
 {
-    // ----- your control logic start -----
+    // </----- your control logic start ----->
 
     // float64[6] pos               # position  
     // float64[6] vel               # velocity
     // float64[6] acc               # acceleration
     // float64    time              # time
 
-    // ----- your control logic end -----
+    // <----- your control logic end -----/>
     
     auto message = dsr_msgs2::msg::ServojRtStream(); 
     message.pos={pos_d[0],pos_d[1],pos_d[2],pos_d[3],pos_d[4],pos_d[5]};
@@ -285,7 +284,8 @@ int main(int argc, char **argv)
     // Pin the main thread to CPUs 2 and 3 //
 
     // -------------------- cpu affinity set    -------------------- //
-    // -------------------- process scheduling  -------------------- //
+
+    // -------------------- get process scheduling option -------------------- //
     auto options_reader = SchedOptionsReader();
     if (!options_reader.read_options(argc, argv)) 
     {
@@ -293,67 +293,40 @@ int main(int argc, char **argv)
         return 0;
     }
     auto options = options_reader.get_options();
-    // -------------------- process scheduling  -------------------- //
+    // -------------------- get process scheduling option -------------------- //
 
     // -------------------- middleware thread scheduling -------------------- //
-    // set_thread_scheduling(pthread_self(), options.policy, options.priority);
-    // rclcpp::init(argc,argv);
-    // auto node1= std::make_shared<ReadDataRtNode>();
-    // auto node2= std::make_shared<TorqueRtNode>();
-    // // auto node3= std::make_shared<ServojRtNode>();
-    // // auto node4= std::make_shared<ServolRtNode>();
-    // rclcpp::executors::MultiThreadedExecutor executor;
-    // executor.add_node(node1);
-    // executor.add_node(node2);
-    // // executor.add_node(node3);
-    // // executor.add_node(node4);
-    // executor.spin();
-    // rclcpp::shutdown();
-    // return 0;
-    // -------------------- middleware thread scheduling -------------------- //
-    
-    // -------------------- main thread scheduling -------------------- //
-    // rclcpp::init(argc,argv);
-    // auto node1= std::make_shared<ReadDataRtNode>();
-    // auto node2= std::make_shared<TorqueRtNode>();
-    // auto node3= std::make_shared<ServojRtNode>();
-    // auto node4= std::make_shared<ServolRtNode>();
-    // rclcpp::executors::MultiThreadedExecutor executor;
-    // executor.add_node(node1);
-    // executor.add_node(node2);
-    // // executor.add_node(node3);
-    // // executor.add_node(node4);
-    // set_thread_scheduling(pthread_self(), options.policy, options.priority);
-    // executor.spin();
-    // rclcpp::shutdown();
-    // return 0;
-    // -------------------- main thread scheduling -------------------- //
-
-    // -------------------- realtime executor scheduling -------------------- //
+    set_thread_scheduling(pthread_self(), options.policy, options.priority);
     rclcpp::init(argc,argv);
 
     auto node1= std::make_shared<ReadDataRtNode>();
     rclcpp::executors::SingleThreadedExecutor executor1;
     executor1.add_node(node1);
     auto executor1_thread = std::thread([&](){executor1.spin();});
-    set_thread_scheduling(executor1_thread.native_handle(), options.policy, options.priority);
 
     auto node2= std::make_shared<TorqueRtNode>();
     rclcpp::executors::SingleThreadedExecutor executor2;
     executor2.add_node(node2);
     auto executor2_thread = std::thread([&](){executor2.spin();});
-    set_thread_scheduling(executor2_thread.native_handle(), options.policy, options.priority);
 
     // auto node3= std::make_shared<ServojRtNode>();
     // rclcpp::executors::SingleThreadedExecutor executor3;
     // executor3.add_node(node3);
     // auto executor3_thread = std::thread([&](){executor3.spin();});
-    // set_thread_scheduling(executor3_thread.native_handle(), options.policy, options.priority);
 
     // auto node4= std::make_shared<ServolRtNode>();
     // rclcpp::executors::SingleThreadedExecutor executor4;
     // executor4.add_node(node4);
     // auto executor4_thread = std::thread([&](){executor4.spin();});
+
+
+    // -------------------- middleware thread scheduling -------------------- //
+
+    // -------------------- realtime executor scheduling -------------------- //
+
+    // set_thread_scheduling(executor1_thread.native_handle(), options.policy, options.priority);
+    // set_thread_scheduling(executor2_thread.native_handle(), options.policy, options.priority);
+    // set_thread_scheduling(executor3_thread.native_handle(), options.policy, options.priority);
     // set_thread_scheduling(executor4_thread.native_handle(), options.policy, options.priority);
     
     // -------------------- realtime executor scheduling -------------------- //

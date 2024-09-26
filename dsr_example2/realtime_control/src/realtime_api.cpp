@@ -55,11 +55,11 @@ Matrix6f K_o{
     {0, 0, 0, 0, 0, 0.1},
 };
 
-Vector6f deg_q_d{0,0,90,0,90,0};
+Vector6f deg_q_d{0,0,0,0,0,0};
 Vector6f deg_q_dot_d{0,0,0,0,0,0};
 Vector6f deg_q_ddot_d{0,0,0,0,0,0};
 
-Vector6f q_d{0,0,1.5707963268,0,1.5707963268,0};
+Vector6f q_d{0,0,0,0,0,0};
 Vector6f q_dot_d{0,0,0,0,0,0};
 Vector6f q_ddot_d{0,0,0,0,0,0};
 // <-------------------- constant variables --------------------/> //
@@ -265,9 +265,9 @@ void TorqueRtNode::TorqueRtAPI()
         RCLCPP_INFO(this->get_logger(), "data not updated yet");        
         return;
     }
-    // trq = TorqueRtNode::GravityCompensation();
+    trq = TorqueRtNode::GravityCompensation();
     // trq = TorqueRtNode::PositionHoldingControl();
-    trq = TorqueRtNode::JointImpedanceControl();
+    // trq = TorqueRtNode::JointImpedanceControl();
     
     for(int i=0; i<6; i++)
     {
@@ -375,51 +375,23 @@ int main(int argc, char **argv)
     }
     auto options = options_reader.get_options();
 
-    // -------------------- middleware thread scheduling -------------------- //
-    // set_thread_scheduling(pthread_self(), options.policy, options.priority);
-    // rclcpp::init(argc,argv);
-    // auto node1= std::make_shared<ReadDataRtNode>();
-    // auto node2= std::make_shared<TorqueRtNode>();
-
-    // rclcpp::executors::MultiThreadedExecutor executor;
-    // executor.add_node(node1);
-    // executor.add_node(node2);
-
-    // executor.spin();
-    // rclcpp::shutdown();
-    // return 0;
-    // -------------------- middleware thread scheduling -------------------- //
-    
-    // -------------------- main thread scheduling -------------------- //
-    // rclcpp::init(argc,argv);
-    // auto node1= std::make_shared<ReadDataRtNode>();
-    // auto node2= std::make_shared<TorqueRtNode>();
-
-    // rclcpp::executors::MultiThreadedExecutor executor;
-    // executor.add_node(node1);
-    // executor.add_node(node2);
-
-    // set_thread_scheduling(pthread_self(), options.policy, options.priority);
-    // executor.spin();
-    // rclcpp::shutdown();
-    // return 0;
-    // -------------------- main thread scheduling -------------------- //
-
     // -------------------- RT Initalize -------------------- // 
     assert(Drfl.connect_rt_control("192.168.137.100",12347));
     Drfl.set_rt_control_output("v1.0",0.001,4);
     Drfl.start_rt_control();
     // -------------------- RT Initalize -------------------- // 
 
-    // -------------------- realtime executor scheduling -------------------- //
+    // </-------------------- realtime executor scheduling -------------------- > //
     rclcpp::init(argc,argv);
 
+    // </---------- if you want to acquire data using SetOnRtMonitoringData API, Uncomment this block ---------- > 
     // auto node = std::make_shared<SetOnRtMonitoringDataNode>();
     // rclcpp::executors::SingleThreadedExecutor executor;
     // executor.add_node(node);
     // auto executor_thread  = std::thread([&](){executor.spin();});
     // set_thread_scheduling(executor_thread.native_handle(), options.policy, options.priority);
     // executor_thread.join();
+    // < ---------- if you want to acquire data using SetOnRtMonitoringData API, Uncomment this block ----------/>
 
     auto node1= std::make_shared<ReadDataRtNode>();
     rclcpp::executors::SingleThreadedExecutor executor1;
@@ -437,7 +409,7 @@ int main(int argc, char **argv)
     executor1_thread.join();
     executor2_thread.join();
     rclcpp::shutdown();
-    // -------------------- realtime executor scheduling -------------------- //
+    // < -------------------- realtime executor scheduling --------------------/> //
 
     // </-------------------- RT Shutdown -------------------- > // 
     Drfl.stop_rt_control();
