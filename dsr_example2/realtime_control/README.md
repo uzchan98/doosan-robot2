@@ -31,14 +31,14 @@ Tutorial for Realtime-Ubuntu can be found at the following link:
 
 ### Option 1:
 
-![realtime_api_communication_structure](.assets\realtime_api_communication_structure.png)
+![realtime_api_communication_structure](assets/realtime_api_communication_structure.png)
 
 1. Call **ReadData API** at 3000 Hz (0.333 ms).
 2. Call **TorqueRt API** at 1000Hz (1 ms).
 
 ### Option 2: 
 
-![realtime_control_communication_structure](.assets\realtime_control_communication_structure.png)
+![realtime_control_communication_structure](assets/realtime_control_communication_structure.png)
 
 1. Request **ReadData service** at 3000 Hz (0.333 ms).
 2. Publish **TorqueRtStream Topic** at 1000 Hz (1 ms).
@@ -101,7 +101,6 @@ $ ros2 run realtime_control rt_shutdown
 $ ros2 run realtime_control realtime_api
 ```
 
-![ReadDataRT_API_Response_30초](.assets\ReadDataRT_API_Response_30초.png)
 
 A 30-seconds test results showed a response time of up to 1.6 ms.
 
@@ -113,7 +112,7 @@ A 30-seconds test results showed a response time of up to 1.6 ms.
 $ ros2 run realtime_control realtime_api --sched SCHED_FIFO --priority 90
 ```
 
-![ReadDataRT_API_Sched_Response_30초](.assets\ReadDataRT_API_Sched_Response_30초.png)
+![ReadDataRT_API_Sched_Response_30sec](assets/ReadDataRT_API_Sched_Response_30sec.png)
 
 A 30-seconds test results showed a response time of up to 0.11 ms.
 
@@ -128,7 +127,6 @@ $ ros2 run realtime_control rt_init
 $ ros2 run realtime_control realtime_control
 ```
 
-![ReadDataRT_Service_Response_15초](.assets\ReadDataRT_Service_Response_15초.png)
 A 30-seconds test results showed a response time of up to 0.13 ms.
 
 **Not suitable for torque control.**
@@ -140,7 +138,6 @@ $ ros2 run realtime_control rt_init
 $ ros2 run realtime_control realtime_control --sched SCHED_FIFO --priority 90
 ```
 
-![ReadDataRT_Service_Sched_Response_15초](.assets\ReadDataRT_Service_Sched_Response_15초.png)
 
 The overall response has improved.
 A 30-seconds test results showed a response time of up to 0.13 ms.

@@ -17,15 +17,14 @@ def main(args=None):
 
         DR_init.__dsr__node = node
 
-        sys.path.append("/home/gossi/ros2_ws/install/common2/lib/common2/imp")
-
         try:
                 from DSR_ROBOT2 import print_ext_result, movej, movel, movec, move_periodic, move_spiral, set_velx, set_accx, DR_BASE, DR_TOOL, DR_AXIS_X, DR_MV_MOD_ABS
                 # print_result("Import DSR_ROBOT2 Success!")
         except ImportError as e:
                 print(f"Error importing DSR_ROBOT2 : {e}")
                 return
-
+        #################
+        ### Set values ##
         set_velx(30, 20)
         set_accx(60, 40)
 
@@ -74,6 +73,8 @@ def main(args=None):
         x04 = [423.6, 34.5, 351.2, 81.3, -180.0, 81.3]
         x0204c = [x02, x04]
 
+        ###########################
+        ### A variety of motions ##
         while rclpy.ok():
                 movej(JReady, v=20, a=20)
 

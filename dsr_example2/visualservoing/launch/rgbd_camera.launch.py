@@ -45,7 +45,7 @@ def generate_launch_description():
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
         launch_arguments={
             #'gz_args': '-r sensors_demo.sdf'
-            'gz_args': '-r ~/doosan_ws/src/doosan-robot2/dsr_example2/visualservoing/description/visual_servoing.sdf'
+            'gz_args': '-r /workspace/doosan_ws/src/doosan-robot2/dsr_example2/visualservoing/description/visual_servoing.sdf'
 
         }.items(),
     )
