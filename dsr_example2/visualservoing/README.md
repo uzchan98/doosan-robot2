@@ -12,79 +12,20 @@ This package provides the visual servoing example using Doosan robots in the ROS
 # Prequiste List
 ## To run the visual servoing example, Have to download these packages and library.
 
-1. [doosan-robot2 (rt-feature branch)](https://github.com/doosan-robotics/doosan-robot2/tree/rt_feature)
+1. [ros-gz: gazebo (humble branch)](https://github.com/gazebosim/ros_gz/tree/humble) at humble
 
-2. [ros-gz: gazebo (humble branch)](https://github.com/gazebosim/ros_gz/tree/humble) at humble
-
-3. `tf-transformations`
-
-```bash
-pip3 install tf-transformations
-```
-
-or
 
 ```bash
 sudo apt install ros-humble-tf-transformations
 ```
 
 ---
-# How to install `dsr_visualservoing_ex` package.
-1. Move to `doosan-robot2` package.
-```bash
-cd ~/ros2_ws/src/doosan-robot2
-```
-
-2. Clone `dsr_visualservoing_ex` package.
-```bash
-git clone 
-```
-
-3. Install dependency
-```bash
-cd ~/ros2_ws
-rosdep update
-rosdep install --from-paths src --ignore-src -r -y
-```
-
-4. Build the workspace
-```bash
-colcon build
-source install/setup.bash
-```
-
-## Directory Structure after Build:
-```bash
-├── user
-    ├── ros2_ws
-        ├── build
-        ├── install
-        ├── log
-        ├── src
-            ├── doosan-robot2
-            │   ├── common2
-            │   ├── dsr_bringup2
-            │   ├── dsr_controller2
-            │   ├── dsr_description2
-            │   ├── dsr_gazebo2
-            │   ├── dsr_hardware2
-            │   ├── dsr_moveit2
-            │   ├── dsr_msgs2
-            │   ├── dsr_visualservoing_ex
-            │   ├── install_emulator.sh
-            │   ├── LICENSE
-            │   ├── README.md
-            │   ├── uninstall_emulator.sh
-            ├── gz_ros2_control
-            ├── ros_gz
-```
 
 
----
 # How to run visual servoing example
 1. Start the Simulation
 ```bash
-ros2 launch dsr_visualservoing_ex dsr_visual_servoing_gazebo.launch.py
+ros2 launch visualservoing dsr_bringup2_visual_servoing_gazebo.launch.py
 ```
 
 2. Move to the home position

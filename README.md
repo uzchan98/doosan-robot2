@@ -28,7 +28,7 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
     wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt-get update
     sudo apt-get install -y libignition-gazebo6-dev
-    sudo apt-get install -y ros-humble-gazebo-ros-pkgs ros-humble-moveit-msgs ros-humble-ros-gz-sim
+    sudo apt-get install -y ros-humble-gazebo-ros-pkgs ros-humble-moveit-msgs ros-humble-ros-gz-sim ros-humble-ros-gz
     
     ### We assume that you have installed the ros-humble-desktop package using the apt-get command.
     ### We recommand the /home/<user_home>/ros2_ws/src
@@ -40,10 +40,6 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
     $ cd ~/ros2_ws/src/doosan-robot2
     $ chmod +x ./install_emulator.sh
     $ sudo ./install_emulator.sh
-    $ sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
-    $ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-    $ sudo apt-get update
-    $ sudo apt install ros-humble-ros-gz
     $ cd ~/ros2_ws
     $ colcon build
     $ . install/setup.bash

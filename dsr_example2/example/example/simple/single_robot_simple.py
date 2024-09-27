@@ -21,8 +21,6 @@ def main(args=None):
 
         DR_init.__dsr__node = node
 
-        sys.path.append("/home/gossi/ros2_ws/install/common2/lib/common2/imp")
-
         try:
                 from DSR_ROBOT2 import print_ext_result, movej, movejx, movesj, movesx, movel, movec, move_periodic, move_spiral, moveb, set_velx, set_accx, set_robot_mode
                 from DSR_ROBOT2 import posj, posx, posb
