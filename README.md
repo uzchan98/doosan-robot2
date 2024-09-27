@@ -32,15 +32,21 @@ Install Docker https://docs.docker.com/engine/install/ubuntu/
     
     ### We assume that you have installed the ros-humble-desktop package using the apt-get command.
     ### We recommand the /home/<user_home>/ros2_ws/src
-    mkdir -p ~/ros2_ws/src
-    cd ~/ros2_ws/src
-    git clone -b humble-devel https://github.com/doosan-robotics/doosan-robot2.git
-    git clone -b humble https://github.com/ros-controls/gz_ros2_control
-    rosdep install -r --from-paths ./gz_ros2_control --ignore-src --rosdistro $ROS_DISTRO -y
-    cd doosan-robot2 && ./install_emulator.sh
-    cd ~/ros2_ws
-    colcon build
-    . install/setup.bash
+    $ mkdir -p ~/ros2_ws/src
+    $ cd ~/ros2_ws/src
+    $ git clone -b humble-devel https://github.com/doosan-robotics/doosan-robot2.git
+    $ git clone -b humble https://github.com/ros-controls/gz_ros2_control
+    $ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+    $ cd ~/ros2_ws/src/doosan-robot2
+    $ chmod +x ./install_emulator.sh
+    $ sudo ./install_emulator.sh
+    $ sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
+    $ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+    $ sudo apt-get update
+    $ sudo apt install ros-humble-ros-gz
+    $ cd ~/ros2_ws
+    $ colcon build
+    $ . install/setup.bash
 
 
 ## Launch Parameters
