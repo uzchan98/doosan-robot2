@@ -28,10 +28,6 @@ class SendPoseServoLGz(Node):
         self.previous_desired_pose = None
 
 
-        self.servol_vel = [80.0, 30.0]
-        self.servol_acc = [80.0, 30.0]
-
-
     def marker_id_callback(self, msg):
         self.current_marker_id = msg.data
         self.check_and_process_data()
@@ -51,16 +47,15 @@ class SendPoseServoLGz(Node):
                 self.get_logger().info("Failed Detecting Marker. Move to waiting Position.")
             
             else:
+                self.publish_pose()
 
                 if self.previous_marker_id == None:
-                    self.publish_first_pose()
-                    self.get_logger().info("Detect, Move to target pose.")
+                    self.get_logger().info("First Detect, Move to target pose.")
                     self.get_logger().info(f"ID: {self.current_marker_id}, Pose: {self.current_desired_pose}")
                     pass
 
 
                 else:
-                    self.publish_pose()
                     if self.previous_marker_id == self.current_marker_id:
                         if self.previous_desired_pose[0:3] != self.current_desired_pose[0:3]:
                             self.get_logger().info("Same Marker, Different Pose, Send New Pose")
@@ -74,22 +69,12 @@ class SendPoseServoLGz(Node):
             self.previous_desired_pose = self.current_desired_pose                
 
 
-    def publish_first_pose(self):
-        self.msg = ServolStream()
-        self.msg.pos = self.current_desired_pose
-        self.msg.vel = [40.0, 20.0]
-        self.msg.acc = [40.0, 20.0]
-        self.msg.time = 0.0
-        
-        self.detected_marker_servol_pub.publish(self.msg)
-
-
     def publish_pose(self):
 
         self.msg = ServolStream()
         self.msg.pos = self.current_desired_pose
-        self.msg.vel = [80.0, 30.0]
-        self.msg.acc = [80.0, 30.0]
+        self.msg.vel = [500.0, 180.0]
+        self.msg.acc = [875.0, 180.0]
         self.msg.time = 0.0
         
         self.detected_marker_servol_pub.publish(self.msg)
