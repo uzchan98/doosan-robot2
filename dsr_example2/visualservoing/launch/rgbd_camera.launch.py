@@ -39,13 +39,14 @@ from launch_ros.actions import Node
 def generate_launch_description():
 
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    descp_path = get_package_share_directory('visualservoing')
 
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
         launch_arguments={
             #'gz_args': '-r sensors_demo.sdf'
-            'gz_args': '-r /workspace/doosan_ws/src/doosan-robot2/dsr_example2/visualservoing/description/visual_servoing.sdf'
+            'gz_args': '-r ' + descp_path + '/description/visual_servoing.sdf'
 
         }.items(),
     )

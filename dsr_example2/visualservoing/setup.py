@@ -21,8 +21,10 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (share_dir + '/launch', glob.glob(os.path.join('launch', '*launch.py'))),
         (share_dir + '/config', glob.glob(os.path.join('config', '*yaml'))),
-        
-    ],
+        (share_dir + '/description', glob.glob(os.path.join('description', '*sdf'))),
+        (share_dir + '/description/textures', glob.glob(os.path.join('description/textures', '*png'))),
+
+    ],  
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Chemin Ahn',
@@ -31,18 +33,10 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
-                
-                # Camera_publisher
+        'console_scripts': [                
                 'camera_publisher = visualservoing.camera_publisher:main',
-
-                #Cobot pos: [0, 0, 90, 0, 90, 0]
                 'joint90 = visualservoing.joint90:main',
-
-                # Visual Servoing @ Gazebo
-                # 마커 좌표 인식 (Gazebo 용도)
                 'detect_marker_gz = visualservoing.detect_marker_gz:main',
-                # 인식한 마커를 기반으로 Cobot 제어 (Gazebo 용도))
                 'send_pose_servol_gz = visualservoing.send_pose_servol_gz:main',
 
 

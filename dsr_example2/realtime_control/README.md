@@ -102,7 +102,7 @@ $ ros2 run realtime_control realtime_api
 ```
 
 
-A 30-seconds test results showed a response time of up to 1.6 ms.
+A 30-seconds test results showed a maximum response time of 1.6 ms.
 
 **Not suitable for torque control.**
 
@@ -113,6 +113,7 @@ $ ros2 run realtime_control realtime_api --sched SCHED_FIFO --priority 90
 ```
 
 ![ReadDataRT_API_Sched_Response_30sec](assets/ReadDataRT_API_Sched_Response_30sec.png)
+(Use Excel for statics.)
 
 A 30-seconds test results showed a response time of up to 0.11 ms.
 
@@ -127,7 +128,7 @@ $ ros2 run realtime_control rt_init
 $ ros2 run realtime_control realtime_control
 ```
 
-A 30-seconds test results showed a response time of up to 0.13 ms.
+A 30-seconds test results showed a maximum response time of up to 13 ms.
 
 **Not suitable for torque control.**
 
@@ -140,7 +141,7 @@ $ ros2 run realtime_control realtime_control --sched SCHED_FIFO --priority 90
 
 
 The overall response has improved.
-A 30-seconds test results showed a response time of up to 0.13 ms.
+A 30-seconds test results showed a maximum response time of 13 ms.
 
 **Not suitable for torque control.**
 

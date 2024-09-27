@@ -19,32 +19,38 @@ Matrix6f J_m{
     {0, 0, 0, 0, 0.00009901, 0},
     {0, 0, 0, 0, 0, 0.00009901},
 };
-Vector6f Gear_Ratio{100,100,100,80,80,80};
-Vector6f Torque_Ratio{0.01,0.01,0.01,0.0125,0.0125,0.0125};
+Vector6f Gear_Ratio{
+    {100, 0, 0, 0, 0, 0},
+    {0, 100, 0, 0, 0, 0},
+    {0, 0, 100, 0, 0, 0},
+    {0, 0, 0, 80, 0, 0},
+    {0, 0, 0, 0, 80, 0},
+    {0, 0, 0, 0, 0, 80},
+};
 
 Matrix6f M_d{
-    {1, 0, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 1, 0, 0},
-    {0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 0, 1},
+    {2.5, 0, 0, 0, 0, 0},
+    {0, 2.5, 0, 0, 0, 0},
+    {0, 0, 2.5, 0, 0, 0},
+    {0, 0, 0, 2.5, 0, 0},
+    {0, 0, 0, 0, 2.5, 0},
+    {0, 0, 0, 0, 0, 2.5},
 };
 Matrix6f D_d{
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
+    {15, 0, 0, 0, 0, 0},
+    {0, 15, 0, 0, 0, 0},
+    {0, 0, 15, 0, 0, 0},
+    {0, 0, 0, 15, 0, 0},
+    {0, 0, 0, 0, 15, 0},
+    {0, 0, 0, 0, 0, 15},
 };
 Matrix6f K_d{
-    {1, 0, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 1, 0, 0},
-    {0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 0, 1},
+    {100, 0, 0, 0, 0, 0},
+    {0, 100, 0, 0, 0, 0},
+    {0, 0, 100, 0, 0, 0},
+    {0, 0, 0, 100, 0, 0},
+    {0, 0, 0, 0, 100, 0},
+    {0, 0, 0, 0, 0, 100},
 };
 Matrix6f K_o{
     {0.1, 0, 0, 0, 0, 0},
@@ -267,7 +273,6 @@ void TorqueRtNode::TorqueRtAPI()
     }
     trq = TorqueRtNode::GravityCompensation();
     // trq = TorqueRtNode::PositionHoldingControl();
-    // trq = TorqueRtNode::JointImpedanceControl();
     
     for(int i=0; i<6; i++)
     {
@@ -288,32 +293,10 @@ Vector6f TorqueRtNode::GravityCompensation()
 Vector6f TorqueRtNode::PositionHoldingControl()
 {
     mtx.lock();
-    q       = deg_q * 0.0174532925;
-    q_dot   = deg_q_dot * 0.0174532925;
-    q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-
     //control input
-    trq_c = J_m * q_ddot + trq_j;
+    trq_c = trq_j;
     mtx.unlock();
 
-    return trq_c;
-}
-Vector6f TorqueRtNode::JointImpedanceControl()
-{
-    
-    mtx.lock();
-    q       = deg_q * 0.0174532925;
-    q_dot   = deg_q_dot * 0.0174532925;
-    q_ddot  = M_d.inverse()*(M_d*q_ddot_d + D_d*(q_dot_d-q_dot) + K_d*(q_d-q) - trq_e);
-
-    //friction observer
-    trq_f_hat = K_o * (trq_m - trq_j -trq_f_hat)*0.001 + trq_f_hat + K_o * J_m * (q_dot_prev - q_dot);
-    q_dot_prev = q_dot;
-    
-    //control input
-    trq_c = J_m * q_ddot + trq_j + trq_f_hat;
-    mtx.unlock();
-    
     return trq_c;
 }
 
