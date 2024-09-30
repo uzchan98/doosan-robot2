@@ -19,7 +19,7 @@ Matrix6f J_m{
     {0, 0, 0, 0, 0.00009901, 0},
     {0, 0, 0, 0, 0, 0.00009901},
 };
-Vector6f Gear_Ratio{
+Matrix6f Gear_Ratio{
     {100, 0, 0, 0, 0, 0},
     {0, 100, 0, 0, 0, 0},
     {0, 0, 100, 0, 0, 0},
@@ -272,7 +272,7 @@ void TorqueRtNode::TorqueRtAPI()
         return;
     }
     trq = TorqueRtNode::GravityCompensation();
-    // trq = TorqueRtNode::PositionHoldingControl();
+    // trq = TorqueRtNode::ExternalForceResist();
     
     for(int i=0; i<6; i++)
     {
@@ -290,7 +290,7 @@ Vector6f TorqueRtNode::GravityCompensation()
 
     return trq_c;
 }
-Vector6f TorqueRtNode::PositionHoldingControl()
+Vector6f TorqueRtNode::ExternalForceResist()
 {
     mtx.lock();
     //control input

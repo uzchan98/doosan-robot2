@@ -153,7 +153,7 @@ public:
 
     void TorqueRtAPI();
     Vector6f GravityCompensation();
-    Vector6f PositionHoldingControl();
+    Vector6f ExternalForceResist();
 
 private:  
     rclcpp::TimerBase::SharedPtr timer_;

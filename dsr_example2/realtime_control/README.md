@@ -65,7 +65,7 @@ $ ros2 run realtime_control realtime_api
 ### Option 2:
 
 ```bash
-## Real Mode (Limitedly available: bad data acquisition)
+## Real Mode (Limitedly available)
 
 # By entering the following command line, you can get control authority from TP to your device
 $ ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py mode:=real host:=192.168.137.100 port:=12345 model:=m1013
@@ -83,6 +83,8 @@ $ ros2 run realtime_control rt_shutdown
 ```bash
 ## Virtual Mode (Not available for now)
 ```
+## Result of Execution(Gravity Compensation)
+![GravityCompensation](assets/m1013_GravityCompensation.gif)
 
 ## Performance Test
 

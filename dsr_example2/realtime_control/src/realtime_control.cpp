@@ -128,7 +128,7 @@ void ReadDataRtNode::ReadDataRtClient()
         }
         auto request = std::make_shared<dsr_msgs2::srv::ReadDataRt::Request>();
         auto future = client_->async_send_request(request);
-        RCLCPP_INFO(this->get_logger(), "ReadDataRt Service Request");
+        // RCLCPP_INFO(this->get_logger(), "ReadDataRt Service Request");
         try
         {
             auto response = future.get();
@@ -136,7 +136,7 @@ void ReadDataRtNode::ReadDataRtClient()
             {
                 first_get=true;
             }
-            RCLCPP_INFO(this->get_logger(), "ReadDataRt Service Response");
+            // RCLCPP_INFO(this->get_logger(), "ReadDataRt Service Response");
             g_stRTState.time_stamp = response->data.time_stamp;
             for(int i=0; i<6; i++)
             {
@@ -184,7 +184,7 @@ void TorqueRtNode::TorqueRtStreamPublisher()
     if(first_get)
     {
         this->publisher_->publish(message);
-        // RCLCPP_INFO(this->get_logger(), "TorqueRtStream Published");
+        RCLCPP_INFO(this->get_logger(), "trq_d[0]%f[1]%f[2]%f[3]%f[4]%f[5]%f",trq_d[0],trq_d[1],trq_d[2],trq_d[3],trq_d[4],trq_d[5]);
     } 
 }
 
