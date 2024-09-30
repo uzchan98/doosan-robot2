@@ -190,11 +190,11 @@ def generate_launch_description():
         connection_node,
         control_node,
         robot_state_pub_node,
-        robot_controller_spawner,
+        # robot_controller_spawner,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         rqt_node,
-        handle_node,
+        # handle_node,
         # controller_node,
         # delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
