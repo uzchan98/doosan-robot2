@@ -44,7 +44,7 @@ colcon build --packages-select example
 ros2 launch dsr_bringup2 dsr_bringup2_rviz.launch.py mode:=virtual host:=127.0.0.1 port:=12345 model:=m1013
 ros2 run example dance
 ```
-
+[Dance Example 시연 영상.webm](https://github.com/user-attachments/assets/19cf76fe-81c6-442c-90ae-ef4b49af17c0)
 
 
 ### Run Single Robot Simple Example
